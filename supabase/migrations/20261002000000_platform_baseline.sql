@@ -23,7 +23,7 @@ parallel safe
 set search_path = ''
 as $$
 declare
-  ts_ms bigint := floor(extract(epoch from clock_timestamp()) * 1000);
+  ts_ms bigint := floor(extract(epoch from clock_timestamp()) * 1000)::bigint;
   bytes bytea;
 begin
   bytes := substring(int8send(ts_ms) from 3) || extensions.gen_random_bytes(10);

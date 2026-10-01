@@ -97,7 +97,19 @@ jobs:
       - name: Start Postgres and apply migrations
         run: supabase db start
       - name: Lint SQL
-        run: supabase db lint --local --level warning --fail-on warning
+        shell: bash
+        run: |
+          set +e
+          supabase db lint --local --level warning --fail-on warning > db-lint.txt 2>&1
+          status=$?
+          cat db-lint.txt
+          if [ "$status" -ne 0 ]; then
+            # Surface the findings as annotations on the pull request.
+            head -40 db-lint.txt | while IFS= read -r line; do
+              [ -n "$line" ] && echo "::error title=SQL lint::${line}"
+            done
+          fi
+          exit "$status"
       - name: pgTAP
         run: supabase test db
 
