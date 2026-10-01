@@ -1,4 +1,7 @@
 begin;
+-- pgTAP lives only inside the test transaction; it never ships to production.
+create extension if not exists pgtap with schema extensions;
+
 select plan(7);
 
 select has_schema('util', 'util schema exists');

@@ -4,7 +4,6 @@
 -- (platform_, auth_, groups_, checkins_ …); see docs/decisions.md (D-003).
 
 create extension if not exists pgcrypto with schema extensions;
-create extension if not exists pgtap with schema extensions;
 
 -- A private schema for helpers. It is not in the API's exposed schemas,
 -- so nothing here is callable over the REST or GraphQL endpoints.

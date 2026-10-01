@@ -100,7 +100,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          supabase db lint --local --level warning --fail-on warning > db-lint.txt 2>&1
+          supabase db lint --local --schema public,util --level warning --fail-on warning > db-lint.txt 2>&1
           status=$?
           cat db-lint.txt
           if [ "$status" -ne 0 ]; then
