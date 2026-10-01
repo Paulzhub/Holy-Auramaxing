@@ -1,0 +1,36 @@
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+
+import { readPublicEnv } from "@/lib/env";
+
+/**
+ * Supabase client for Server Components, Server Actions and Route Handlers.
+ * Uses the publishable key, so every query runs as the signed-in user and is
+ * limited by row-level security. The secret key is never used here.
+ */
+export async function createSupabaseServerClient() {
+  const env = readPublicEnv();
+  if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    throw new Error("Supabase is not configured. Copy .env.example to .env.local (see README).");
+  }
+  const cookieStore = await cookies();
+
+  return createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
+    cookies: {
+      getAll: () => cookieStore.getAll(),
+      setAll(cookiesToSet) {
+        try {
+          for (const { name, value, options } of cookiesToSet) cookieStore.set(name, value, options);
+        } catch {
+          // Called from a Server Component, where cookies are read-only.
+          // Session refresh happens in the proxy from Phase 2 onwards.
+        }
+      },
+    },
+  });
+}
+
+export function isSupabaseConfigured(): boolean {
+  const env = readPublicEnv();
+  return Boolean(env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+}

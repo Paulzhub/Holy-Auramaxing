@@ -1,0 +1,179 @@
+/*
+ * Design tokens — "light breaking through".
+ *
+ * Light theme: a pre-dawn mist with indigo ink and warm gold.
+ * Dark theme: deep indigo night where gold becomes the primary light.
+ *
+ * Theme resolution (see src/features/theme):
+ *   - no data-theme attribute  → follow the system (prefers-color-scheme)
+ *   - data-theme="light"|"dark" → pinned by the user
+ *
+ * The two DARK blocks below must stay identical; tests/unit/tokens.test.ts
+ * enforces that and checks every text/background pair against WCAG 2.2 AA.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---------- colour: light (default) ---------- */
+  --color-bg: #f5f3fa;
+  --color-surface: #ffffff;
+  --color-sunken: #ece8f5;
+  --color-ink: #1d1940;
+  --color-ink-muted: #57527a;
+  --color-line: #827ca6;
+  --color-line-subtle: #dcd7ea;
+  --color-primary: #3b3391;
+  --color-primary-hover: #2e2779;
+  --color-primary-active: #241f63;
+  --color-on-primary: #ffffff;
+  --color-accent: #e6a82e;
+  --color-accent-strong: #a86e00;
+  --color-accent-ink: #8a5800;
+  --color-on-accent: #1d1940;
+  --color-focus: #3b3391;
+  --color-danger: #a8321e;
+  --color-success: #2d6b4c;
+  --color-slip: #7a4b83;
+  --color-scrim: rgb(29 25 64 / 0.48);
+  --color-horizon-1: #3b3391;
+  --color-horizon-2: #d98c8c;
+  --color-horizon-3: #e6a82e;
+
+  /* ---------- type ---------- */
+  --font-display-stack: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
+  --font-sans-stack: var(--font-atkinson), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Major-third scale (1.25) on a 16px base */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 1.953rem;
+  --text-3xl: 2.441rem;
+  --text-4xl: 3.052rem;
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-body: 1.55;
+
+  /* ---------- space (4px grid) ---------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* ---------- radius: rounder the smaller the thing ---------- */
+  --radius-sm: 0.625rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-pill: 999px;
+
+  /* ---------- shadow: tinted with indigo, never grey ---------- */
+  --shadow-1: 0 1px 2px rgb(29 25 64 / 0.06), 0 2px 8px rgb(29 25 64 / 0.06);
+  --shadow-2: 0 4px 12px rgb(29 25 64 / 0.1), 0 16px 40px rgb(29 25 64 / 0.12);
+
+  /* ---------- motion ---------- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ---------- layout ---------- */
+  --sidebar-width: 15.5rem;
+  --bottom-nav-height: 4.25rem;
+  --topbar-height: 3.5rem;
+  --content-max: 46rem;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* DARK:BEGIN pinned */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #13112b;
+  --color-surface: #1d1a3d;
+  --color-sunken: #0e0c22;
+  --color-ink: #efecfa;
+  --color-ink-muted: #b9b3d9;
+  --color-line: #8a83b8;
+  --color-line-subtle: #2e2a5a;
+  --color-primary: #f2c14e;
+  --color-primary-hover: #f7d27e;
+  --color-primary-active: #e8b032;
+  --color-on-primary: #1d1940;
+  --color-accent: #f2c14e;
+  --color-accent-strong: #f2c14e;
+  --color-accent-ink: #f2c14e;
+  --color-on-accent: #1d1940;
+  --color-focus: #f2c14e;
+  --color-danger: #ff9c8c;
+  --color-success: #86d3ac;
+  --color-slip: #d7b3de;
+  --color-scrim: rgb(5 4 16 / 0.64);
+  --color-horizon-1: #2e2779;
+  --color-horizon-2: #b86b7a;
+  --color-horizon-3: #f2c14e;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.25);
+  --shadow-2: 0 4px 12px rgb(0 0 0 / 0.35), 0 16px 40px rgb(0 0 0 / 0.4);
+}
+/* DARK:END pinned */
+
+@media (prefers-color-scheme: dark) {
+  /* DARK:BEGIN system */
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: #13112b;
+    --color-surface: #1d1a3d;
+    --color-sunken: #0e0c22;
+    --color-ink: #efecfa;
+    --color-ink-muted: #b9b3d9;
+    --color-line: #8a83b8;
+    --color-line-subtle: #2e2a5a;
+    --color-primary: #f2c14e;
+    --color-primary-hover: #f7d27e;
+    --color-primary-active: #e8b032;
+    --color-on-primary: #1d1940;
+    --color-accent: #f2c14e;
+    --color-accent-strong: #f2c14e;
+    --color-accent-ink: #f2c14e;
+    --color-on-accent: #1d1940;
+    --color-focus: #f2c14e;
+    --color-danger: #ff9c8c;
+    --color-success: #86d3ac;
+    --color-slip: #d7b3de;
+    --color-scrim: rgb(5 4 16 / 0.64);
+    --color-horizon-1: #2e2779;
+    --color-horizon-2: #b86b7a;
+    --color-horizon-3: #f2c14e;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 8px rgb(0 0 0 / 0.25);
+    --shadow-2: 0 4px 12px rgb(0 0 0 / 0.35), 0 16px 40px rgb(0 0 0 / 0.4);
+  }
+  /* DARK:END system */
+}
+
+/* Users who ask for more contrast get firmer lines and muted text. */
+@media (prefers-contrast: more) {
+  /* :is() lifts specificity to match the dark-theme blocks above. */
+  :root:is([data-theme], :not([data-theme])) {
+    --color-line: var(--color-ink);
+    --color-line-subtle: var(--color-line);
+    --color-ink-muted: var(--color-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}
