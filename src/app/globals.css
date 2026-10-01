@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/components.css";
+@import "../styles/shell.css";
+
+/*
+ * Tailwind is used for layout utilities only. Colours always come from the
+ * design tokens (src/styles/tokens.css), so the default palette is removed
+ * to stop off-palette colours creeping in. Use `text-(--color-ink)` etc.
+ */
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+}
+
+@theme inline {
+  --font-display: var(--font-display-stack);
+  --font-sans: var(--font-sans-stack);
+}
+
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans-stack);
+    font-size: 100%;
+    line-height: var(--leading-body);
+    accent-color: var(--color-primary);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Keep focused elements clear of the sticky top bar and bottom nav (WCAG 2.4.11). */
+    scroll-padding-block: calc(var(--topbar-height) + var(--space-4)) calc(var(--bottom-nav-height) + var(--space-7));
+  }
+
+  @media (min-width: 1024px) {
+    html {
+      scroll-padding-block: var(--space-5);
+    }
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display-stack);
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  :focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  @media (forced-colors: active) {
+    :focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}
