@@ -1,0 +1,1004 @@
+level,label,tier,tier_name,variant,era,reference,days_from_level_0
+0,Clay,0,Clay,,Beginning,Isaiah 64:8,0
+1,Breath of Life,1,Breath of Life,,Genesis,Genesis 2:7,5
+2,Breath of Life Lite,1,Breath of Life,Lite,Genesis,Genesis 2:7,10
+3,Breath of Life Pro,1,Breath of Life,Pro,Genesis,Genesis 2:7,15
+4,Breath of Life Max,1,Breath of Life,Max,Genesis,Genesis 2:7,20
+5,Breath of Life Ultra,1,Breath of Life,Ultra,Genesis,Genesis 2:7,25
+6,Breath of Life Ultra Pro Max,1,Breath of Life,Ultra Pro Max,Genesis,Genesis 2:7,30
+7,Ark Builder,2,Ark Builder,,Genesis,Genesis 6:14,35
+8,Ark Builder Lite,2,Ark Builder,Lite,Genesis,Genesis 6:14,40
+9,Ark Builder Pro,2,Ark Builder,Pro,Genesis,Genesis 6:14,45
+10,Ark Builder Max,2,Ark Builder,Max,Genesis,Genesis 6:14,50
+11,Ark Builder Ultra,2,Ark Builder,Ultra,Genesis,Genesis 6:14,55
+12,Ark Builder Ultra Pro Max,2,Ark Builder,Ultra Pro Max,Genesis,Genesis 6:14,60
+13,Dove Sender,3,Dove Sender,,Genesis,Genesis 8:8,65
+14,Dove Sender Lite,3,Dove Sender,Lite,Genesis,Genesis 8:8,70
+15,Dove Sender Pro,3,Dove Sender,Pro,Genesis,Genesis 8:8,75
+16,Dove Sender Max,3,Dove Sender,Max,Genesis,Genesis 8:8,80
+17,Dove Sender Ultra,3,Dove Sender,Ultra,Genesis,Genesis 8:8,85
+18,Dove Sender Ultra Pro Max,3,Dove Sender,Ultra Pro Max,Genesis,Genesis 8:8,90
+19,Rainbow Promise,4,Rainbow Promise,,Genesis,Genesis 9:13,95
+20,Rainbow Promise Lite,4,Rainbow Promise,Lite,Genesis,Genesis 9:13,100
+21,Rainbow Promise Pro,4,Rainbow Promise,Pro,Genesis,Genesis 9:13,110
+22,Rainbow Promise Max,4,Rainbow Promise,Max,Genesis,Genesis 9:13,120
+23,Rainbow Promise Ultra,4,Rainbow Promise,Ultra,Genesis,Genesis 9:13,130
+24,Rainbow Promise Ultra Pro Max,4,Rainbow Promise,Ultra Pro Max,Genesis,Genesis 9:13,140
+25,Pilgrim,5,Pilgrim,,Genesis,Genesis 12:1,150
+26,Pilgrim Lite,5,Pilgrim,Lite,Genesis,Genesis 12:1,160
+27,Pilgrim Pro,5,Pilgrim,Pro,Genesis,Genesis 12:1,170
+28,Pilgrim Max,5,Pilgrim,Max,Genesis,Genesis 12:1,180
+29,Pilgrim Ultra,5,Pilgrim,Ultra,Genesis,Genesis 12:1,190
+30,Pilgrim Ultra Pro Max,5,Pilgrim,Ultra Pro Max,Genesis,Genesis 12:1,200
+31,Star Counter,6,Star Counter,,Genesis,Genesis 15:5,210
+32,Star Counter Lite,6,Star Counter,Lite,Genesis,Genesis 15:5,220
+33,Star Counter Pro,6,Star Counter,Pro,Genesis,Genesis 15:5,230
+34,Star Counter Max,6,Star Counter,Max,Genesis,Genesis 15:5,240
+35,Star Counter Ultra,6,Star Counter,Ultra,Genesis,Genesis 15:5,250
+36,Star Counter Ultra Pro Max,6,Star Counter,Ultra Pro Max,Genesis,Genesis 15:5,260
+37,Well Digger,7,Well Digger,,Genesis,Genesis 26:18,270
+38,Well Digger Lite,7,Well Digger,Lite,Genesis,Genesis 26:18,280
+39,Well Digger Pro,7,Well Digger,Pro,Genesis,Genesis 26:18,290
+40,Well Digger Max,7,Well Digger,Max,Genesis,Genesis 26:18,300
+41,Well Digger Ultra,7,Well Digger,Ultra,Genesis,Genesis 26:18,310
+42,Well Digger Ultra Pro Max,7,Well Digger,Ultra Pro Max,Genesis,Genesis 26:18,320
+43,Ladder Dreamer,8,Ladder Dreamer,,Genesis,Genesis 28:12,330
+44,Ladder Dreamer Lite,8,Ladder Dreamer,Lite,Genesis,Genesis 28:12,340
+45,Ladder Dreamer Pro,8,Ladder Dreamer,Pro,Genesis,Genesis 28:12,350
+46,Ladder Dreamer Max,8,Ladder Dreamer,Max,Genesis,Genesis 28:12,360
+47,Ladder Dreamer Ultra,8,Ladder Dreamer,Ultra,Genesis,Genesis 28:12,370
+48,Ladder Dreamer Ultra Pro Max,8,Ladder Dreamer,Ultra Pro Max,Genesis,Genesis 28:12,380
+49,Wrestler,9,Wrestler,,Genesis,Genesis 32:24,390
+50,Wrestler Lite,9,Wrestler,Lite,Genesis,Genesis 32:24,400
+51,Wrestler Pro,9,Wrestler,Pro,Genesis,Genesis 32:24,410
+52,Wrestler Max,9,Wrestler,Max,Genesis,Genesis 32:24,420
+53,Wrestler Ultra,9,Wrestler,Ultra,Genesis,Genesis 32:24,430
+54,Wrestler Ultra Pro Max,9,Wrestler,Ultra Pro Max,Genesis,Genesis 32:24,440
+55,Coat of Many Colors,10,Coat of Many Colors,,Genesis,Genesis 37:3,450
+56,Coat of Many Colors Lite,10,Coat of Many Colors,Lite,Genesis,Genesis 37:3,460
+57,Coat of Many Colors Pro,10,Coat of Many Colors,Pro,Genesis,Genesis 37:3,470
+58,Coat of Many Colors Max,10,Coat of Many Colors,Max,Genesis,Genesis 37:3,480
+59,Coat of Many Colors Ultra,10,Coat of Many Colors,Ultra,Genesis,Genesis 37:3,490
+60,Coat of Many Colors Ultra Pro Max,10,Coat of Many Colors,Ultra Pro Max,Genesis,Genesis 37:3,500
+61,Temptation Dodger,11,Temptation Dodger,,Genesis,Genesis 39:12,510
+62,Temptation Dodger Lite,11,Temptation Dodger,Lite,Genesis,Genesis 39:12,520
+63,Temptation Dodger Pro,11,Temptation Dodger,Pro,Genesis,Genesis 39:12,530
+64,Temptation Dodger Max,11,Temptation Dodger,Max,Genesis,Genesis 39:12,540
+65,Temptation Dodger Ultra,11,Temptation Dodger,Ultra,Genesis,Genesis 39:12,550
+66,Temptation Dodger Ultra Pro Max,11,Temptation Dodger,Ultra Pro Max,Genesis,Genesis 39:12,560
+67,Palace Riser,12,Palace Riser,,Genesis,Genesis 41:41,570
+68,Palace Riser Lite,12,Palace Riser,Lite,Genesis,Genesis 41:41,580
+69,Palace Riser Pro,12,Palace Riser,Pro,Genesis,Genesis 41:41,590
+70,Palace Riser Max,12,Palace Riser,Max,Genesis,Genesis 41:41,600
+71,Palace Riser Ultra,12,Palace Riser,Ultra,Genesis,Genesis 41:41,610
+72,Palace Riser Ultra Pro Max,12,Palace Riser,Ultra Pro Max,Genesis,Genesis 41:41,620
+73,Reed Basket,13,Reed Basket,,Exodus & Wilderness,Exodus 2:3,630
+74,Reed Basket Lite,13,Reed Basket,Lite,Exodus & Wilderness,Exodus 2:3,640
+75,Reed Basket Pro,13,Reed Basket,Pro,Exodus & Wilderness,Exodus 2:3,650
+76,Reed Basket Max,13,Reed Basket,Max,Exodus & Wilderness,Exodus 2:3,660
+77,Reed Basket Ultra,13,Reed Basket,Ultra,Exodus & Wilderness,Exodus 2:3,670
+78,Reed Basket Ultra Pro Max,13,Reed Basket,Ultra Pro Max,Exodus & Wilderness,Exodus 2:3,680
+79,Holy Ground,14,Holy Ground,,Exodus & Wilderness,Exodus 3:5,690
+80,Holy Ground Lite,14,Holy Ground,Lite,Exodus & Wilderness,Exodus 3:5,700
+81,Holy Ground Pro,14,Holy Ground,Pro,Exodus & Wilderness,Exodus 3:5,710
+82,Holy Ground Max,14,Holy Ground,Max,Exodus & Wilderness,Exodus 3:5,720
+83,Holy Ground Ultra,14,Holy Ground,Ultra,Exodus & Wilderness,Exodus 3:5,730
+84,Holy Ground Ultra Pro Max,14,Holy Ground,Ultra Pro Max,Exodus & Wilderness,Exodus 3:5,740
+85,Passover Ready,15,Passover Ready,,Exodus & Wilderness,Exodus 12:11,750
+86,Passover Ready Lite,15,Passover Ready,Lite,Exodus & Wilderness,Exodus 12:11,760
+87,Passover Ready Pro,15,Passover Ready,Pro,Exodus & Wilderness,Exodus 12:11,770
+88,Passover Ready Max,15,Passover Ready,Max,Exodus & Wilderness,Exodus 12:11,780
+89,Passover Ready Ultra,15,Passover Ready,Ultra,Exodus & Wilderness,Exodus 12:11,790
+90,Passover Ready Ultra Pro Max,15,Passover Ready,Ultra Pro Max,Exodus & Wilderness,Exodus 12:11,800
+91,Red Sea Crosser,16,Red Sea Crosser,,Exodus & Wilderness,Exodus 14:22,810
+92,Red Sea Crosser Lite,16,Red Sea Crosser,Lite,Exodus & Wilderness,Exodus 14:22,820
+93,Red Sea Crosser Pro,16,Red Sea Crosser,Pro,Exodus & Wilderness,Exodus 14:22,830
+94,Red Sea Crosser Max,16,Red Sea Crosser,Max,Exodus & Wilderness,Exodus 14:22,840
+95,Red Sea Crosser Ultra,16,Red Sea Crosser,Ultra,Exodus & Wilderness,Exodus 14:22,850
+96,Red Sea Crosser Ultra Pro Max,16,Red Sea Crosser,Ultra Pro Max,Exodus & Wilderness,Exodus 14:22,860
+97,Victory Song,17,Victory Song,,Exodus & Wilderness,Exodus 15:1,870
+98,Victory Song Lite,17,Victory Song,Lite,Exodus & Wilderness,Exodus 15:1,880
+99,Victory Song Pro,17,Victory Song,Pro,Exodus & Wilderness,Exodus 15:1,890
+100,Victory Song Max,17,Victory Song,Max,Exodus & Wilderness,Exodus 15:1,900
+101,Victory Song Ultra,17,Victory Song,Ultra,Exodus & Wilderness,Exodus 15:1,910
+102,Victory Song Ultra Pro Max,17,Victory Song,Ultra Pro Max,Exodus & Wilderness,Exodus 15:1,920
+103,Manna Gatherer,18,Manna Gatherer,,Exodus & Wilderness,Exodus 16:18,930
+104,Manna Gatherer Lite,18,Manna Gatherer,Lite,Exodus & Wilderness,Exodus 16:18,940
+105,Manna Gatherer Pro,18,Manna Gatherer,Pro,Exodus & Wilderness,Exodus 16:18,950
+106,Manna Gatherer Max,18,Manna Gatherer,Max,Exodus & Wilderness,Exodus 16:18,960
+107,Manna Gatherer Ultra,18,Manna Gatherer,Ultra,Exodus & Wilderness,Exodus 16:18,970
+108,Manna Gatherer Ultra Pro Max,18,Manna Gatherer,Ultra Pro Max,Exodus & Wilderness,Exodus 16:18,980
+109,Raised Hands,19,Raised Hands,,Exodus & Wilderness,Exodus 17:12,990
+110,Raised Hands Lite,19,Raised Hands,Lite,Exodus & Wilderness,Exodus 17:12,1000
+111,Raised Hands Pro,19,Raised Hands,Pro,Exodus & Wilderness,Exodus 17:12,1010
+112,Raised Hands Max,19,Raised Hands,Max,Exodus & Wilderness,Exodus 17:12,1020
+113,Raised Hands Ultra,19,Raised Hands,Ultra,Exodus & Wilderness,Exodus 17:12,1030
+114,Raised Hands Ultra Pro Max,19,Raised Hands,Ultra Pro Max,Exodus & Wilderness,Exodus 17:12,1040
+115,Ten Words,20,Ten Words,,Exodus & Wilderness,Exodus 34:28,1050
+116,Ten Words Lite,20,Ten Words,Lite,Exodus & Wilderness,Exodus 34:28,1060
+117,Ten Words Pro,20,Ten Words,Pro,Exodus & Wilderness,Exodus 34:28,1070
+118,Ten Words Max,20,Ten Words,Max,Exodus & Wilderness,Exodus 34:28,1080
+119,Ten Words Ultra,20,Ten Words,Ultra,Exodus & Wilderness,Exodus 34:28,1090
+120,Ten Words Ultra Pro Max,20,Ten Words,Ultra Pro Max,Exodus & Wilderness,Exodus 34:28,1100
+121,Shining Face,21,Shining Face,,Exodus & Wilderness,Exodus 34:29,1110
+122,Shining Face Lite,21,Shining Face,Lite,Exodus & Wilderness,Exodus 34:29,1120
+123,Shining Face Pro,21,Shining Face,Pro,Exodus & Wilderness,Exodus 34:29,1130
+124,Shining Face Max,21,Shining Face,Max,Exodus & Wilderness,Exodus 34:29,1140
+125,Shining Face Ultra,21,Shining Face,Ultra,Exodus & Wilderness,Exodus 34:29,1150
+126,Shining Face Ultra Pro Max,21,Shining Face,Ultra Pro Max,Exodus & Wilderness,Exodus 34:29,1160
+127,Cloud Follower,22,Cloud Follower,,Exodus & Wilderness,Exodus 40:36,1170
+128,Cloud Follower Lite,22,Cloud Follower,Lite,Exodus & Wilderness,Exodus 40:36,1180
+129,Cloud Follower Pro,22,Cloud Follower,Pro,Exodus & Wilderness,Exodus 40:36,1190
+130,Cloud Follower Max,22,Cloud Follower,Max,Exodus & Wilderness,Exodus 40:36,1200
+131,Cloud Follower Ultra,22,Cloud Follower,Ultra,Exodus & Wilderness,Exodus 40:36,1210
+132,Cloud Follower Ultra Pro Max,22,Cloud Follower,Ultra Pro Max,Exodus & Wilderness,Exodus 40:36,1220
+133,Jubilee,23,Jubilee,,Exodus & Wilderness,Leviticus 25:10,1230
+134,Jubilee Lite,23,Jubilee,Lite,Exodus & Wilderness,Leviticus 25:10,1240
+135,Jubilee Pro,23,Jubilee,Pro,Exodus & Wilderness,Leviticus 25:10,1250
+136,Jubilee Max,23,Jubilee,Max,Exodus & Wilderness,Leviticus 25:10,1260
+137,Jubilee Ultra,23,Jubilee,Ultra,Exodus & Wilderness,Leviticus 25:10,1270
+138,Jubilee Ultra Pro Max,23,Jubilee,Ultra Pro Max,Exodus & Wilderness,Leviticus 25:10,1280
+139,Nazirite,24,Nazirite,,Exodus & Wilderness,Numbers 6:2,1290
+140,Nazirite Lite,24,Nazirite,Lite,Exodus & Wilderness,Numbers 6:2,1300
+141,Nazirite Pro,24,Nazirite,Pro,Exodus & Wilderness,Numbers 6:2,1310
+142,Nazirite Max,24,Nazirite,Max,Exodus & Wilderness,Numbers 6:2,1320
+143,Nazirite Ultra,24,Nazirite,Ultra,Exodus & Wilderness,Numbers 6:2,1330
+144,Nazirite Ultra Pro Max,24,Nazirite,Ultra Pro Max,Exodus & Wilderness,Numbers 6:2,1340
+145,Grape Carrier,25,Grape Carrier,,Exodus & Wilderness,Numbers 13:23,1350
+146,Grape Carrier Lite,25,Grape Carrier,Lite,Exodus & Wilderness,Numbers 13:23,1360
+147,Grape Carrier Pro,25,Grape Carrier,Pro,Exodus & Wilderness,Numbers 13:23,1370
+148,Grape Carrier Max,25,Grape Carrier,Max,Exodus & Wilderness,Numbers 13:23,1380
+149,Grape Carrier Ultra,25,Grape Carrier,Ultra,Exodus & Wilderness,Numbers 13:23,1390
+150,Grape Carrier Ultra Pro Max,25,Grape Carrier,Ultra Pro Max,Exodus & Wilderness,Numbers 13:23,1400
+151,Different Spirit,26,Different Spirit,,Exodus & Wilderness,Numbers 14:24,1410
+152,Different Spirit Lite,26,Different Spirit,Lite,Exodus & Wilderness,Numbers 14:24,1420
+153,Different Spirit Pro,26,Different Spirit,Pro,Exodus & Wilderness,Numbers 14:24,1430
+154,Different Spirit Max,26,Different Spirit,Max,Exodus & Wilderness,Numbers 14:24,1440
+155,Different Spirit Ultra,26,Different Spirit,Ultra,Exodus & Wilderness,Numbers 14:24,1450
+156,Different Spirit Ultra Pro Max,26,Different Spirit,Ultra Pro Max,Exodus & Wilderness,Numbers 14:24,1460
+157,Choose Life,27,Choose Life,,Exodus & Wilderness,Deuteronomy 30:19,1470
+158,Choose Life Lite,27,Choose Life,Lite,Exodus & Wilderness,Deuteronomy 30:19,1480
+159,Choose Life Pro,27,Choose Life,Pro,Exodus & Wilderness,Deuteronomy 30:19,1490
+160,Choose Life Max,27,Choose Life,Max,Exodus & Wilderness,Deuteronomy 30:19,1500
+161,Choose Life Ultra,27,Choose Life,Ultra,Exodus & Wilderness,Deuteronomy 30:19,1510
+162,Choose Life Ultra Pro Max,27,Choose Life,Ultra Pro Max,Exodus & Wilderness,Deuteronomy 30:19,1520
+163,Scarlet Cord,28,Scarlet Cord,,Promised Land,Joshua 2:18,1530
+164,Scarlet Cord Lite,28,Scarlet Cord,Lite,Promised Land,Joshua 2:18,1540
+165,Scarlet Cord Pro,28,Scarlet Cord,Pro,Promised Land,Joshua 2:18,1550
+166,Scarlet Cord Max,28,Scarlet Cord,Max,Promised Land,Joshua 2:18,1560
+167,Scarlet Cord Ultra,28,Scarlet Cord,Ultra,Promised Land,Joshua 2:18,1570
+168,Scarlet Cord Ultra Pro Max,28,Scarlet Cord,Ultra Pro Max,Promised Land,Joshua 2:18,1580
+169,Step of Faith,29,Step of Faith,,Promised Land,Joshua 3:15,1590
+170,Step of Faith Lite,29,Step of Faith,Lite,Promised Land,Joshua 3:15,1600
+171,Step of Faith Pro,29,Step of Faith,Pro,Promised Land,Joshua 3:15,1610
+172,Step of Faith Max,29,Step of Faith,Max,Promised Land,Joshua 3:15,1620
+173,Step of Faith Ultra,29,Step of Faith,Ultra,Promised Land,Joshua 3:15,1630
+174,Step of Faith Ultra Pro Max,29,Step of Faith,Ultra Pro Max,Promised Land,Joshua 3:15,1640
+175,Memorial Stone,30,Memorial Stone,,Promised Land,Joshua 4:7,1650
+176,Memorial Stone Lite,30,Memorial Stone,Lite,Promised Land,Joshua 4:7,1660
+177,Memorial Stone Pro,30,Memorial Stone,Pro,Promised Land,Joshua 4:7,1670
+178,Memorial Stone Max,30,Memorial Stone,Max,Promised Land,Joshua 4:7,1680
+179,Memorial Stone Ultra,30,Memorial Stone,Ultra,Promised Land,Joshua 4:7,1690
+180,Memorial Stone Ultra Pro Max,30,Memorial Stone,Ultra Pro Max,Promised Land,Joshua 4:7,1700
+181,Jericho Shouter,31,Jericho Shouter,,Promised Land,Joshua 6:20,1710
+182,Jericho Shouter Lite,31,Jericho Shouter,Lite,Promised Land,Joshua 6:20,1720
+183,Jericho Shouter Pro,31,Jericho Shouter,Pro,Promised Land,Joshua 6:20,1730
+184,Jericho Shouter Max,31,Jericho Shouter,Max,Promised Land,Joshua 6:20,1740
+185,Jericho Shouter Ultra,31,Jericho Shouter,Ultra,Promised Land,Joshua 6:20,1750
+186,Jericho Shouter Ultra Pro Max,31,Jericho Shouter,Ultra Pro Max,Promised Land,Joshua 6:20,1760
+187,Sun Stopper,32,Sun Stopper,,Promised Land,Joshua 10:13,1770
+188,Sun Stopper Lite,32,Sun Stopper,Lite,Promised Land,Joshua 10:13,1780
+189,Sun Stopper Pro,32,Sun Stopper,Pro,Promised Land,Joshua 10:13,1790
+190,Sun Stopper Max,32,Sun Stopper,Max,Promised Land,Joshua 10:13,1800
+191,Sun Stopper Ultra,32,Sun Stopper,Ultra,Promised Land,Joshua 10:13,1810
+192,Sun Stopper Ultra Pro Max,32,Sun Stopper,Ultra Pro Max,Promised Land,Joshua 10:13,1820
+193,Mountain Claimer,33,Mountain Claimer,,Promised Land,Joshua 14:12,1830
+194,Mountain Claimer Lite,33,Mountain Claimer,Lite,Promised Land,Joshua 14:12,1840
+195,Mountain Claimer Pro,33,Mountain Claimer,Pro,Promised Land,Joshua 14:12,1850
+196,Mountain Claimer Max,33,Mountain Claimer,Max,Promised Land,Joshua 14:12,1860
+197,Mountain Claimer Ultra,33,Mountain Claimer,Ultra,Promised Land,Joshua 14:12,1870
+198,Mountain Claimer Ultra Pro Max,33,Mountain Claimer,Ultra Pro Max,Promised Land,Joshua 14:12,1880
+199,Mighty Valor,34,Mighty Valor,,Promised Land,Judges 6:12,1890
+200,Mighty Valor Lite,34,Mighty Valor,Lite,Promised Land,Judges 6:12,1900
+201,Mighty Valor Pro,34,Mighty Valor,Pro,Promised Land,Judges 6:12,1910
+202,Mighty Valor Max,34,Mighty Valor,Max,Promised Land,Judges 6:12,1920
+203,Mighty Valor Ultra,34,Mighty Valor,Ultra,Promised Land,Judges 6:12,1930
+204,Mighty Valor Ultra Pro Max,34,Mighty Valor,Ultra Pro Max,Promised Land,Judges 6:12,1940
+205,Fleece Tester,35,Fleece Tester,,Promised Land,Judges 6:37,1950
+206,Fleece Tester Lite,35,Fleece Tester,Lite,Promised Land,Judges 6:37,1960
+207,Fleece Tester Pro,35,Fleece Tester,Pro,Promised Land,Judges 6:37,1970
+208,Fleece Tester Max,35,Fleece Tester,Max,Promised Land,Judges 6:37,1980
+209,Fleece Tester Ultra,35,Fleece Tester,Ultra,Promised Land,Judges 6:37,1990
+210,Fleece Tester Ultra Pro Max,35,Fleece Tester,Ultra Pro Max,Promised Land,Judges 6:37,2000
+211,Three Hundred,36,Three Hundred,,Promised Land,Judges 7:7,2010
+212,Three Hundred Lite,36,Three Hundred,Lite,Promised Land,Judges 7:7,2020
+213,Three Hundred Pro,36,Three Hundred,Pro,Promised Land,Judges 7:7,2030
+214,Three Hundred Max,36,Three Hundred,Max,Promised Land,Judges 7:7,2040
+215,Three Hundred Ultra,36,Three Hundred,Ultra,Promised Land,Judges 7:7,2050
+216,Three Hundred Ultra Pro Max,36,Three Hundred,Ultra Pro Max,Promised Land,Judges 7:7,2060
+217,Torchbearer,37,Torchbearer,,Promised Land,Judges 7:20,2070
+218,Torchbearer Lite,37,Torchbearer,Lite,Promised Land,Judges 7:20,2080
+219,Torchbearer Pro,37,Torchbearer,Pro,Promised Land,Judges 7:20,2090
+220,Torchbearer Max,37,Torchbearer,Max,Promised Land,Judges 7:20,2100
+221,Torchbearer Ultra,37,Torchbearer,Ultra,Promised Land,Judges 7:20,2110
+222,Torchbearer Ultra Pro Max,37,Torchbearer,Ultra Pro Max,Promised Land,Judges 7:20,2120
+223,Gleaner,38,Gleaner,,Promised Land,Ruth 2:2,2130
+224,Gleaner Lite,38,Gleaner,Lite,Promised Land,Ruth 2:2,2140
+225,Gleaner Pro,38,Gleaner,Pro,Promised Land,Ruth 2:2,2150
+226,Gleaner Max,38,Gleaner,Max,Promised Land,Ruth 2:2,2160
+227,Gleaner Ultra,38,Gleaner,Ultra,Promised Land,Ruth 2:2,2170
+228,Gleaner Ultra Pro Max,38,Gleaner,Ultra Pro Max,Promised Land,Ruth 2:2,2180
+229,Unquenched Lamp,39,Unquenched Lamp,,Kingdom,1 Samuel 3:3,2190
+230,Unquenched Lamp Lite,39,Unquenched Lamp,Lite,Kingdom,1 Samuel 3:3,2200
+231,Unquenched Lamp Pro,39,Unquenched Lamp,Pro,Kingdom,1 Samuel 3:3,2210
+232,Unquenched Lamp Max,39,Unquenched Lamp,Max,Kingdom,1 Samuel 3:3,2220
+233,Unquenched Lamp Ultra,39,Unquenched Lamp,Ultra,Kingdom,1 Samuel 3:3,2230
+234,Unquenched Lamp Ultra Pro Max,39,Unquenched Lamp,Ultra Pro Max,Kingdom,1 Samuel 3:3,2240
+235,Here I Am,40,Here I Am,,Kingdom,1 Samuel 3:4,2250
+236,Here I Am Lite,40,Here I Am,Lite,Kingdom,1 Samuel 3:4,2260
+237,Here I Am Pro,40,Here I Am,Pro,Kingdom,1 Samuel 3:4,2270
+238,Here I Am Max,40,Here I Am,Max,Kingdom,1 Samuel 3:4,2280
+239,Here I Am Ultra,40,Here I Am,Ultra,Kingdom,1 Samuel 3:4,2290
+240,Here I Am Ultra Pro Max,40,Here I Am,Ultra Pro Max,Kingdom,1 Samuel 3:4,2300
+241,Ebenezer,41,Ebenezer,,Kingdom,1 Samuel 7:12,2310
+242,Ebenezer Lite,41,Ebenezer,Lite,Kingdom,1 Samuel 7:12,2320
+243,Ebenezer Pro,41,Ebenezer,Pro,Kingdom,1 Samuel 7:12,2330
+244,Ebenezer Max,41,Ebenezer,Max,Kingdom,1 Samuel 7:12,2340
+245,Ebenezer Ultra,41,Ebenezer,Ultra,Kingdom,1 Samuel 7:12,2350
+246,Ebenezer Ultra Pro Max,41,Ebenezer,Ultra Pro Max,Kingdom,1 Samuel 7:12,2360
+247,Five Stones,42,Five Stones,,Kingdom,1 Samuel 17:40,2370
+248,Five Stones Lite,42,Five Stones,Lite,Kingdom,1 Samuel 17:40,2380
+249,Five Stones Pro,42,Five Stones,Pro,Kingdom,1 Samuel 17:40,2390
+250,Five Stones Max,42,Five Stones,Max,Kingdom,1 Samuel 17:40,2400
+251,Five Stones Ultra,42,Five Stones,Ultra,Kingdom,1 Samuel 17:40,2410
+252,Five Stones Ultra Pro Max,42,Five Stones,Ultra Pro Max,Kingdom,1 Samuel 17:40,2420
+253,Giant Slayer,43,Giant Slayer,,Kingdom,1 Samuel 17:50,2430
+254,Giant Slayer Lite,43,Giant Slayer,Lite,Kingdom,1 Samuel 17:50,2440
+255,Giant Slayer Pro,43,Giant Slayer,Pro,Kingdom,1 Samuel 17:50,2450
+256,Giant Slayer Max,43,Giant Slayer,Max,Kingdom,1 Samuel 17:50,2460
+257,Giant Slayer Ultra,43,Giant Slayer,Ultra,Kingdom,1 Samuel 17:50,2470
+258,Giant Slayer Ultra Pro Max,43,Giant Slayer,Ultra Pro Max,Kingdom,1 Samuel 17:50,2480
+259,Covenant Friend,44,Covenant Friend,,Kingdom,1 Samuel 18:3,2490
+260,Covenant Friend Lite,44,Covenant Friend,Lite,Kingdom,1 Samuel 18:3,2500
+261,Covenant Friend Pro,44,Covenant Friend,Pro,Kingdom,1 Samuel 18:3,2510
+262,Covenant Friend Max,44,Covenant Friend,Max,Kingdom,1 Samuel 18:3,2520
+263,Covenant Friend Ultra,44,Covenant Friend,Ultra,Kingdom,1 Samuel 18:3,2530
+264,Covenant Friend Ultra Pro Max,44,Covenant Friend,Ultra Pro Max,Kingdom,1 Samuel 18:3,2540
+265,Undignified Dancer,45,Undignified Dancer,,Kingdom,2 Samuel 6:22,2550
+266,Undignified Dancer Lite,45,Undignified Dancer,Lite,Kingdom,2 Samuel 6:22,2560
+267,Undignified Dancer Pro,45,Undignified Dancer,Pro,Kingdom,2 Samuel 6:22,2570
+268,Undignified Dancer Max,45,Undignified Dancer,Max,Kingdom,2 Samuel 6:22,2580
+269,Undignified Dancer Ultra,45,Undignified Dancer,Ultra,Kingdom,2 Samuel 6:22,2590
+270,Undignified Dancer Ultra Pro Max,45,Undignified Dancer,Ultra Pro Max,Kingdom,2 Samuel 6:22,2600
+271,Psalmist,46,Psalmist,,Kingdom,2 Samuel 23:1,2610
+272,Psalmist Lite,46,Psalmist,Lite,Kingdom,2 Samuel 23:1,2620
+273,Psalmist Pro,46,Psalmist,Pro,Kingdom,2 Samuel 23:1,2630
+274,Psalmist Max,46,Psalmist,Max,Kingdom,2 Samuel 23:1,2640
+275,Psalmist Ultra,46,Psalmist,Ultra,Kingdom,2 Samuel 23:1,2650
+276,Psalmist Ultra Pro Max,46,Psalmist,Ultra Pro Max,Kingdom,2 Samuel 23:1,2660
+277,Raven Fed,47,Raven Fed,,Kingdom,1 Kings 17:6,2670
+278,Raven Fed Lite,47,Raven Fed,Lite,Kingdom,1 Kings 17:6,2680
+279,Raven Fed Pro,47,Raven Fed,Pro,Kingdom,1 Kings 17:6,2690
+280,Raven Fed Max,47,Raven Fed,Max,Kingdom,1 Kings 17:6,2700
+281,Raven Fed Ultra,47,Raven Fed,Ultra,Kingdom,1 Kings 17:6,2710
+282,Raven Fed Ultra Pro Max,47,Raven Fed,Ultra Pro Max,Kingdom,1 Kings 17:6,2720
+283,Fire Caller,48,Fire Caller,,Kingdom,1 Kings 18:38,2730
+284,Fire Caller Lite,48,Fire Caller,Lite,Kingdom,1 Kings 18:38,2740
+285,Fire Caller Pro,48,Fire Caller,Pro,Kingdom,1 Kings 18:38,2750
+286,Fire Caller Max,48,Fire Caller,Max,Kingdom,1 Kings 18:38,2760
+287,Fire Caller Ultra,48,Fire Caller,Ultra,Kingdom,1 Kings 18:38,2770
+288,Fire Caller Ultra Pro Max,48,Fire Caller,Ultra Pro Max,Kingdom,1 Kings 18:38,2780
+289,Still Small Voice,49,Still Small Voice,,Kingdom,1 Kings 19:12,2790
+290,Still Small Voice Lite,49,Still Small Voice,Lite,Kingdom,1 Kings 19:12,2800
+291,Still Small Voice Pro,49,Still Small Voice,Pro,Kingdom,1 Kings 19:12,2810
+292,Still Small Voice Max,49,Still Small Voice,Max,Kingdom,1 Kings 19:12,2820
+293,Still Small Voice Ultra,49,Still Small Voice,Ultra,Kingdom,1 Kings 19:12,2830
+294,Still Small Voice Ultra Pro Max,49,Still Small Voice,Ultra Pro Max,Kingdom,1 Kings 19:12,2840
+295,Double Portion,50,Double Portion,,Kingdom,2 Kings 2:9,2850
+296,Double Portion Lite,50,Double Portion,Lite,Kingdom,2 Kings 2:9,2860
+297,Double Portion Pro,50,Double Portion,Pro,Kingdom,2 Kings 2:9,2870
+298,Double Portion Max,50,Double Portion,Max,Kingdom,2 Kings 2:9,2880
+299,Double Portion Ultra,50,Double Portion,Ultra,Kingdom,2 Kings 2:9,2890
+300,Double Portion Ultra Pro Max,50,Double Portion,Ultra Pro Max,Kingdom,2 Kings 2:9,2900
+301,Chariot of Fire,51,Chariot of Fire,,Kingdom,2 Kings 2:11,2910
+302,Chariot of Fire Lite,51,Chariot of Fire,Lite,Kingdom,2 Kings 2:11,2920
+303,Chariot of Fire Pro,51,Chariot of Fire,Pro,Kingdom,2 Kings 2:11,2930
+304,Chariot of Fire Max,51,Chariot of Fire,Max,Kingdom,2 Kings 2:11,2940
+305,Chariot of Fire Ultra,51,Chariot of Fire,Ultra,Kingdom,2 Kings 2:11,2950
+306,Chariot of Fire Ultra Pro Max,51,Chariot of Fire,Ultra Pro Max,Kingdom,2 Kings 2:11,2960
+307,Mantle Bearer,52,Mantle Bearer,,Kingdom,2 Kings 2:13,2970
+308,Mantle Bearer Lite,52,Mantle Bearer,Lite,Kingdom,2 Kings 2:13,2980
+309,Mantle Bearer Pro,52,Mantle Bearer,Pro,Kingdom,2 Kings 2:13,2990
+310,Mantle Bearer Max,52,Mantle Bearer,Max,Kingdom,2 Kings 2:13,3000
+311,Mantle Bearer Ultra,52,Mantle Bearer,Ultra,Kingdom,2 Kings 2:13,3010
+312,Mantle Bearer Ultra Pro Max,52,Mantle Bearer,Ultra Pro Max,Kingdom,2 Kings 2:13,3020
+313,Overflowing Jar,53,Overflowing Jar,,Kingdom,2 Kings 4:6,3030
+314,Overflowing Jar Lite,53,Overflowing Jar,Lite,Kingdom,2 Kings 4:6,3040
+315,Overflowing Jar Pro,53,Overflowing Jar,Pro,Kingdom,2 Kings 4:6,3050
+316,Overflowing Jar Max,53,Overflowing Jar,Max,Kingdom,2 Kings 4:6,3060
+317,Overflowing Jar Ultra,53,Overflowing Jar,Ultra,Kingdom,2 Kings 4:6,3070
+318,Overflowing Jar Ultra Pro Max,53,Overflowing Jar,Ultra Pro Max,Kingdom,2 Kings 4:6,3080
+319,Jordan Dipper,54,Jordan Dipper,,Kingdom,2 Kings 5:14,3090
+320,Jordan Dipper Lite,54,Jordan Dipper,Lite,Kingdom,2 Kings 5:14,3100
+321,Jordan Dipper Pro,54,Jordan Dipper,Pro,Kingdom,2 Kings 5:14,3110
+322,Jordan Dipper Max,54,Jordan Dipper,Max,Kingdom,2 Kings 5:14,3120
+323,Jordan Dipper Ultra,54,Jordan Dipper,Ultra,Kingdom,2 Kings 5:14,3130
+324,Jordan Dipper Ultra Pro Max,54,Jordan Dipper,Ultra Pro Max,Kingdom,2 Kings 5:14,3140
+325,Iron Floater,55,Iron Floater,,Kingdom,2 Kings 6:6,3150
+326,Iron Floater Lite,55,Iron Floater,Lite,Kingdom,2 Kings 6:6,3160
+327,Iron Floater Pro,55,Iron Floater,Pro,Kingdom,2 Kings 6:6,3170
+328,Iron Floater Max,55,Iron Floater,Max,Kingdom,2 Kings 6:6,3180
+329,Iron Floater Ultra,55,Iron Floater,Ultra,Kingdom,2 Kings 6:6,3190
+330,Iron Floater Ultra Pro Max,55,Iron Floater,Ultra Pro Max,Kingdom,2 Kings 6:6,3200
+331,Face Seeker,56,Face Seeker,,Return & Rebuild,2 Chronicles 7:14,3210
+332,Face Seeker Lite,56,Face Seeker,Lite,Return & Rebuild,2 Chronicles 7:14,3220
+333,Face Seeker Pro,56,Face Seeker,Pro,Return & Rebuild,2 Chronicles 7:14,3230
+334,Face Seeker Max,56,Face Seeker,Max,Return & Rebuild,2 Chronicles 7:14,3240
+335,Face Seeker Ultra,56,Face Seeker,Ultra,Return & Rebuild,2 Chronicles 7:14,3250
+336,Face Seeker Ultra Pro Max,56,Face Seeker,Ultra Pro Max,Return & Rebuild,2 Chronicles 7:14,3260
+337,Exile Returner,57,Exile Returner,,Return & Rebuild,Ezra 1:3,3270
+338,Exile Returner Lite,57,Exile Returner,Lite,Return & Rebuild,Ezra 1:3,3280
+339,Exile Returner Pro,57,Exile Returner,Pro,Return & Rebuild,Ezra 1:3,3290
+340,Exile Returner Max,57,Exile Returner,Max,Return & Rebuild,Ezra 1:3,3300
+341,Exile Returner Ultra,57,Exile Returner,Ultra,Return & Rebuild,Ezra 1:3,3310
+342,Exile Returner Ultra Pro Max,57,Exile Returner,Ultra Pro Max,Return & Rebuild,Ezra 1:3,3320
+343,Foundation Layer,58,Foundation Layer,,Return & Rebuild,Ezra 3:11,3330
+344,Foundation Layer Lite,58,Foundation Layer,Lite,Return & Rebuild,Ezra 3:11,3340
+345,Foundation Layer Pro,58,Foundation Layer,Pro,Return & Rebuild,Ezra 3:11,3350
+346,Foundation Layer Max,58,Foundation Layer,Max,Return & Rebuild,Ezra 3:11,3360
+347,Foundation Layer Ultra,58,Foundation Layer,Ultra,Return & Rebuild,Ezra 3:11,3370
+348,Foundation Layer Ultra Pro Max,58,Foundation Layer,Ultra Pro Max,Return & Rebuild,Ezra 3:11,3380
+349,Wall Builder,59,Wall Builder,,Return & Rebuild,Nehemiah 4:6,3390
+350,Wall Builder Lite,59,Wall Builder,Lite,Return & Rebuild,Nehemiah 4:6,3400
+351,Wall Builder Pro,59,Wall Builder,Pro,Return & Rebuild,Nehemiah 4:6,3410
+352,Wall Builder Max,59,Wall Builder,Max,Return & Rebuild,Nehemiah 4:6,3420
+353,Wall Builder Ultra,59,Wall Builder,Ultra,Return & Rebuild,Nehemiah 4:6,3430
+354,Wall Builder Ultra Pro Max,59,Wall Builder,Ultra Pro Max,Return & Rebuild,Nehemiah 4:6,3440
+355,Sword & Trowel,60,Sword & Trowel,,Return & Rebuild,Nehemiah 4:17,3450
+356,Sword & Trowel Lite,60,Sword & Trowel,Lite,Return & Rebuild,Nehemiah 4:17,3460
+357,Sword & Trowel Pro,60,Sword & Trowel,Pro,Return & Rebuild,Nehemiah 4:17,3470
+358,Sword & Trowel Max,60,Sword & Trowel,Max,Return & Rebuild,Nehemiah 4:17,3480
+359,Sword & Trowel Ultra,60,Sword & Trowel,Ultra,Return & Rebuild,Nehemiah 4:17,3490
+360,Sword & Trowel Ultra Pro Max,60,Sword & Trowel,Ultra Pro Max,Return & Rebuild,Nehemiah 4:17,3500
+361,Joy Strong,61,Joy Strong,,Return & Rebuild,Nehemiah 8:10,3510
+362,Joy Strong Lite,61,Joy Strong,Lite,Return & Rebuild,Nehemiah 8:10,3520
+363,Joy Strong Pro,61,Joy Strong,Pro,Return & Rebuild,Nehemiah 8:10,3530
+364,Joy Strong Max,61,Joy Strong,Max,Return & Rebuild,Nehemiah 8:10,3540
+365,Joy Strong Ultra,61,Joy Strong,Ultra,Return & Rebuild,Nehemiah 8:10,3550
+366,Joy Strong Ultra Pro Max,61,Joy Strong,Ultra Pro Max,Return & Rebuild,Nehemiah 8:10,3560
+367,Such a Time,62,Such a Time,,Return & Rebuild,Esther 4:14,3570
+368,Such a Time Lite,62,Such a Time,Lite,Return & Rebuild,Esther 4:14,3580
+369,Such a Time Pro,62,Such a Time,Pro,Return & Rebuild,Esther 4:14,3590
+370,Such a Time Max,62,Such a Time,Max,Return & Rebuild,Esther 4:14,3600
+371,Such a Time Ultra,62,Such a Time,Ultra,Return & Rebuild,Esther 4:14,3610
+372,Such a Time Ultra Pro Max,62,Such a Time,Ultra Pro Max,Return & Rebuild,Esther 4:14,3620
+373,Refined Gold,63,Refined Gold,,Wisdom,Job 23:10,3630
+374,Refined Gold Lite,63,Refined Gold,Lite,Wisdom,Job 23:10,3640
+375,Refined Gold Pro,63,Refined Gold,Pro,Wisdom,Job 23:10,3650
+376,Refined Gold Max,63,Refined Gold,Max,Wisdom,Job 23:10,3660
+377,Refined Gold Ultra,63,Refined Gold,Ultra,Wisdom,Job 23:10,3670
+378,Refined Gold Ultra Pro Max,63,Refined Gold,Ultra Pro Max,Wisdom,Job 23:10,3680
+379,Pure Gaze,64,Pure Gaze,,Wisdom,Job 31:1,3690
+380,Pure Gaze Lite,64,Pure Gaze,Lite,Wisdom,Job 31:1,3700
+381,Pure Gaze Pro,64,Pure Gaze,Pro,Wisdom,Job 31:1,3710
+382,Pure Gaze Max,64,Pure Gaze,Max,Wisdom,Job 31:1,3720
+383,Pure Gaze Ultra,64,Pure Gaze,Ultra,Wisdom,Job 31:1,3730
+384,Pure Gaze Ultra Pro Max,64,Pure Gaze,Ultra Pro Max,Wisdom,Job 31:1,3740
+385,Streamside Tree,65,Streamside Tree,,Wisdom,Psalm 1:3,3750
+386,Streamside Tree Lite,65,Streamside Tree,Lite,Wisdom,Psalm 1:3,3760
+387,Streamside Tree Pro,65,Streamside Tree,Pro,Wisdom,Psalm 1:3,3770
+388,Streamside Tree Max,65,Streamside Tree,Max,Wisdom,Psalm 1:3,3780
+389,Streamside Tree Ultra,65,Streamside Tree,Ultra,Wisdom,Psalm 1:3,3790
+390,Streamside Tree Ultra Pro Max,65,Streamside Tree,Ultra Pro Max,Wisdom,Psalm 1:3,3800
+391,Thirsty Deer,66,Thirsty Deer,,Wisdom,Psalm 42:1,3810
+392,Thirsty Deer Lite,66,Thirsty Deer,Lite,Wisdom,Psalm 42:1,3820
+393,Thirsty Deer Pro,66,Thirsty Deer,Pro,Wisdom,Psalm 42:1,3830
+394,Thirsty Deer Max,66,Thirsty Deer,Max,Wisdom,Psalm 42:1,3840
+395,Thirsty Deer Ultra,66,Thirsty Deer,Ultra,Wisdom,Psalm 42:1,3850
+396,Thirsty Deer Ultra Pro Max,66,Thirsty Deer,Ultra Pro Max,Wisdom,Psalm 42:1,3860
+397,Clean Heart,67,Clean Heart,,Wisdom,Psalm 51:10,3870
+398,Clean Heart Lite,67,Clean Heart,Lite,Wisdom,Psalm 51:10,3880
+399,Clean Heart Pro,67,Clean Heart,Pro,Wisdom,Psalm 51:10,3890
+400,Clean Heart Max,67,Clean Heart,Max,Wisdom,Psalm 51:10,3900
+401,Clean Heart Ultra,67,Clean Heart,Ultra,Wisdom,Psalm 51:10,3910
+402,Clean Heart Ultra Pro Max,67,Clean Heart,Ultra Pro Max,Wisdom,Psalm 51:10,3920
+403,Shelter Dweller,68,Shelter Dweller,,Wisdom,Psalm 91:1,3930
+404,Shelter Dweller Lite,68,Shelter Dweller,Lite,Wisdom,Psalm 91:1,3940
+405,Shelter Dweller Pro,68,Shelter Dweller,Pro,Wisdom,Psalm 91:1,3950
+406,Shelter Dweller Max,68,Shelter Dweller,Max,Wisdom,Psalm 91:1,3960
+407,Shelter Dweller Ultra,68,Shelter Dweller,Ultra,Wisdom,Psalm 91:1,3970
+408,Shelter Dweller Ultra Pro Max,68,Shelter Dweller,Ultra Pro Max,Wisdom,Psalm 91:1,3980
+409,Cedar of Lebanon,69,Cedar of Lebanon,,Wisdom,Psalm 92:12,3990
+410,Cedar of Lebanon Lite,69,Cedar of Lebanon,Lite,Wisdom,Psalm 92:12,4000
+411,Cedar of Lebanon Pro,69,Cedar of Lebanon,Pro,Wisdom,Psalm 92:12,4010
+412,Cedar of Lebanon Max,69,Cedar of Lebanon,Max,Wisdom,Psalm 92:12,4020
+413,Cedar of Lebanon Ultra,69,Cedar of Lebanon,Ultra,Wisdom,Psalm 92:12,4030
+414,Cedar of Lebanon Ultra Pro Max,69,Cedar of Lebanon,Ultra Pro Max,Wisdom,Psalm 92:12,4040
+415,Word Hider,70,Word Hider,,Wisdom,Psalm 119:11,4050
+416,Word Hider Lite,70,Word Hider,Lite,Wisdom,Psalm 119:11,4060
+417,Word Hider Pro,70,Word Hider,Pro,Wisdom,Psalm 119:11,4070
+418,Word Hider Max,70,Word Hider,Max,Wisdom,Psalm 119:11,4080
+419,Word Hider Ultra,70,Word Hider,Ultra,Wisdom,Psalm 119:11,4090
+420,Word Hider Ultra Pro Max,70,Word Hider,Ultra Pro Max,Wisdom,Psalm 119:11,4100
+421,Guarded Heart,71,Guarded Heart,,Wisdom,Proverbs 4:23,4110
+422,Guarded Heart Lite,71,Guarded Heart,Lite,Wisdom,Proverbs 4:23,4120
+423,Guarded Heart Pro,71,Guarded Heart,Pro,Wisdom,Proverbs 4:23,4130
+424,Guarded Heart Max,71,Guarded Heart,Max,Wisdom,Proverbs 4:23,4140
+425,Guarded Heart Ultra,71,Guarded Heart,Ultra,Wisdom,Proverbs 4:23,4150
+426,Guarded Heart Ultra Pro Max,71,Guarded Heart,Ultra Pro Max,Wisdom,Proverbs 4:23,4160
+427,Ant Watcher,72,Ant Watcher,,Wisdom,Proverbs 6:6,4170
+428,Ant Watcher Lite,72,Ant Watcher,Lite,Wisdom,Proverbs 6:6,4180
+429,Ant Watcher Pro,72,Ant Watcher,Pro,Wisdom,Proverbs 6:6,4190
+430,Ant Watcher Max,72,Ant Watcher,Max,Wisdom,Proverbs 6:6,4200
+431,Ant Watcher Ultra,72,Ant Watcher,Ultra,Wisdom,Proverbs 6:6,4210
+432,Ant Watcher Ultra Pro Max,72,Ant Watcher,Ultra Pro Max,Wisdom,Proverbs 6:6,4220
+433,Iron Sharpener,73,Iron Sharpener,,Wisdom,Proverbs 27:17,4230
+434,Iron Sharpener Lite,73,Iron Sharpener,Lite,Wisdom,Proverbs 27:17,4240
+435,Iron Sharpener Pro,73,Iron Sharpener,Pro,Wisdom,Proverbs 27:17,4250
+436,Iron Sharpener Max,73,Iron Sharpener,Max,Wisdom,Proverbs 27:17,4260
+437,Iron Sharpener Ultra,73,Iron Sharpener,Ultra,Wisdom,Proverbs 27:17,4270
+438,Iron Sharpener Ultra Pro Max,73,Iron Sharpener,Ultra Pro Max,Wisdom,Proverbs 27:17,4280
+439,Lionheart,74,Lionheart,,Wisdom,Proverbs 28:1,4290
+440,Lionheart Lite,74,Lionheart,Lite,Wisdom,Proverbs 28:1,4300
+441,Lionheart Pro,74,Lionheart,Pro,Wisdom,Proverbs 28:1,4310
+442,Lionheart Max,74,Lionheart,Max,Wisdom,Proverbs 28:1,4320
+443,Lionheart Ultra,74,Lionheart,Ultra,Wisdom,Proverbs 28:1,4330
+444,Lionheart Ultra Pro Max,74,Lionheart,Ultra Pro Max,Wisdom,Proverbs 28:1,4340
+445,Threefold Cord,75,Threefold Cord,,Wisdom,Ecclesiastes 4:12,4350
+446,Threefold Cord Lite,75,Threefold Cord,Lite,Wisdom,Ecclesiastes 4:12,4360
+447,Threefold Cord Pro,75,Threefold Cord,Pro,Wisdom,Ecclesiastes 4:12,4370
+448,Threefold Cord Max,75,Threefold Cord,Max,Wisdom,Ecclesiastes 4:12,4380
+449,Threefold Cord Ultra,75,Threefold Cord,Ultra,Wisdom,Ecclesiastes 4:12,4390
+450,Threefold Cord Ultra Pro Max,75,Threefold Cord,Ultra Pro Max,Wisdom,Ecclesiastes 4:12,4400
+451,Fox Catcher,76,Fox Catcher,,Wisdom,Song of Songs 2:15,4410
+452,Fox Catcher Lite,76,Fox Catcher,Lite,Wisdom,Song of Songs 2:15,4420
+453,Fox Catcher Pro,76,Fox Catcher,Pro,Wisdom,Song of Songs 2:15,4430
+454,Fox Catcher Max,76,Fox Catcher,Max,Wisdom,Song of Songs 2:15,4440
+455,Fox Catcher Ultra,76,Fox Catcher,Ultra,Wisdom,Song of Songs 2:15,4450
+456,Fox Catcher Ultra Pro Max,76,Fox Catcher,Ultra Pro Max,Wisdom,Song of Songs 2:15,4460
+457,Many Waters,77,Many Waters,,Wisdom,Song of Songs 8:7,4470
+458,Many Waters Lite,77,Many Waters,Lite,Wisdom,Song of Songs 8:7,4480
+459,Many Waters Pro,77,Many Waters,Pro,Wisdom,Song of Songs 8:7,4490
+460,Many Waters Max,77,Many Waters,Max,Wisdom,Song of Songs 8:7,4500
+461,Many Waters Ultra,77,Many Waters,Ultra,Wisdom,Song of Songs 8:7,4510
+462,Many Waters Ultra Pro Max,77,Many Waters,Ultra Pro Max,Wisdom,Song of Songs 8:7,4520
+463,Plowshare,78,Plowshare,,Prophets,Isaiah 2:4,4530
+464,Plowshare Lite,78,Plowshare,Lite,Prophets,Isaiah 2:4,4540
+465,Plowshare Pro,78,Plowshare,Pro,Prophets,Isaiah 2:4,4550
+466,Plowshare Max,78,Plowshare,Max,Prophets,Isaiah 2:4,4560
+467,Plowshare Ultra,78,Plowshare,Ultra,Prophets,Isaiah 2:4,4570
+468,Plowshare Ultra Pro Max,78,Plowshare,Ultra Pro Max,Prophets,Isaiah 2:4,4580
+469,Live Coal,79,Live Coal,,Prophets,Isaiah 6:6,4590
+470,Live Coal Lite,79,Live Coal,Lite,Prophets,Isaiah 6:6,4600
+471,Live Coal Pro,79,Live Coal,Pro,Prophets,Isaiah 6:6,4610
+472,Live Coal Max,79,Live Coal,Max,Prophets,Isaiah 6:6,4620
+473,Live Coal Ultra,79,Live Coal,Ultra,Prophets,Isaiah 6:6,4630
+474,Live Coal Ultra Pro Max,79,Live Coal,Ultra Pro Max,Prophets,Isaiah 6:6,4640
+475,Highway Maker,80,Highway Maker,,Prophets,Isaiah 40:3,4650
+476,Highway Maker Lite,80,Highway Maker,Lite,Prophets,Isaiah 40:3,4660
+477,Highway Maker Pro,80,Highway Maker,Pro,Prophets,Isaiah 40:3,4670
+478,Highway Maker Max,80,Highway Maker,Max,Prophets,Isaiah 40:3,4680
+479,Highway Maker Ultra,80,Highway Maker,Ultra,Prophets,Isaiah 40:3,4690
+480,Highway Maker Ultra Pro Max,80,Highway Maker,Ultra Pro Max,Prophets,Isaiah 40:3,4700
+481,Eagle Soarer,81,Eagle Soarer,,Prophets,Isaiah 40:31,4710
+482,Eagle Soarer Lite,81,Eagle Soarer,Lite,Prophets,Isaiah 40:31,4720
+483,Eagle Soarer Pro,81,Eagle Soarer,Pro,Prophets,Isaiah 40:31,4730
+484,Eagle Soarer Max,81,Eagle Soarer,Max,Prophets,Isaiah 40:31,4740
+485,Eagle Soarer Ultra,81,Eagle Soarer,Ultra,Prophets,Isaiah 40:31,4750
+486,Eagle Soarer Ultra Pro Max,81,Eagle Soarer,Ultra Pro Max,Prophets,Isaiah 40:31,4760
+487,Beauty for Ashes,82,Beauty for Ashes,,Prophets,Isaiah 61:3,4770
+488,Beauty for Ashes Lite,82,Beauty for Ashes,Lite,Prophets,Isaiah 61:3,4780
+489,Beauty for Ashes Pro,82,Beauty for Ashes,Pro,Prophets,Isaiah 61:3,4790
+490,Beauty for Ashes Max,82,Beauty for Ashes,Max,Prophets,Isaiah 61:3,4800
+491,Beauty for Ashes Ultra,82,Beauty for Ashes,Ultra,Prophets,Isaiah 61:3,4810
+492,Beauty for Ashes Ultra Pro Max,82,Beauty for Ashes,Ultra Pro Max,Prophets,Isaiah 61:3,4820
+493,Oak of Righteousness,83,Oak of Righteousness,,Prophets,Isaiah 61:3,4830
+494,Oak of Righteousness Lite,83,Oak of Righteousness,Lite,Prophets,Isaiah 61:3,4840
+495,Oak of Righteousness Pro,83,Oak of Righteousness,Pro,Prophets,Isaiah 61:3,4850
+496,Oak of Righteousness Max,83,Oak of Righteousness,Max,Prophets,Isaiah 61:3,4860
+497,Oak of Righteousness Ultra,83,Oak of Righteousness,Ultra,Prophets,Isaiah 61:3,4870
+498,Oak of Righteousness Ultra Pro Max,83,Oak of Righteousness,Ultra Pro Max,Prophets,Isaiah 61:3,4880
+499,Watchman,84,Watchman,,Prophets,Isaiah 62:6,4890
+500,Watchman Lite,84,Watchman,Lite,Prophets,Isaiah 62:6,4900
+501,Watchman Pro,84,Watchman,Pro,Prophets,Isaiah 62:6,4910
+502,Watchman Max,84,Watchman,Max,Prophets,Isaiah 62:6,4920
+503,Watchman Ultra,84,Watchman,Ultra,Prophets,Isaiah 62:6,4930
+504,Watchman Ultra Pro Max,84,Watchman,Ultra Pro Max,Prophets,Isaiah 62:6,4940
+505,Fire in My Bones,85,Fire in My Bones,,Prophets,Jeremiah 20:9,4950
+506,Fire in My Bones Lite,85,Fire in My Bones,Lite,Prophets,Jeremiah 20:9,4960
+507,Fire in My Bones Pro,85,Fire in My Bones,Pro,Prophets,Jeremiah 20:9,4970
+508,Fire in My Bones Max,85,Fire in My Bones,Max,Prophets,Jeremiah 20:9,4980
+509,Fire in My Bones Ultra,85,Fire in My Bones,Ultra,Prophets,Jeremiah 20:9,4990
+510,Fire in My Bones Ultra Pro Max,85,Fire in My Bones,Ultra Pro Max,Prophets,Jeremiah 20:9,5000
+511,New Mercies,86,New Mercies,,Prophets,Lamentations 3:23,5010
+512,New Mercies Lite,86,New Mercies,Lite,Prophets,Lamentations 3:23,5020
+513,New Mercies Pro,86,New Mercies,Pro,Prophets,Lamentations 3:23,5030
+514,New Mercies Max,86,New Mercies,Max,Prophets,Lamentations 3:23,5040
+515,New Mercies Ultra,86,New Mercies,Ultra,Prophets,Lamentations 3:23,5050
+516,New Mercies Ultra Pro Max,86,New Mercies,Ultra Pro Max,Prophets,Lamentations 3:23,5060
+517,Heart of Flesh,87,Heart of Flesh,,Prophets,Ezekiel 36:26,5070
+518,Heart of Flesh Lite,87,Heart of Flesh,Lite,Prophets,Ezekiel 36:26,5080
+519,Heart of Flesh Pro,87,Heart of Flesh,Pro,Prophets,Ezekiel 36:26,5090
+520,Heart of Flesh Max,87,Heart of Flesh,Max,Prophets,Ezekiel 36:26,5100
+521,Heart of Flesh Ultra,87,Heart of Flesh,Ultra,Prophets,Ezekiel 36:26,5110
+522,Heart of Flesh Ultra Pro Max,87,Heart of Flesh,Ultra Pro Max,Prophets,Ezekiel 36:26,5120
+523,Dry Bones Rising,88,Dry Bones Rising,,Prophets,Ezekiel 37:10,5130
+524,Dry Bones Rising Lite,88,Dry Bones Rising,Lite,Prophets,Ezekiel 37:10,5140
+525,Dry Bones Rising Pro,88,Dry Bones Rising,Pro,Prophets,Ezekiel 37:10,5150
+526,Dry Bones Rising Max,88,Dry Bones Rising,Max,Prophets,Ezekiel 37:10,5160
+527,Dry Bones Rising Ultra,88,Dry Bones Rising,Ultra,Prophets,Ezekiel 37:10,5170
+528,Dry Bones Rising Ultra Pro Max,88,Dry Bones Rising,Ultra Pro Max,Prophets,Ezekiel 37:10,5180
+529,Resolved,89,Resolved,,Prophets,Daniel 1:8,5190
+530,Resolved Lite,89,Resolved,Lite,Prophets,Daniel 1:8,5200
+531,Resolved Pro,89,Resolved,Pro,Prophets,Daniel 1:8,5210
+532,Resolved Max,89,Resolved,Max,Prophets,Daniel 1:8,5220
+533,Resolved Ultra,89,Resolved,Ultra,Prophets,Daniel 1:8,5230
+534,Resolved Ultra Pro Max,89,Resolved,Ultra Pro Max,Prophets,Daniel 1:8,5240
+535,Fireproof,90,Fireproof,,Prophets,Daniel 3:27,5250
+536,Fireproof Lite,90,Fireproof,Lite,Prophets,Daniel 3:27,5260
+537,Fireproof Pro,90,Fireproof,Pro,Prophets,Daniel 3:27,5270
+538,Fireproof Max,90,Fireproof,Max,Prophets,Daniel 3:27,5280
+539,Fireproof Ultra,90,Fireproof,Ultra,Prophets,Daniel 3:27,5290
+540,Fireproof Ultra Pro Max,90,Fireproof,Ultra Pro Max,Prophets,Daniel 3:27,5300
+541,Lion's Den,91,Lion's Den,,Prophets,Daniel 6:22,5310
+542,Lion's Den Lite,91,Lion's Den,Lite,Prophets,Daniel 6:22,5320
+543,Lion's Den Pro,91,Lion's Den,Pro,Prophets,Daniel 6:22,5330
+544,Lion's Den Max,91,Lion's Den,Max,Prophets,Daniel 6:22,5340
+545,Lion's Den Ultra,91,Lion's Den,Ultra,Prophets,Daniel 6:22,5350
+546,Lion's Den Ultra Pro Max,91,Lion's Den,Ultra Pro Max,Prophets,Daniel 6:22,5360
+547,Door of Hope,92,Door of Hope,,Prophets,Hosea 2:15,5370
+548,Door of Hope Lite,92,Door of Hope,Lite,Prophets,Hosea 2:15,5380
+549,Door of Hope Pro,92,Door of Hope,Pro,Prophets,Hosea 2:15,5390
+550,Door of Hope Max,92,Door of Hope,Max,Prophets,Hosea 2:15,5400
+551,Door of Hope Ultra,92,Door of Hope,Ultra,Prophets,Hosea 2:15,5410
+552,Door of Hope Ultra Pro Max,92,Door of Hope,Ultra Pro Max,Prophets,Hosea 2:15,5420
+553,Restored Years,93,Restored Years,,Prophets,Joel 2:25,5430
+554,Restored Years Lite,93,Restored Years,Lite,Prophets,Joel 2:25,5440
+555,Restored Years Pro,93,Restored Years,Pro,Prophets,Joel 2:25,5450
+556,Restored Years Max,93,Restored Years,Max,Prophets,Joel 2:25,5460
+557,Restored Years Ultra,93,Restored Years,Ultra,Prophets,Joel 2:25,5470
+558,Restored Years Ultra Pro Max,93,Restored Years,Ultra Pro Max,Prophets,Joel 2:25,5480
+559,Second Chance,94,Second Chance,,Prophets,Jonah 3:1,5490
+560,Second Chance Lite,94,Second Chance,Lite,Prophets,Jonah 3:1,5500
+561,Second Chance Pro,94,Second Chance,Pro,Prophets,Jonah 3:1,5510
+562,Second Chance Max,94,Second Chance,Max,Prophets,Jonah 3:1,5520
+563,Second Chance Ultra,94,Second Chance,Ultra,Prophets,Jonah 3:1,5530
+564,Second Chance Ultra Pro Max,94,Second Chance,Ultra Pro Max,Prophets,Jonah 3:1,5540
+565,Humble Walker,95,Humble Walker,,Prophets,Micah 6:8,5550
+566,Humble Walker Lite,95,Humble Walker,Lite,Prophets,Micah 6:8,5560
+567,Humble Walker Pro,95,Humble Walker,Pro,Prophets,Micah 6:8,5570
+568,Humble Walker Max,95,Humble Walker,Max,Prophets,Micah 6:8,5580
+569,Humble Walker Ultra,95,Humble Walker,Ultra,Prophets,Micah 6:8,5590
+570,Humble Walker Ultra Pro Max,95,Humble Walker,Ultra Pro Max,Prophets,Micah 6:8,5600
+571,Hind's Feet,96,Hind's Feet,,Prophets,Habakkuk 3:19,5610
+572,Hind's Feet Lite,96,Hind's Feet,Lite,Prophets,Habakkuk 3:19,5620
+573,Hind's Feet Pro,96,Hind's Feet,Pro,Prophets,Habakkuk 3:19,5630
+574,Hind's Feet Max,96,Hind's Feet,Max,Prophets,Habakkuk 3:19,5640
+575,Hind's Feet Ultra,96,Hind's Feet,Ultra,Prophets,Habakkuk 3:19,5650
+576,Hind's Feet Ultra Pro Max,96,Hind's Feet,Ultra Pro Max,Prophets,Habakkuk 3:19,5660
+577,Brand from the Fire,97,Brand from the Fire,,Prophets,Zechariah 3:2,5670
+578,Brand from the Fire Lite,97,Brand from the Fire,Lite,Prophets,Zechariah 3:2,5680
+579,Brand from the Fire Pro,97,Brand from the Fire,Pro,Prophets,Zechariah 3:2,5690
+580,Brand from the Fire Max,97,Brand from the Fire,Max,Prophets,Zechariah 3:2,5700
+581,Brand from the Fire Ultra,97,Brand from the Fire,Ultra,Prophets,Zechariah 3:2,5710
+582,Brand from the Fire Ultra Pro Max,97,Brand from the Fire,Ultra Pro Max,Prophets,Zechariah 3:2,5720
+583,Not by Might,98,Not by Might,,Prophets,Zechariah 4:6,5730
+584,Not by Might Lite,98,Not by Might,Lite,Prophets,Zechariah 4:6,5740
+585,Not by Might Pro,98,Not by Might,Pro,Prophets,Zechariah 4:6,5750
+586,Not by Might Max,98,Not by Might,Max,Prophets,Zechariah 4:6,5760
+587,Not by Might Ultra,98,Not by Might,Ultra,Prophets,Zechariah 4:6,5770
+588,Not by Might Ultra Pro Max,98,Not by Might,Ultra Pro Max,Prophets,Zechariah 4:6,5780
+589,Prisoner of Hope,99,Prisoner of Hope,,Prophets,Zechariah 9:12,5790
+590,Prisoner of Hope Lite,99,Prisoner of Hope,Lite,Prophets,Zechariah 9:12,5800
+591,Prisoner of Hope Pro,99,Prisoner of Hope,Pro,Prophets,Zechariah 9:12,5810
+592,Prisoner of Hope Max,99,Prisoner of Hope,Max,Prophets,Zechariah 9:12,5820
+593,Prisoner of Hope Ultra,99,Prisoner of Hope,Ultra,Prophets,Zechariah 9:12,5830
+594,Prisoner of Hope Ultra Pro Max,99,Prisoner of Hope,Ultra Pro Max,Prophets,Zechariah 9:12,5840
+595,Leaping Calf,100,Leaping Calf,,Prophets,Malachi 4:2,5850
+596,Leaping Calf Lite,100,Leaping Calf,Lite,Prophets,Malachi 4:2,5860
+597,Leaping Calf Pro,100,Leaping Calf,Pro,Prophets,Malachi 4:2,5870
+598,Leaping Calf Max,100,Leaping Calf,Max,Prophets,Malachi 4:2,5880
+599,Leaping Calf Ultra,100,Leaping Calf,Ultra,Prophets,Malachi 4:2,5890
+600,Leaping Calf Ultra Pro Max,100,Leaping Calf,Ultra Pro Max,Prophets,Malachi 4:2,5900
+601,Voice in the Wilderness,101,Voice in the Wilderness,,Gospels,Matthew 3:3,5910
+602,Voice in the Wilderness Lite,101,Voice in the Wilderness,Lite,Gospels,Matthew 3:3,5920
+603,Voice in the Wilderness Pro,101,Voice in the Wilderness,Pro,Gospels,Matthew 3:3,5930
+604,Voice in the Wilderness Max,101,Voice in the Wilderness,Max,Gospels,Matthew 3:3,5940
+605,Voice in the Wilderness Ultra,101,Voice in the Wilderness,Ultra,Gospels,Matthew 3:3,5950
+606,Voice in the Wilderness Ultra Pro Max,101,Voice in the Wilderness,Ultra Pro Max,Gospels,Matthew 3:3,5960
+607,Locust Eater,102,Locust Eater,,Gospels,Matthew 3:4,5970
+608,Locust Eater Lite,102,Locust Eater,Lite,Gospels,Matthew 3:4,5980
+609,Locust Eater Pro,102,Locust Eater,Pro,Gospels,Matthew 3:4,5990
+610,Locust Eater Max,102,Locust Eater,Max,Gospels,Matthew 3:4,6000
+611,Locust Eater Ultra,102,Locust Eater,Ultra,Gospels,Matthew 3:4,6010
+612,Locust Eater Ultra Pro Max,102,Locust Eater,Ultra Pro Max,Gospels,Matthew 3:4,6020
+613,Net Caster,103,Net Caster,,Gospels,Matthew 4:19,6030
+614,Net Caster Lite,103,Net Caster,Lite,Gospels,Matthew 4:19,6040
+615,Net Caster Pro,103,Net Caster,Pro,Gospels,Matthew 4:19,6050
+616,Net Caster Max,103,Net Caster,Max,Gospels,Matthew 4:19,6060
+617,Net Caster Ultra,103,Net Caster,Ultra,Gospels,Matthew 4:19,6070
+618,Net Caster Ultra Pro Max,103,Net Caster,Ultra Pro Max,Gospels,Matthew 4:19,6080
+619,Pure in Heart,104,Pure in Heart,,Gospels,Matthew 5:8,6090
+620,Pure in Heart Lite,104,Pure in Heart,Lite,Gospels,Matthew 5:8,6100
+621,Pure in Heart Pro,104,Pure in Heart,Pro,Gospels,Matthew 5:8,6110
+622,Pure in Heart Max,104,Pure in Heart,Max,Gospels,Matthew 5:8,6120
+623,Pure in Heart Ultra,104,Pure in Heart,Ultra,Gospels,Matthew 5:8,6130
+624,Pure in Heart Ultra Pro Max,104,Pure in Heart,Ultra Pro Max,Gospels,Matthew 5:8,6140
+625,Salt of the Earth,105,Salt of the Earth,,Gospels,Matthew 5:13,6150
+626,Salt of the Earth Lite,105,Salt of the Earth,Lite,Gospels,Matthew 5:13,6160
+627,Salt of the Earth Pro,105,Salt of the Earth,Pro,Gospels,Matthew 5:13,6170
+628,Salt of the Earth Max,105,Salt of the Earth,Max,Gospels,Matthew 5:13,6180
+629,Salt of the Earth Ultra,105,Salt of the Earth,Ultra,Gospels,Matthew 5:13,6190
+630,Salt of the Earth Ultra Pro Max,105,Salt of the Earth,Ultra Pro Max,Gospels,Matthew 5:13,6200
+631,City on a Hill,106,City on a Hill,,Gospels,Matthew 5:14,6210
+632,City on a Hill Lite,106,City on a Hill,Lite,Gospels,Matthew 5:14,6220
+633,City on a Hill Pro,106,City on a Hill,Pro,Gospels,Matthew 5:14,6230
+634,City on a Hill Max,106,City on a Hill,Max,Gospels,Matthew 5:14,6240
+635,City on a Hill Ultra,106,City on a Hill,Ultra,Gospels,Matthew 5:14,6250
+636,City on a Hill Ultra Pro Max,106,City on a Hill,Ultra Pro Max,Gospels,Matthew 5:14,6260
+637,Extra Miler,107,Extra Miler,,Gospels,Matthew 5:41,6270
+638,Extra Miler Lite,107,Extra Miler,Lite,Gospels,Matthew 5:41,6280
+639,Extra Miler Pro,107,Extra Miler,Pro,Gospels,Matthew 5:41,6290
+640,Extra Miler Max,107,Extra Miler,Max,Gospels,Matthew 5:41,6300
+641,Extra Miler Ultra,107,Extra Miler,Ultra,Gospels,Matthew 5:41,6310
+642,Extra Miler Ultra Pro Max,107,Extra Miler,Ultra Pro Max,Gospels,Matthew 5:41,6320
+643,Narrow Gate,108,Narrow Gate,,Gospels,Matthew 7:13,6330
+644,Narrow Gate Lite,108,Narrow Gate,Lite,Gospels,Matthew 7:13,6340
+645,Narrow Gate Pro,108,Narrow Gate,Pro,Gospels,Matthew 7:13,6350
+646,Narrow Gate Max,108,Narrow Gate,Max,Gospels,Matthew 7:13,6360
+647,Narrow Gate Ultra,108,Narrow Gate,Ultra,Gospels,Matthew 7:13,6370
+648,Narrow Gate Ultra Pro Max,108,Narrow Gate,Ultra Pro Max,Gospels,Matthew 7:13,6380
+649,Rock Solid,109,Rock Solid,,Gospels,Matthew 7:24,6390
+650,Rock Solid Lite,109,Rock Solid,Lite,Gospels,Matthew 7:24,6400
+651,Rock Solid Pro,109,Rock Solid,Pro,Gospels,Matthew 7:24,6410
+652,Rock Solid Max,109,Rock Solid,Max,Gospels,Matthew 7:24,6420
+653,Rock Solid Ultra,109,Rock Solid,Ultra,Gospels,Matthew 7:24,6430
+654,Rock Solid Ultra Pro Max,109,Rock Solid,Ultra Pro Max,Gospels,Matthew 7:24,6440
+655,Yoke Bearer,110,Yoke Bearer,,Gospels,Matthew 11:29,6450
+656,Yoke Bearer Lite,110,Yoke Bearer,Lite,Gospels,Matthew 11:29,6460
+657,Yoke Bearer Pro,110,Yoke Bearer,Pro,Gospels,Matthew 11:29,6470
+658,Yoke Bearer Max,110,Yoke Bearer,Max,Gospels,Matthew 11:29,6480
+659,Yoke Bearer Ultra,110,Yoke Bearer,Ultra,Gospels,Matthew 11:29,6490
+660,Yoke Bearer Ultra Pro Max,110,Yoke Bearer,Ultra Pro Max,Gospels,Matthew 11:29,6500
+661,Good Soil,111,Good Soil,,Gospels,Matthew 13:23,6510
+662,Good Soil Lite,111,Good Soil,Lite,Gospels,Matthew 13:23,6520
+663,Good Soil Pro,111,Good Soil,Pro,Gospels,Matthew 13:23,6530
+664,Good Soil Max,111,Good Soil,Max,Gospels,Matthew 13:23,6540
+665,Good Soil Ultra,111,Good Soil,Ultra,Gospels,Matthew 13:23,6550
+666,Good Soil Ultra Pro Max,111,Good Soil,Ultra Pro Max,Gospels,Matthew 13:23,6560
+667,Pearl Merchant,112,Pearl Merchant,,Gospels,Matthew 13:45,6570
+668,Pearl Merchant Lite,112,Pearl Merchant,Lite,Gospels,Matthew 13:45,6580
+669,Pearl Merchant Pro,112,Pearl Merchant,Pro,Gospels,Matthew 13:45,6590
+670,Pearl Merchant Max,112,Pearl Merchant,Max,Gospels,Matthew 13:45,6600
+671,Pearl Merchant Ultra,112,Pearl Merchant,Ultra,Gospels,Matthew 13:45,6610
+672,Pearl Merchant Ultra Pro Max,112,Pearl Merchant,Ultra Pro Max,Gospels,Matthew 13:45,6620
+673,Water Walker,113,Water Walker,,Gospels,Matthew 14:29,6630
+674,Water Walker Lite,113,Water Walker,Lite,Gospels,Matthew 14:29,6640
+675,Water Walker Pro,113,Water Walker,Pro,Gospels,Matthew 14:29,6650
+676,Water Walker Max,113,Water Walker,Max,Gospels,Matthew 14:29,6660
+677,Water Walker Ultra,113,Water Walker,Ultra,Gospels,Matthew 14:29,6670
+678,Water Walker Ultra Pro Max,113,Water Walker,Ultra Pro Max,Gospels,Matthew 14:29,6680
+679,Mountain Mover,114,Mountain Mover,,Gospels,Matthew 17:20,6690
+680,Mountain Mover Lite,114,Mountain Mover,Lite,Gospels,Matthew 17:20,6700
+681,Mountain Mover Pro,114,Mountain Mover,Pro,Gospels,Matthew 17:20,6710
+682,Mountain Mover Max,114,Mountain Mover,Max,Gospels,Matthew 17:20,6720
+683,Mountain Mover Ultra,114,Mountain Mover,Ultra,Gospels,Matthew 17:20,6730
+684,Mountain Mover Ultra Pro Max,114,Mountain Mover,Ultra Pro Max,Gospels,Matthew 17:20,6740
+685,Seventy Times Seven,115,Seventy Times Seven,,Gospels,Matthew 18:22,6750
+686,Seventy Times Seven Lite,115,Seventy Times Seven,Lite,Gospels,Matthew 18:22,6760
+687,Seventy Times Seven Pro,115,Seventy Times Seven,Pro,Gospels,Matthew 18:22,6770
+688,Seventy Times Seven Max,115,Seventy Times Seven,Max,Gospels,Matthew 18:22,6780
+689,Seventy Times Seven Ultra,115,Seventy Times Seven,Ultra,Gospels,Matthew 18:22,6790
+690,Seventy Times Seven Ultra Pro Max,115,Seventy Times Seven,Ultra Pro Max,Gospels,Matthew 18:22,6800
+691,Oil Keeper,116,Oil Keeper,,Gospels,Matthew 25:4,6810
+692,Oil Keeper Lite,116,Oil Keeper,Lite,Gospels,Matthew 25:4,6820
+693,Oil Keeper Pro,116,Oil Keeper,Pro,Gospels,Matthew 25:4,6830
+694,Oil Keeper Max,116,Oil Keeper,Max,Gospels,Matthew 25:4,6840
+695,Oil Keeper Ultra,116,Oil Keeper,Ultra,Gospels,Matthew 25:4,6850
+696,Oil Keeper Ultra Pro Max,116,Oil Keeper,Ultra Pro Max,Gospels,Matthew 25:4,6860
+697,Talent Multiplier,117,Talent Multiplier,,Gospels,Matthew 25:20,6870
+698,Talent Multiplier Lite,117,Talent Multiplier,Lite,Gospels,Matthew 25:20,6880
+699,Talent Multiplier Pro,117,Talent Multiplier,Pro,Gospels,Matthew 25:20,6890
+700,Talent Multiplier Max,117,Talent Multiplier,Max,Gospels,Matthew 25:20,6900
+701,Talent Multiplier Ultra,117,Talent Multiplier,Ultra,Gospels,Matthew 25:20,6910
+702,Talent Multiplier Ultra Pro Max,117,Talent Multiplier,Ultra Pro Max,Gospels,Matthew 25:20,6920
+703,Roof Breaker,118,Roof Breaker,,Gospels,Mark 2:4,6930
+704,Roof Breaker Lite,118,Roof Breaker,Lite,Gospels,Mark 2:4,6940
+705,Roof Breaker Pro,118,Roof Breaker,Pro,Gospels,Mark 2:4,6950
+706,Roof Breaker Max,118,Roof Breaker,Max,Gospels,Mark 2:4,6960
+707,Roof Breaker Ultra,118,Roof Breaker,Ultra,Gospels,Mark 2:4,6970
+708,Roof Breaker Ultra Pro Max,118,Roof Breaker,Ultra Pro Max,Gospels,Mark 2:4,6980
+709,Alabaster Jar,119,Alabaster Jar,,Gospels,Mark 14:3,6990
+710,Alabaster Jar Lite,119,Alabaster Jar,Lite,Gospels,Mark 14:3,7000
+711,Alabaster Jar Pro,119,Alabaster Jar,Pro,Gospels,Mark 14:3,7010
+712,Alabaster Jar Max,119,Alabaster Jar,Max,Gospels,Mark 14:3,7020
+713,Alabaster Jar Ultra,119,Alabaster Jar,Ultra,Gospels,Mark 14:3,7030
+714,Alabaster Jar Ultra Pro Max,119,Alabaster Jar,Ultra Pro Max,Gospels,Mark 14:3,7040
+715,Homecomer,120,Homecomer,,Gospels,Luke 15:20,7050
+716,Homecomer Lite,120,Homecomer,Lite,Gospels,Luke 15:20,7060
+717,Homecomer Pro,120,Homecomer,Pro,Gospels,Luke 15:20,7070
+718,Homecomer Max,120,Homecomer,Max,Gospels,Luke 15:20,7080
+719,Homecomer Ultra,120,Homecomer,Ultra,Gospels,Luke 15:20,7090
+720,Homecomer Ultra Pro Max,120,Homecomer,Ultra Pro Max,Gospels,Luke 15:20,7100
+721,Sycamore Climber,121,Sycamore Climber,,Gospels,Luke 19:4,7110
+722,Sycamore Climber Lite,121,Sycamore Climber,Lite,Gospels,Luke 19:4,7120
+723,Sycamore Climber Pro,121,Sycamore Climber,Pro,Gospels,Luke 19:4,7130
+724,Sycamore Climber Max,121,Sycamore Climber,Max,Gospels,Luke 19:4,7140
+725,Sycamore Climber Ultra,121,Sycamore Climber,Ultra,Gospels,Luke 19:4,7150
+726,Sycamore Climber Ultra Pro Max,121,Sycamore Climber,Ultra Pro Max,Gospels,Luke 19:4,7160
+727,Road to Emmaus,122,Road to Emmaus,,Gospels,Luke 24:32,7170
+728,Road to Emmaus Lite,122,Road to Emmaus,Lite,Gospels,Luke 24:32,7180
+729,Road to Emmaus Pro,122,Road to Emmaus,Pro,Gospels,Luke 24:32,7190
+730,Road to Emmaus Max,122,Road to Emmaus,Max,Gospels,Luke 24:32,7200
+731,Road to Emmaus Ultra,122,Road to Emmaus,Ultra,Gospels,Luke 24:32,7210
+732,Road to Emmaus Ultra Pro Max,122,Road to Emmaus,Ultra Pro Max,Gospels,Luke 24:32,7220
+733,Wellspring,123,Wellspring,,Gospels,John 4:14,7230
+734,Wellspring Lite,123,Wellspring,Lite,Gospels,John 4:14,7240
+735,Wellspring Pro,123,Wellspring,Pro,Gospels,John 4:14,7250
+736,Wellspring Max,123,Wellspring,Max,Gospels,John 4:14,7260
+737,Wellspring Ultra,123,Wellspring,Ultra,Gospels,John 4:14,7270
+738,Wellspring Ultra Pro Max,123,Wellspring,Ultra Pro Max,Gospels,John 4:14,7280
+739,Unbound,124,Unbound,,Gospels,John 11:44,7290
+740,Unbound Lite,124,Unbound,Lite,Gospels,John 11:44,7300
+741,Unbound Pro,124,Unbound,Pro,Gospels,John 11:44,7310
+742,Unbound Max,124,Unbound,Max,Gospels,John 11:44,7320
+743,Unbound Ultra,124,Unbound,Ultra,Gospels,John 11:44,7330
+744,Unbound Ultra Pro Max,124,Unbound,Ultra Pro Max,Gospels,John 11:44,7340
+745,Foot Washer,125,Foot Washer,,Gospels,John 13:14,7350
+746,Foot Washer Lite,125,Foot Washer,Lite,Gospels,John 13:14,7360
+747,Foot Washer Pro,125,Foot Washer,Pro,Gospels,John 13:14,7370
+748,Foot Washer Max,125,Foot Washer,Max,Gospels,John 13:14,7380
+749,Foot Washer Ultra,125,Foot Washer,Ultra,Gospels,John 13:14,7390
+750,Foot Washer Ultra Pro Max,125,Foot Washer,Ultra Pro Max,Gospels,John 13:14,7400
+751,Vine Abider,126,Vine Abider,,Gospels,John 15:4,7410
+752,Vine Abider Lite,126,Vine Abider,Lite,Gospels,John 15:4,7420
+753,Vine Abider Pro,126,Vine Abider,Pro,Gospels,John 15:4,7430
+754,Vine Abider Max,126,Vine Abider,Max,Gospels,John 15:4,7440
+755,Vine Abider Ultra,126,Vine Abider,Ultra,Gospels,John 15:4,7450
+756,Vine Abider Ultra Pro Max,126,Vine Abider,Ultra Pro Max,Gospels,John 15:4,7460
+757,Upper Room,127,Upper Room,,Acts,Acts 1:13,7470
+758,Upper Room Lite,127,Upper Room,Lite,Acts,Acts 1:13,7480
+759,Upper Room Pro,127,Upper Room,Pro,Acts,Acts 1:13,7490
+760,Upper Room Max,127,Upper Room,Max,Acts,Acts 1:13,7500
+761,Upper Room Ultra,127,Upper Room,Ultra,Acts,Acts 1:13,7510
+762,Upper Room Ultra Pro Max,127,Upper Room,Ultra Pro Max,Acts,Acts 1:13,7520
+763,Pentecost Flame,128,Pentecost Flame,,Acts,Acts 2:3,7530
+764,Pentecost Flame Lite,128,Pentecost Flame,Lite,Acts,Acts 2:3,7540
+765,Pentecost Flame Pro,128,Pentecost Flame,Pro,Acts,Acts 2:3,7550
+766,Pentecost Flame Max,128,Pentecost Flame,Max,Acts,Acts 2:3,7560
+767,Pentecost Flame Ultra,128,Pentecost Flame,Ultra,Acts,Acts 2:3,7570
+768,Pentecost Flame Ultra Pro Max,128,Pentecost Flame,Ultra Pro Max,Acts,Acts 2:3,7580
+769,Beautiful Gate,129,Beautiful Gate,,Acts,Acts 3:8,7590
+770,Beautiful Gate Lite,129,Beautiful Gate,Lite,Acts,Acts 3:8,7600
+771,Beautiful Gate Pro,129,Beautiful Gate,Pro,Acts,Acts 3:8,7610
+772,Beautiful Gate Max,129,Beautiful Gate,Max,Acts,Acts 3:8,7620
+773,Beautiful Gate Ultra,129,Beautiful Gate,Ultra,Acts,Acts 3:8,7630
+774,Beautiful Gate Ultra Pro Max,129,Beautiful Gate,Ultra Pro Max,Acts,Acts 3:8,7640
+775,Encourager,130,Encourager,,Acts,Acts 4:36,7650
+776,Encourager Lite,130,Encourager,Lite,Acts,Acts 4:36,7660
+777,Encourager Pro,130,Encourager,Pro,Acts,Acts 4:36,7670
+778,Encourager Max,130,Encourager,Max,Acts,Acts 4:36,7680
+779,Encourager Ultra,130,Encourager,Ultra,Acts,Acts 4:36,7690
+780,Encourager Ultra Pro Max,130,Encourager,Ultra Pro Max,Acts,Acts 4:36,7700
+781,Scales Fallen,131,Scales Fallen,,Acts,Acts 9:18,7710
+782,Scales Fallen Lite,131,Scales Fallen,Lite,Acts,Acts 9:18,7720
+783,Scales Fallen Pro,131,Scales Fallen,Pro,Acts,Acts 9:18,7730
+784,Scales Fallen Max,131,Scales Fallen,Max,Acts,Acts 9:18,7740
+785,Scales Fallen Ultra,131,Scales Fallen,Ultra,Acts,Acts 9:18,7750
+786,Scales Fallen Ultra Pro Max,131,Scales Fallen,Ultra Pro Max,Acts,Acts 9:18,7760
+787,Chainbreaker,132,Chainbreaker,,Acts,Acts 12:7,7770
+788,Chainbreaker Lite,132,Chainbreaker,Lite,Acts,Acts 12:7,7780
+789,Chainbreaker Pro,132,Chainbreaker,Pro,Acts,Acts 12:7,7790
+790,Chainbreaker Max,132,Chainbreaker,Max,Acts,Acts 12:7,7800
+791,Chainbreaker Ultra,132,Chainbreaker,Ultra,Acts,Acts 12:7,7810
+792,Chainbreaker Ultra Pro Max,132,Chainbreaker,Ultra Pro Max,Acts,Acts 12:7,7820
+793,Midnight Singer,133,Midnight Singer,,Acts,Acts 16:25,7830
+794,Midnight Singer Lite,133,Midnight Singer,Lite,Acts,Acts 16:25,7840
+795,Midnight Singer Pro,133,Midnight Singer,Pro,Acts,Acts 16:25,7850
+796,Midnight Singer Max,133,Midnight Singer,Max,Acts,Acts 16:25,7860
+797,Midnight Singer Ultra,133,Midnight Singer,Ultra,Acts,Acts 16:25,7870
+798,Midnight Singer Ultra Pro Max,133,Midnight Singer,Ultra Pro Max,Acts,Acts 16:25,7880
+799,World Turner,134,World Turner,,Acts,Acts 17:6,7890
+800,World Turner Lite,134,World Turner,Lite,Acts,Acts 17:6,7900
+801,World Turner Pro,134,World Turner,Pro,Acts,Acts 17:6,7910
+802,World Turner Max,134,World Turner,Max,Acts,Acts 17:6,7920
+803,World Turner Ultra,134,World Turner,Ultra,Acts,Acts 17:6,7930
+804,World Turner Ultra Pro Max,134,World Turner,Ultra Pro Max,Acts,Acts 17:6,7940
+805,Berean,135,Berean,,Acts,Acts 17:11,7950
+806,Berean Lite,135,Berean,Lite,Acts,Acts 17:11,7960
+807,Berean Pro,135,Berean,Pro,Acts,Acts 17:11,7970
+808,Berean Max,135,Berean,Max,Acts,Acts 17:11,7980
+809,Berean Ultra,135,Berean,Ultra,Acts,Acts 17:11,7990
+810,Berean Ultra Pro Max,135,Berean,Ultra Pro Max,Acts,Acts 17:11,8000
+811,Shipwreck Survivor,136,Shipwreck Survivor,,Acts,Acts 27:44,8010
+812,Shipwreck Survivor Lite,136,Shipwreck Survivor,Lite,Acts,Acts 27:44,8020
+813,Shipwreck Survivor Pro,136,Shipwreck Survivor,Pro,Acts,Acts 27:44,8030
+814,Shipwreck Survivor Max,136,Shipwreck Survivor,Max,Acts,Acts 27:44,8040
+815,Shipwreck Survivor Ultra,136,Shipwreck Survivor,Ultra,Acts,Acts 27:44,8050
+816,Shipwreck Survivor Ultra Pro Max,136,Shipwreck Survivor,Ultra Pro Max,Acts,Acts 27:44,8060
+817,Viper Shaker,137,Viper Shaker,,Acts,Acts 28:5,8070
+818,Viper Shaker Lite,137,Viper Shaker,Lite,Acts,Acts 28:5,8080
+819,Viper Shaker Pro,137,Viper Shaker,Pro,Acts,Acts 28:5,8090
+820,Viper Shaker Max,137,Viper Shaker,Max,Acts,Acts 28:5,8100
+821,Viper Shaker Ultra,137,Viper Shaker,Ultra,Acts,Acts 28:5,8110
+822,Viper Shaker Ultra Pro Max,137,Viper Shaker,Ultra Pro Max,Acts,Acts 28:5,8120
+823,More Than Conqueror,138,More Than Conqueror,,Letters,Romans 8:37,8130
+824,More Than Conqueror Lite,138,More Than Conqueror,Lite,Letters,Romans 8:37,8140
+825,More Than Conqueror Pro,138,More Than Conqueror,Pro,Letters,Romans 8:37,8150
+826,More Than Conqueror Max,138,More Than Conqueror,Max,Letters,Romans 8:37,8160
+827,More Than Conqueror Ultra,138,More Than Conqueror,Ultra,Letters,Romans 8:37,8170
+828,More Than Conqueror Ultra Pro Max,138,More Than Conqueror,Ultra Pro Max,Letters,Romans 8:37,8180
+829,Living Sacrifice,139,Living Sacrifice,,Letters,Romans 12:1,8190
+830,Living Sacrifice Lite,139,Living Sacrifice,Lite,Letters,Romans 12:1,8200
+831,Living Sacrifice Pro,139,Living Sacrifice,Pro,Letters,Romans 12:1,8210
+832,Living Sacrifice Max,139,Living Sacrifice,Max,Letters,Romans 12:1,8220
+833,Living Sacrifice Ultra,139,Living Sacrifice,Ultra,Letters,Romans 12:1,8230
+834,Living Sacrifice Ultra Pro Max,139,Living Sacrifice,Ultra Pro Max,Letters,Romans 12:1,8240
+835,Renewed Mind,140,Renewed Mind,,Letters,Romans 12:2,8250
+836,Renewed Mind Lite,140,Renewed Mind,Lite,Letters,Romans 12:2,8260
+837,Renewed Mind Pro,140,Renewed Mind,Pro,Letters,Romans 12:2,8270
+838,Renewed Mind Max,140,Renewed Mind,Max,Letters,Romans 12:2,8280
+839,Renewed Mind Ultra,140,Renewed Mind,Ultra,Letters,Romans 12:2,8290
+840,Renewed Mind Ultra Pro Max,140,Renewed Mind,Ultra Pro Max,Letters,Romans 12:2,8300
+841,Temple Keeper,141,Temple Keeper,,Letters,1 Corinthians 6:19,8310
+842,Temple Keeper Lite,141,Temple Keeper,Lite,Letters,1 Corinthians 6:19,8320
+843,Temple Keeper Pro,141,Temple Keeper,Pro,Letters,1 Corinthians 6:19,8330
+844,Temple Keeper Max,141,Temple Keeper,Max,Letters,1 Corinthians 6:19,8340
+845,Temple Keeper Ultra,141,Temple Keeper,Ultra,Letters,1 Corinthians 6:19,8350
+846,Temple Keeper Ultra Pro Max,141,Temple Keeper,Ultra Pro Max,Letters,1 Corinthians 6:19,8360
+847,Race Runner,142,Race Runner,,Letters,1 Corinthians 9:24,8370
+848,Race Runner Lite,142,Race Runner,Lite,Letters,1 Corinthians 9:24,8380
+849,Race Runner Pro,142,Race Runner,Pro,Letters,1 Corinthians 9:24,8390
+850,Race Runner Max,142,Race Runner,Max,Letters,1 Corinthians 9:24,8400
+851,Race Runner Ultra,142,Race Runner,Ultra,Letters,1 Corinthians 9:24,8410
+852,Race Runner Ultra Pro Max,142,Race Runner,Ultra Pro Max,Letters,1 Corinthians 9:24,8420
+853,Escape Artist,143,Escape Artist,,Letters,1 Corinthians 10:13,8430
+854,Escape Artist Lite,143,Escape Artist,Lite,Letters,1 Corinthians 10:13,8440
+855,Escape Artist Pro,143,Escape Artist,Pro,Letters,1 Corinthians 10:13,8450
+856,Escape Artist Max,143,Escape Artist,Max,Letters,1 Corinthians 10:13,8460
+857,Escape Artist Ultra,143,Escape Artist,Ultra,Letters,1 Corinthians 10:13,8470
+858,Escape Artist Ultra Pro Max,143,Escape Artist,Ultra Pro Max,Letters,1 Corinthians 10:13,8480
+859,New Creation,144,New Creation,,Letters,2 Corinthians 5:17,8490
+860,New Creation Lite,144,New Creation,Lite,Letters,2 Corinthians 5:17,8500
+861,New Creation Pro,144,New Creation,Pro,Letters,2 Corinthians 5:17,8510
+862,New Creation Max,144,New Creation,Max,Letters,2 Corinthians 5:17,8520
+863,New Creation Ultra,144,New Creation,Ultra,Letters,2 Corinthians 5:17,8530
+864,New Creation Ultra Pro Max,144,New Creation,Ultra Pro Max,Letters,2 Corinthians 5:17,8540
+865,Spirit Walker,145,Spirit Walker,,Letters,Galatians 5:16,8550
+866,Spirit Walker Lite,145,Spirit Walker,Lite,Letters,Galatians 5:16,8560
+867,Spirit Walker Pro,145,Spirit Walker,Pro,Letters,Galatians 5:16,8570
+868,Spirit Walker Max,145,Spirit Walker,Max,Letters,Galatians 5:16,8580
+869,Spirit Walker Ultra,145,Spirit Walker,Ultra,Letters,Galatians 5:16,8590
+870,Spirit Walker Ultra Pro Max,145,Spirit Walker,Ultra Pro Max,Letters,Galatians 5:16,8600
+871,Fruitful,146,Fruitful,,Letters,Galatians 5:22,8610
+872,Fruitful Lite,146,Fruitful,Lite,Letters,Galatians 5:22,8620
+873,Fruitful Pro,146,Fruitful,Pro,Letters,Galatians 5:22,8630
+874,Fruitful Max,146,Fruitful,Max,Letters,Galatians 5:22,8640
+875,Fruitful Ultra,146,Fruitful,Ultra,Letters,Galatians 5:22,8650
+876,Fruitful Ultra Pro Max,146,Fruitful,Ultra Pro Max,Letters,Galatians 5:22,8660
+877,Belt of Truth,147,Belt of Truth,,Letters,Ephesians 6:14,8670
+878,Belt of Truth Lite,147,Belt of Truth,Lite,Letters,Ephesians 6:14,8680
+879,Belt of Truth Pro,147,Belt of Truth,Pro,Letters,Ephesians 6:14,8690
+880,Belt of Truth Max,147,Belt of Truth,Max,Letters,Ephesians 6:14,8700
+881,Belt of Truth Ultra,147,Belt of Truth,Ultra,Letters,Ephesians 6:14,8710
+882,Belt of Truth Ultra Pro Max,147,Belt of Truth,Ultra Pro Max,Letters,Ephesians 6:14,8720
+883,Breastplate,148,Breastplate,,Letters,Ephesians 6:14,8730
+884,Breastplate Lite,148,Breastplate,Lite,Letters,Ephesians 6:14,8740
+885,Breastplate Pro,148,Breastplate,Pro,Letters,Ephesians 6:14,8750
+886,Breastplate Max,148,Breastplate,Max,Letters,Ephesians 6:14,8760
+887,Breastplate Ultra,148,Breastplate,Ultra,Letters,Ephesians 6:14,8770
+888,Breastplate Ultra Pro Max,148,Breastplate,Ultra Pro Max,Letters,Ephesians 6:14,8780
+889,Gospel Boots,149,Gospel Boots,,Letters,Ephesians 6:15,8790
+890,Gospel Boots Lite,149,Gospel Boots,Lite,Letters,Ephesians 6:15,8800
+891,Gospel Boots Pro,149,Gospel Boots,Pro,Letters,Ephesians 6:15,8810
+892,Gospel Boots Max,149,Gospel Boots,Max,Letters,Ephesians 6:15,8820
+893,Gospel Boots Ultra,149,Gospel Boots,Ultra,Letters,Ephesians 6:15,8830
+894,Gospel Boots Ultra Pro Max,149,Gospel Boots,Ultra Pro Max,Letters,Ephesians 6:15,8840
+895,Shield of Faith,150,Shield of Faith,,Letters,Ephesians 6:16,8850
+896,Shield of Faith Lite,150,Shield of Faith,Lite,Letters,Ephesians 6:16,8860
+897,Shield of Faith Pro,150,Shield of Faith,Pro,Letters,Ephesians 6:16,8870
+898,Shield of Faith Max,150,Shield of Faith,Max,Letters,Ephesians 6:16,8880
+899,Shield of Faith Ultra,150,Shield of Faith,Ultra,Letters,Ephesians 6:16,8890
+900,Shield of Faith Ultra Pro Max,150,Shield of Faith,Ultra Pro Max,Letters,Ephesians 6:16,8900
+901,Helmet of Salvation,151,Helmet of Salvation,,Letters,Ephesians 6:17,8910
+902,Helmet of Salvation Lite,151,Helmet of Salvation,Lite,Letters,Ephesians 6:17,8920
+903,Helmet of Salvation Pro,151,Helmet of Salvation,Pro,Letters,Ephesians 6:17,8930
+904,Helmet of Salvation Max,151,Helmet of Salvation,Max,Letters,Ephesians 6:17,8940
+905,Helmet of Salvation Ultra,151,Helmet of Salvation,Ultra,Letters,Ephesians 6:17,8950
+906,Helmet of Salvation Ultra Pro Max,151,Helmet of Salvation,Ultra Pro Max,Letters,Ephesians 6:17,8960
+907,Sword of the Spirit,152,Sword of the Spirit,,Letters,Ephesians 6:17,8970
+908,Sword of the Spirit Lite,152,Sword of the Spirit,Lite,Letters,Ephesians 6:17,8980
+909,Sword of the Spirit Pro,152,Sword of the Spirit,Pro,Letters,Ephesians 6:17,8990
+910,Sword of the Spirit Max,152,Sword of the Spirit,Max,Letters,Ephesians 6:17,9000
+911,Sword of the Spirit Ultra,152,Sword of the Spirit,Ultra,Letters,Ephesians 6:17,9010
+912,Sword of the Spirit Ultra Pro Max,152,Sword of the Spirit,Ultra Pro Max,Letters,Ephesians 6:17,9020
+913,Unashamed,153,Unashamed,,Letters,2 Timothy 2:15,9030
+914,Unashamed Lite,153,Unashamed,Lite,Letters,2 Timothy 2:15,9040
+915,Unashamed Pro,153,Unashamed,Pro,Letters,2 Timothy 2:15,9050
+916,Unashamed Max,153,Unashamed,Max,Letters,2 Timothy 2:15,9060
+917,Unashamed Ultra,153,Unashamed,Ultra,Letters,2 Timothy 2:15,9070
+918,Unashamed Ultra Pro Max,153,Unashamed,Ultra Pro Max,Letters,2 Timothy 2:15,9080
+919,Vessel of Honor,154,Vessel of Honor,,Letters,2 Timothy 2:21,9090
+920,Vessel of Honor Lite,154,Vessel of Honor,Lite,Letters,2 Timothy 2:21,9100
+921,Vessel of Honor Pro,154,Vessel of Honor,Pro,Letters,2 Timothy 2:21,9110
+922,Vessel of Honor Max,154,Vessel of Honor,Max,Letters,2 Timothy 2:21,9120
+923,Vessel of Honor Ultra,154,Vessel of Honor,Ultra,Letters,2 Timothy 2:21,9130
+924,Vessel of Honor Ultra Pro Max,154,Vessel of Honor,Ultra Pro Max,Letters,2 Timothy 2:21,9140
+925,Royal Priest,155,Royal Priest,,Letters,1 Peter 2:9,9150
+926,Royal Priest Lite,155,Royal Priest,Lite,Letters,1 Peter 2:9,9160
+927,Royal Priest Pro,155,Royal Priest,Pro,Letters,1 Peter 2:9,9170
+928,Royal Priest Max,155,Royal Priest,Max,Letters,1 Peter 2:9,9180
+929,Royal Priest Ultra,155,Royal Priest,Ultra,Letters,1 Peter 2:9,9190
+930,Royal Priest Ultra Pro Max,155,Royal Priest,Ultra Pro Max,Letters,1 Peter 2:9,9200
+931,Overcomer,156,Overcomer,,Glory,Revelation 2:7,9210
+932,Overcomer Lite,156,Overcomer,Lite,Glory,Revelation 2:7,9220
+933,Overcomer Pro,156,Overcomer,Pro,Glory,Revelation 2:7,9230
+934,Overcomer Max,156,Overcomer,Max,Glory,Revelation 2:7,9240
+935,Overcomer Ultra,156,Overcomer,Ultra,Glory,Revelation 2:7,9250
+936,Overcomer Ultra Pro Max,156,Overcomer,Ultra Pro Max,Glory,Revelation 2:7,9260
+937,Tree of Life,157,Tree of Life,,Glory,Revelation 2:7,9270
+938,Tree of Life Lite,157,Tree of Life,Lite,Glory,Revelation 2:7,9280
+939,Tree of Life Pro,157,Tree of Life,Pro,Glory,Revelation 2:7,9290
+940,Tree of Life Max,157,Tree of Life,Max,Glory,Revelation 2:7,9300
+941,Tree of Life Ultra,157,Tree of Life,Ultra,Glory,Revelation 2:7,9310
+942,Tree of Life Ultra Pro Max,157,Tree of Life,Ultra Pro Max,Glory,Revelation 2:7,9320
+943,Crown of Life,158,Crown of Life,,Glory,Revelation 2:10,9330
+944,Crown of Life Lite,158,Crown of Life,Lite,Glory,Revelation 2:10,9340
+945,Crown of Life Pro,158,Crown of Life,Pro,Glory,Revelation 2:10,9350
+946,Crown of Life Max,158,Crown of Life,Max,Glory,Revelation 2:10,9360
+947,Crown of Life Ultra,158,Crown of Life,Ultra,Glory,Revelation 2:10,9370
+948,Crown of Life Ultra Pro Max,158,Crown of Life,Ultra Pro Max,Glory,Revelation 2:10,9380
+949,Hidden Manna,159,Hidden Manna,,Glory,Revelation 2:17,9390
+950,Hidden Manna Lite,159,Hidden Manna,Lite,Glory,Revelation 2:17,9400
+951,Hidden Manna Pro,159,Hidden Manna,Pro,Glory,Revelation 2:17,9410
+952,Hidden Manna Max,159,Hidden Manna,Max,Glory,Revelation 2:17,9420
+953,Hidden Manna Ultra,159,Hidden Manna,Ultra,Glory,Revelation 2:17,9430
+954,Hidden Manna Ultra Pro Max,159,Hidden Manna,Ultra Pro Max,Glory,Revelation 2:17,9440
+955,White Stone,160,White Stone,,Glory,Revelation 2:17,9450
+956,White Stone Lite,160,White Stone,Lite,Glory,Revelation 2:17,9460
+957,White Stone Pro,160,White Stone,Pro,Glory,Revelation 2:17,9470
+958,White Stone Max,160,White Stone,Max,Glory,Revelation 2:17,9480
+959,White Stone Ultra,160,White Stone,Ultra,Glory,Revelation 2:17,9490
+960,White Stone Ultra Pro Max,160,White Stone,Ultra Pro Max,Glory,Revelation 2:17,9500
+961,White Robe,161,White Robe,,Glory,Revelation 3:5,9510
+962,White Robe Lite,161,White Robe,Lite,Glory,Revelation 3:5,9520
+963,White Robe Pro,161,White Robe,Pro,Glory,Revelation 3:5,9530
+964,White Robe Max,161,White Robe,Max,Glory,Revelation 3:5,9540
+965,White Robe Ultra,161,White Robe,Ultra,Glory,Revelation 3:5,9550
+966,White Robe Ultra Pro Max,161,White Robe,Ultra Pro Max,Glory,Revelation 3:5,9560
+967,Temple Pillar,162,Temple Pillar,,Glory,Revelation 3:12,9570
+968,Temple Pillar Lite,162,Temple Pillar,Lite,Glory,Revelation 3:12,9580
+969,Temple Pillar Pro,162,Temple Pillar,Pro,Glory,Revelation 3:12,9590
+970,Temple Pillar Max,162,Temple Pillar,Max,Glory,Revelation 3:12,9600
+971,Temple Pillar Ultra,162,Temple Pillar,Ultra,Glory,Revelation 3:12,9610
+972,Temple Pillar Ultra Pro Max,162,Temple Pillar,Ultra Pro Max,Glory,Revelation 3:12,9620
+973,Crystal Sea,163,Crystal Sea,,Glory,Revelation 15:2,9630
+974,Crystal Sea Lite,163,Crystal Sea,Lite,Glory,Revelation 15:2,9640
+975,Crystal Sea Pro,163,Crystal Sea,Pro,Glory,Revelation 15:2,9650
+976,Crystal Sea Max,163,Crystal Sea,Max,Glory,Revelation 15:2,9660
+977,Crystal Sea Ultra,163,Crystal Sea,Ultra,Glory,Revelation 15:2,9670
+978,Crystal Sea Ultra Pro Max,163,Crystal Sea,Ultra Pro Max,Glory,Revelation 15:2,9680
+979,Golden Harp,164,Golden Harp,,Glory,Revelation 15:2,9690
+980,Golden Harp Lite,164,Golden Harp,Lite,Glory,Revelation 15:2,9700
+981,Golden Harp Pro,164,Golden Harp,Pro,Glory,Revelation 15:2,9710
+982,Golden Harp Max,164,Golden Harp,Max,Glory,Revelation 15:2,9720
+983,Golden Harp Ultra,164,Golden Harp,Ultra,Glory,Revelation 15:2,9730
+984,Golden Harp Ultra Pro Max,164,Golden Harp,Ultra Pro Max,Glory,Revelation 15:2,9740
+985,Pearl Gate,165,Pearl Gate,,Glory,Revelation 21:21,9750
+986,Pearl Gate Lite,165,Pearl Gate,Lite,Glory,Revelation 21:21,9760
+987,Pearl Gate Pro,165,Pearl Gate,Pro,Glory,Revelation 21:21,9770
+988,Pearl Gate Max,165,Pearl Gate,Max,Glory,Revelation 21:21,9780
+989,Pearl Gate Ultra,165,Pearl Gate,Ultra,Glory,Revelation 21:21,9790
+990,Pearl Gate Ultra Pro Max,165,Pearl Gate,Ultra Pro Max,Glory,Revelation 21:21,9800
+991,Golden Street,166,Golden Street,,Glory,Revelation 21:21,9810
+992,Golden Street Lite,166,Golden Street,Lite,Glory,Revelation 21:21,9820
+993,Golden Street Pro,166,Golden Street,Pro,Glory,Revelation 21:21,9830
+994,Golden Street Max,166,Golden Street,Max,Glory,Revelation 21:21,9840
+995,Golden Street Ultra,166,Golden Street,Ultra,Glory,Revelation 21:21,9850
+996,Golden Street Ultra Pro Max,166,Golden Street,Ultra Pro Max,Glory,Revelation 21:21,9860
+997,Well Done,167,Well Done,,Glory,Matthew 25:21,9870
+998,Well Done Lite,167,Well Done,Lite,Glory,Matthew 25:21,9880
+999,Well Done Pro,167,Well Done,Pro,Glory,Matthew 25:21,9890
+1000,Well Done Max,167,Well Done,Max,Glory,Matthew 25:21,9900
+1001,Well Done Ultra,167,Well Done,Ultra,Glory,Matthew 25:21,9910
+1002,Well Done Ultra Pro Max,167,Well Done,Ultra Pro Max,Glory,Matthew 25:21,9920
