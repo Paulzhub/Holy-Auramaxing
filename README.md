@@ -147,4 +147,4 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
   - Enable Turnstile with the secret key in Supabase (Authentication → Attack protection).
 - **Email:** connect a real SMTP sender (Resend) with the sender name "Aura".
 - **Upstash:** set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
-- **Before launch:** fill in the grievance officer's name and contact on `/privacy`, and have all three policy pages reviewed by a lawyer.
+- **Before launch:** consider moving the grievance contact on `/privacy` (currently Paulz, a personal Gmail) to a dedicated address such as `privacy@<domain>`, and have all three policy pages reviewed by a lawyer.

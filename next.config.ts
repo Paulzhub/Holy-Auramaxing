@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -14,6 +16,9 @@ const withNextIntl = createNextIntlPlugin({
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  // Pin the project root, so a stray package-lock.json in a parent folder
+  // (e.g. the user's home directory) is never mistaken for this project's.
+  turbopack: { root: fileURLToPath(new URL(".", import.meta.url)) },
   async headers() {
     return [
       {
