@@ -78,6 +78,17 @@ Then open <http://localhost:3000>. Useful pages:
 - `/api/health`: shows whether Supabase is configured and reachable
 - Supabase Studio: <http://127.0.0.1:54323>
 
+### After pulling a new phase
+
+Each phase may add database tables, settings or packages. After switching branch or pulling:
+
+```bash
+npm ci                         # new packages
+npx supabase migration up      # new tables; keeps your local accounts
+```
+
+Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`), and restart `npm run dev`: environment files are read only at start-up.
+
 > **Windows tips**
 >
 > - Keep the project **outside OneDrive** or any other synced folder. Syncing `node_modules` is slow and causes "file in use" errors.
