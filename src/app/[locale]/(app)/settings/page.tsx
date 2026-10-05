@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/shell/app-shell";
 import { ThemeSwitcher } from "@/components/shell/theme-switcher";
 import { Card, CardTitle } from "@/components/ui/card";
 import { getThemePreference } from "@/lib/server/theme";
+import { SignOutButton } from "@/features/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
@@ -30,6 +31,15 @@ export default async function Page() {
           <div className="grid gap-3">
             <CardTitle as="h2">{t("language")}</CardTitle>
             <p className="text-muted">{t("languageBody")}</p>
+          </div>
+        </Card>
+        <Card>
+          <div className="grid gap-3">
+            <CardTitle as="h2">{t("account")}</CardTitle>
+            <p className="text-muted">{t("accountBody")}</p>
+            <div>
+              <SignOutButton />
+            </div>
           </div>
         </Card>
       </div>

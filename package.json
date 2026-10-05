@@ -14,11 +14,12 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:db": "supabase test db",
-    "lighthouse": "lhci autorun --config=lighthouserc.public.json && lhci autorun --config=lighthouserc.app.json",
+    "lighthouse": "lhci autorun --config=lighthouserc.public.json && lhci autorun --config=lighthouserc.auth.json && node scripts/lighthouse-session.mjs && lhci autorun --config=.lighthouseci/lighthouserc.app.json",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
-    "check": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build"
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build",
+    "db:types": "supabase gen types typescript --local --schema public > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@radix-ui/react-tabs": "^1.1.21",

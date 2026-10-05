@@ -3,6 +3,20 @@ import { test as base, expect, type BrowserContext, type Page } from "@playwrigh
 
 export const appRoutes = ["/home", "/groups", "/check-in", "/alerts", "/me", "/settings"] as const;
 export const allRoutes = ["/", ...appRoutes, "/dev/components", "/this-page-does-not-exist"] as const;
+/** Pages for signed-out visitors (axe, keyboard and password-manager checks in auth.spec.ts). */
+export const authRoutes = [
+  "/sign-in",
+  "/sign-up",
+  "/sign-up/under-18",
+  "/sign-up/check-email",
+  "/forgot-password",
+  "/confirm?token_hash=abcdefgh12345678&type=signup",
+  "/privacy",
+  "/terms",
+  "/your-data",
+] as const;
+/** A fresh, signed-out browser state. */
+export const signedOut = { cookies: [], origins: [] };
 export const themes = ["light", "dark"] as const;
 export type Theme = (typeof themes)[number];
 
@@ -23,8 +37,21 @@ export async function expectNoAxeViolations(page: Page, label: string) {
   expect(summary, `axe violations on ${label}`).toEqual([]);
 }
 
+/** A made-up client address per test, so the app's per-IP rate limits don't add up across the suite. */
+function testClientIp(): string {
+  const n = () => Math.floor(Math.random() * 254) + 1;
+  return `10.${n()}.${n()}.${n()}`;
+}
+
 /** Fails the test if the page logs a CSP violation or an uncaught error. */
-export const test = base.extend<{ consoleGuard: void }>({
+export const test = base.extend<{ consoleGuard: void; clientIp: void }>({
+  clientIp: [
+    async ({ context }, use) => {
+      await context.setExtraHTTPHeaders({ "x-forwarded-for": testClientIp() });
+      await use();
+    },
+    { auto: true },
+  ],
   consoleGuard: [
     async ({ page }, use) => {
       const problems: string[] = [];

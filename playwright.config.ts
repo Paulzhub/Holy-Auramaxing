@@ -1,4 +1,10 @@
+import { loadEnvConfig } from "@next/env";
 import { defineConfig, devices } from "@playwright/test";
+
+// Same environment as the app (.env.local): Supabase URL and keys for test helpers.
+loadEnvConfig(process.cwd());
+
+const MEMBER_STATE = "tests/e2e/.auth/member.json";
 
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 const baseURL = `http://localhost:${PORT}`;
@@ -18,11 +24,27 @@ export default defineConfig({
     launchOptions: { executablePath },
   },
   projects: [
+    // Signs in one shared member; app specs reuse that session (auth.setup.ts).
+    {
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
+      use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } },
+    },
     {
       name: "desktop",
-      use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 860 }, launchOptions: { executablePath } },
+      dependencies: ["setup"],
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 860 },
+        launchOptions: { executablePath },
+        storageState: MEMBER_STATE,
+      },
     },
-    { name: "mobile", use: { ...devices["Pixel 7"], launchOptions: { executablePath } } },
+    {
+      name: "mobile",
+      dependencies: ["setup"],
+      use: { ...devices["Pixel 7"], launchOptions: { executablePath }, storageState: MEMBER_STATE },
+    },
   ],
   webServer: {
     // Tests run against a production build: `npm run build` first.

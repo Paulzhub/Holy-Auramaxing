@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getThemePreference } from "@/lib/server/theme";
+import { AuthNotice } from "@/features/auth";
 
 // Placeholder public landing page. Phase 9 replaces it with the scroll story.
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -23,8 +24,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function LandingPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { locale } = await params;
+  const { notice } = await searchParams;
   setRequestLocale(hasLocale(routing.locales, locale) ? locale : routing.defaultLocale);
   const t = await getTranslations("landing");
   const tApp = await getTranslations("app");
@@ -41,12 +49,18 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
         <ThemeSwitcher initial={theme} />
       </header>
       <main id="main" className="landing">
+        <AuthNotice notice={notice} />
         <h1 className="landing__title">{t("title")}</h1>
         <p className="page-lede">{t("lede")}</p>
         <p className="landing__grace">{t("graceLine")}</p>
-        <Link href="/home" className={buttonVariants({ size: "lg" })}>
-          {t("cta")}
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/sign-up" className={buttonVariants({ size: "lg" })}>
+            {t("cta")}
+          </Link>
+          <Link href="/sign-in" className={buttonVariants({ size: "lg", variant: "secondary" })}>
+            {t("signIn")}
+          </Link>
+        </div>
       </main>
     </>
   );

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/shell/app-shell";
 import { getThemePreference } from "@/lib/server/theme";
+import { requireAccount } from "@/features/auth";
 
 // Everything inside the app is private: never indexed, never cached publicly.
 export const metadata: Metadata = {
@@ -10,6 +11,8 @@ export const metadata: Metadata = {
 };
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
+  // Redirects to sign-in when signed out (the proxy usually got there first).
+  await requireAccount();
   const theme = await getThemePreference();
   return <AppShell theme={theme}>{children}</AppShell>;
 }
