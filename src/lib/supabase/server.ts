@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 
 import { readPublicEnv } from "@/lib/env";
 
+import { sessionCookieOptions } from "./cookies";
+
 /**
  * Supabase client for Server Components, Server Actions and Route Handlers.
  * Uses the publishable key, so every query runs as the signed-in user and is
@@ -16,14 +18,15 @@ export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
   return createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
+    cookieOptions: sessionCookieOptions(),
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll(cookiesToSet) {
         try {
           for (const { name, value, options } of cookiesToSet) cookieStore.set(name, value, options);
         } catch {
-          // Called from a Server Component, where cookies are read-only.
-          // Session refresh happens in the proxy from Phase 2 onwards.
+          // Called from a Server Component, where cookies are read-only. The
+          // proxy (src/proxy.ts) refreshes the session before rendering.
         }
       },
     },
