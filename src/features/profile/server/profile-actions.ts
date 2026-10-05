@@ -45,9 +45,7 @@ export async function saveProfileAction(_prev: ProfileFormState, formData: FormD
 
   const { data: before } = await supabase
     .from("privacy_settings")
-    .select(
-      "profile_visibility, bio_visibility, testimony_visibility, verse_visibility, show_in_leaderboards, default_share_level",
-    )
+    .select("profile_visibility, bio_visibility, testimony_visibility, verse_visibility")
     .eq("user_id", userId)
     .single();
   const privacy = {
@@ -55,8 +53,6 @@ export async function saveProfileAction(_prev: ProfileFormState, formData: FormD
     bio_visibility: v.bioVisibility,
     testimony_visibility: v.testimonyVisibility,
     verse_visibility: v.verseVisibility,
-    show_in_leaderboards: v.showInLeaderboards,
-    default_share_level: v.defaultShareLevel,
   };
   const { error: privacyError } = await supabase.from("privacy_settings").update(privacy).eq("user_id", userId);
   if (privacyError) return { status: "error", formError: "saveFailed" };

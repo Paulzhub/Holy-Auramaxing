@@ -13,8 +13,6 @@ function form(overrides: Record<string, string | undefined> = {}): FormData {
     bioVisibility: "groups",
     testimonyVisibility: "partners",
     verseVisibility: "groups",
-    showInLeaderboards: "on",
-    defaultShareLevel: "checkin_only",
     ...overrides,
   };
   const data = new FormData();
@@ -27,7 +25,7 @@ describe("parseProfileForm", () => {
     const result = parseProfileForm(form());
     expect(result).toEqual({
       ok: true,
-      values: expect.objectContaining({ displayName: "Sam", handle: "sam_1", bio: null, showInLeaderboards: true }),
+      values: expect.objectContaining({ displayName: "Sam", handle: "sam_1", bio: null }),
     });
   });
 
@@ -42,11 +40,6 @@ describe("parseProfileForm", () => {
     expect(result.ok && result.values.testimony).toBe("A\n\nB");
   });
 
-  it("an unticked leaderboard box means hidden", () => {
-    const result = parseProfileForm(form({ showInLeaderboards: undefined }));
-    expect(result.ok && result.values.showInLeaderboards).toBe(false);
-  });
-
   it("reports each problem against its field", () => {
     const result = parseProfileForm(
       form({
@@ -56,7 +49,6 @@ describe("parseProfileForm", () => {
         favouriteVerse: "Psalm\n23",
         displayName: "z".repeat(41),
         bioVisibility: "everyone",
-        defaultShareLevel: "public",
       }),
     );
     expect(result).toEqual({
@@ -68,7 +60,6 @@ describe("parseProfileForm", () => {
         favouriteVerse: "textInvalid",
         displayName: "nameTooLong",
         bioVisibility: "choiceInvalid",
-        defaultShareLevel: "choiceInvalid",
       },
     });
   });

@@ -202,3 +202,13 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Zod in the browser:** client components took constants from Zod schema files, which shipped Zod (and its CSP-breaking `eval` check) to `/welcome` since 2b. Constants now live in `src/features/profile/limits.ts`, and `src/test/client-bundle.test.ts` fails if any client component pulls in Zod again.
 - **JavaScript budget:** `/me/edit` loads 159 KB of JavaScript at gzip -9 (170.9 KB in Lighthouse's local measure, which includes headers and `next start`'s lighter compression). That is within the 170 KB budget, but the closest page so far; move heavier editor parts behind `import()` if it grows.
 - **`audit()` moved** from the auth module to `src/lib/server/audit.ts`, since every module writes to the platform audit log. It now also works inside `after()`, where request headers are unavailable.
+
+## D-027 · Phase 2c · Accountability settings belong to the group, not the person
+
+- **Context:** The 2c editor offered two per-person settings from the spec: "Show me on group leaderboards" and a default share level for check-ins. The owner felt they weaken accountability, which is the point of joining a group.
+- **Decision (owner, 2026-10-06):** each group decides, as part of its covenant.
+  - Phase 3 adds `groups.min_share_level` (checkin_only / streak / full) and `groups.leaderboard_hiding_allowed`. Both are shown with the covenant before someone joins, so taking part is still an informed choice.
+  - A member may share more than the group's minimum, never less.
+  - `privacy_settings.show_in_leaderboards` and `default_share_level` are dropped (migration `20261006000100`), and the two controls are gone from `/me/edit`.
+  - CLAUDE.md §6, §7.4 and §7.6 are updated to match.
+- **Unchanged:** profile visibility and per-field visibility stay personal. Privacy by default (§2.3) still holds for anything outside a group's covenant, and a level is still shown only at the streak or full share level, so a 10-level drop never gives away a slip at check-in-only groups.

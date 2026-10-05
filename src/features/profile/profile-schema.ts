@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-import { BIO_MAX, HANDLE_PATTERN, shareLevels, TESTIMONY_MAX, VERSE_MAX, visibilities } from "./limits";
+import { BIO_MAX, HANDLE_PATTERN, TESTIMONY_MAX, VERSE_MAX, visibilities } from "./limits";
 import { displayNameSchema } from "./onboarding";
 
 /** Profile editor rules (CLAUDE.md §7.3). Error messages are keys under "profile.errors". */
 
 export { BIO_MAX, DISPLAY_NAME_MAX, HANDLE_PATTERN, TESTIMONY_MAX, VERSE_MAX } from "./limits";
-export { shareLevels, visibilities, type ShareLevel, type Visibility } from "./limits";
+export { visibilities, type Visibility } from "./limits";
 
 // Control and invisible formatting characters are refused (newlines are
 // allowed in the longer texts). Everything is shown as plain text anyway.
@@ -35,8 +35,6 @@ export const profileSchema = z.object({
   bioVisibility: z.enum(visibilities),
   testimonyVisibility: z.enum(visibilities),
   verseVisibility: z.enum(visibilities),
-  showInLeaderboards: z.boolean(),
-  defaultShareLevel: z.enum(shareLevels),
 });
 
 export type ProfileInput = z.input<typeof profileSchema>;
@@ -88,8 +86,6 @@ export function parseProfileForm(
     bioVisibility: text("bioVisibility"),
     testimonyVisibility: text("testimonyVisibility"),
     verseVisibility: text("verseVisibility"),
-    showInLeaderboards: formData.get("showInLeaderboards") === "on",
-    defaultShareLevel: text("defaultShareLevel"),
   });
   if (parsed.success) return { ok: true, values: parsed.data };
   const fieldErrors: Partial<Record<ProfileField, ProfileErrorKey>> = {};

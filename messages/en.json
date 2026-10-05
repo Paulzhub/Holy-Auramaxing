@@ -630,11 +630,6 @@
       "partners": "My accountability partners only",
       "nobody": "Only me"
     },
-    "shareLevels": {
-      "checkin_only": "Only whether I checked in today",
-      "streak": "Whether I checked in, and my current streak",
-      "full": "Whether I checked in, my streak and how my day went"
-    },
     "editor": {
       "title": "Edit profile",
       "lede": "Share as much or as little as you like. Everything here is optional except your handle.",
@@ -653,13 +648,9 @@
       "whoSeesVerse": "Who can see your favourite verse",
       "whoSeesTestimony": "Who can see your testimony",
       "privacyTitle": "Privacy",
-      "privacyLede": "Your profile is never public and never appears in search engines.",
+      "privacyLede": "Your profile is never public and never appears in search engines. What your groups see about your check-ins, and whether you appear on their leaderboards, is part of each group’s covenant, shown before you join.",
       "profileVisibilityLabel": "Who can see my profile",
       "profileVisibilityHint": "If you choose “Only me”, other members see just your display name.",
-      "leaderboardLabel": "Show me on group leaderboards",
-      "leaderboardHint": "When this is off, you appear as a hidden member.",
-      "shareLevelLabel": "What my groups see about my check-ins, by default",
-      "shareLevelHint": "You can change this for each group when you join it. Your level is shown only with the streak or full option.",
       "save": "Save profile",
       "saving": "Saving",
       "cancel": "Cancel",

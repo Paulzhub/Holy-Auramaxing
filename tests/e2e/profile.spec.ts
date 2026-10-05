@@ -177,8 +177,6 @@ test("editing the profile and its privacy settings", async ({ page }) => {
   await page.getByLabel("My testimony", { exact: true }).fill("He set me free.");
   await page.getByLabel("Who can see your testimony").selectOption("nobody");
   await page.getByLabel("Who can see my profile").selectOption("partners");
-  await page.getByLabel("Show me on group leaderboards").uncheck();
-  await page.getByLabel("What my groups see about my check-ins, by default").selectOption("streak");
   await page.getByRole("button", { name: "Save profile" }).click();
 
   await expect(page).toHaveURL(/\/me\?saved=1$/);
@@ -202,14 +200,12 @@ test("editing the profile and its privacy settings", async ({ page }) => {
   });
   const { data: privacy } = await admin()
     .from("privacy_settings")
-    .select("profile_visibility, testimony_visibility, show_in_leaderboards, default_share_level")
+    .select("profile_visibility, testimony_visibility")
     .eq("user_id", userId)
     .single();
   expect(privacy).toEqual({
     profile_visibility: "partners",
     testimony_visibility: "nobody",
-    show_in_leaderboards: false,
-    default_share_level: "streak",
   });
 
   // Profile text is never written to the audit log; which settings changed is.

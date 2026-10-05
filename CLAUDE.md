@@ -62,8 +62,8 @@ Tenancy model: one database, one schema, a `group_id` on every group-scoped row,
 Core tables (add columns as needed; keep these names):
 
 - `profiles` — id (auth user id), handle (unique), display_name, avatar_path, bio, testimony, favourite_verse, timezone, locale, theme_pref, adult_confirmed_at, created_at, deleted_at
-- `privacy_settings` — user_id, profile_visibility (groups / partners / nobody), show_in_leaderboards, default_share_level
-- `groups` — id, name, slug, description, cover_path, owner_id, challenge_type (30 / 40 / 60 / 90 / custom / ongoing), start_date, end_date, group_timezone, covenant_text, join_policy (invite_only / request_to_join), max_members, archived_at
+- `privacy_settings` — user_id, profile_visibility (groups / partners / nobody), plus per-field visibility for bio, testimony and favourite verse
+- `groups` — id, name, slug, description, cover_path, owner_id, challenge_type (30 / 40 / 60 / 90 / custom / ongoing), start_date, end_date, group_timezone, covenant_text, min_share_level (checkin_only / streak / full), leaderboard_hiding_allowed, join_policy (invite_only / request_to_join), max_members, archived_at
 - `group_members` — group_id, user_id, role (owner / admin / member), status (active / pending / removed / left), share_level (checkin_only / streak / full), joined_at; unique (group_id, user_id)
 - `group_invites` — id, group_id, token_hash, created_by, expires_at, max_uses, use_count, revoked_at
 - `checkins` — id, user_id, local_date, outcome (clean / slipped), mood (1–5), urge_level (0–5), triggers (from a fixed list), note_encrypted, created_at; unique (user_id, local_date)
@@ -117,7 +117,7 @@ Three or four skippable screens: welcome (a grace message and a verse), an optio
 
 ### 7.4 Groups (isolated, multi-tenant challenges)
 
-- Any verified user can create a group: name, description, cover image, challenge type (30, 40, 60 or 90 days, custom length, or ongoing), start date, group time zone, member cap (default 50), join policy, and a short covenant members accept on joining.
+- Any verified user can create a group: name, description, cover image, challenge type (30, 40, 60 or 90 days, custom length, or ongoing), start date, group time zone, member cap (default 50), join policy, and a short covenant members accept on joining. The covenant includes the group's accountability level: the minimum share level every member gives the group, and whether members may hide from the leaderboard. Both are shown before someone joins, and a member may share more than the minimum but never less.
 - Invite by link, short code or QR code. Links expire (default 7 days), can have a use limit, and can be revoked and regenerated. Tokens are at least 128-bit random and stored hashed. The invite page is `noindex` and shows only the group name and member count.
 - A user can join many groups; a group switcher in the header lists them with unread counts.
 - Owners promote, demote and remove members, transfer ownership, archive or delete the group. Members can leave at any time.
@@ -150,7 +150,7 @@ Three or four skippable screens: welcome (a grace message and a verse), an optio
     - Level-up: animation, verse card, optional share card. Level-down after a slip: one quiet, grace-filled line ("You're now Ark Builder Pro. Your longest streak and total clean days are still yours."), never notified to anyone else.
     - Privacy: a group sees a member's level only when their share level there is streak or full, because a 10-level drop would otherwise reveal a slip.
 - **Badges:** clean-day milestones at 1, 3, 7, 14, 21, 30, 40, 60, 90, 180 and 365; check-in consistency at 7, 30 and 100 days; Encourager; Prayer Warrior; Faithful Finisher; First Testimony. Each has an icon, a verse and one line of description.
-- **Leaderboards** per group only (no global board at launch). Tabs: Consistency XP (default), Level, Current streak, Clean days this challenge, Encourager. Ties go to whoever got there first. Members can opt out and show as hidden. This-week and all-time views.
+- **Leaderboards** per group only (no global board at launch). Tabs: Consistency XP (default), Level, Current streak, Clean days this challenge, Encourager. Ties go to whoever got there first. Members can hide from the leaderboard only if the group owner allows it (part of the covenant). This-week and all-time views.
 - **Group goals:** a shared target ("500 clean days together this month") with a group progress bar.
 
 ### 7.7 Social and encouragement

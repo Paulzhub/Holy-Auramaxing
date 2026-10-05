@@ -12,5 +12,3 @@ export const HANDLE_PATTERN = /^[a-z0-9_]{3,20}$/;
 
 export const visibilities = ["groups", "partners", "nobody"] as const;
 export type Visibility = (typeof visibilities)[number];
-export const shareLevels = ["checkin_only", "streak", "full"] as const;
-export type ShareLevel = (typeof shareLevels)[number];

@@ -11,4 +11,4 @@ export { FinishOnboardingButton, SkipSetupButton } from "./components/finish-onb
 export { getOwnProfile, type OwnProfile } from "./server/queries";
 export { serveAvatar } from "./server/avatar-route";
 export { avatarUrl, type AvatarSize } from "./avatar/url";
-export type { ShareLevel, Visibility } from "./profile-schema";
+export type { Visibility } from "./profile-schema";

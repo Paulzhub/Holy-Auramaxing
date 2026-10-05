@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import { screenPendingAvatar } from "../avatar/store";
 import { avatarUrl } from "../avatar/url";
-import type { ShareLevel, Visibility } from "../profile-schema";
+import type { Visibility } from "../profile-schema";
 
 export interface OwnProfile {
   id: string;
@@ -26,8 +26,6 @@ export interface OwnProfile {
     bioVisibility: Visibility;
     testimonyVisibility: Visibility;
     verseVisibility: Visibility;
-    showInLeaderboards: boolean;
-    defaultShareLevel: ShareLevel;
   };
 }
 
@@ -44,9 +42,7 @@ export const getOwnProfile = cache(async (userId: string): Promise<OwnProfile | 
       .maybeSingle(),
     supabase
       .from("privacy_settings")
-      .select(
-        "profile_visibility, bio_visibility, testimony_visibility, verse_visibility, show_in_leaderboards, default_share_level",
-      )
+      .select("profile_visibility, bio_visibility, testimony_visibility, verse_visibility")
       .eq("user_id", userId)
       .maybeSingle(),
   ]);
@@ -74,8 +70,6 @@ export const getOwnProfile = cache(async (userId: string): Promise<OwnProfile | 
       bioVisibility: s.bio_visibility as Visibility,
       testimonyVisibility: s.testimony_visibility as Visibility,
       verseVisibility: s.verse_visibility as Visibility,
-      showInLeaderboards: s.show_in_leaderboards,
-      defaultShareLevel: s.default_share_level as ShareLevel,
     },
   };
 });

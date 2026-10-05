@@ -10,16 +10,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { TextField } from "@/components/ui/text-field";
 import { Link } from "@/i18n/navigation";
 
-import {
-  BIO_MAX,
-  DISPLAY_NAME_MAX,
-  type ShareLevel,
-  shareLevels,
-  TESTIMONY_MAX,
-  VERSE_MAX,
-  type Visibility,
-  visibilities,
-} from "../limits";
+import { BIO_MAX, DISPLAY_NAME_MAX, TESTIMONY_MAX, VERSE_MAX, type Visibility, visibilities } from "../limits";
 import type { ProfileField, ProfileFormState } from "../profile-schema";
 import { saveProfileAction } from "../server/profile-actions";
 
@@ -33,8 +24,6 @@ export interface ProfileFormValues {
   bioVisibility: Visibility;
   testimonyVisibility: Visibility;
   verseVisibility: Visibility;
-  showInLeaderboards: boolean;
-  defaultShareLevel: ShareLevel;
 }
 
 const initial: ProfileFormState = { status: "idle" };
@@ -50,8 +39,6 @@ const fieldOrder: ProfileField[] = [
   "testimony",
   "testimonyVisibility",
   "profileVisibility",
-  "showInLeaderboards",
-  "defaultShareLevel",
 ];
 
 function ErrorSummary({ state }: { state: ProfileFormState }) {
@@ -308,30 +295,6 @@ export function ProfileForm({ values }: { values: ProfileFormValues }) {
           labels={visibilityLabel}
           defaultValue={values.profileVisibility}
           error={err("profileVisibility")}
-        />
-        <div>
-          <div className="auth-check">
-            <input
-              type="checkbox"
-              id="showInLeaderboards"
-              name="showInLeaderboards"
-              defaultChecked={values.showInLeaderboards}
-              aria-describedby="showInLeaderboards-hint"
-            />
-            <label htmlFor="showInLeaderboards">{t("editor.leaderboardLabel")}</label>
-          </div>
-          <p className="ui-hint auth-check__hint" id="showInLeaderboards-hint">
-            {t("editor.leaderboardHint")}
-          </p>
-        </div>
-        <Choice
-          id="defaultShareLevel"
-          label={t("editor.shareLevelLabel")}
-          hint={t("editor.shareLevelHint")}
-          options={shareLevels}
-          labels={(v) => t(`shareLevels.${v}`)}
-          defaultValue={values.defaultShareLevel}
-          error={err("defaultShareLevel")}
         />
       </Section>
 
