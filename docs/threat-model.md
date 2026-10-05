@@ -64,6 +64,19 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 | **T**ampering              | Skipping onboarding checks or forging `onboarded_at`          | Column not writable by members; only `complete_onboarding()` sets it, for the caller only                         |
 | **I**nformation disclosure | Reminder or notification text revealing the topic             | Discreet mode on by default, with an explicit opt-out                                                             |
 
+## Phase 2c additions
+
+| Threat                     | Example                                                                       | Mitigation                                                                                                                                                                                     |
+| -------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | A shared photo reveals where someone lives (GPS) or which phone they use      | Every photo is decoded and re-encoded to WebP on the server; no metadata survives. An e2e test uploads a photo with GPS and checks every served size (D-026)                                   |
+| **I**nformation disclosure | Reading someone's avatar or profile without sharing a group                   | Private bucket with no user policies; avatars served by `/api/avatar/<id>` only after `profile_cards` (RLS) allows it; 404 for hidden and missing alike; `private` cache only                  |
+| **T**ampering              | Uploading HTML, SVG or a polyglot file as a "photo" (stored XSS)              | Magic-byte allow-list (JPEG, PNG, WebP); full decode with `failOn: "error"`; output is always freshly encoded WebP; served with `nosniff`, `Content-Security-Policy: sandbox` and a fixed type |
+| **T**ampering              | Writing straight to storage, or pointing `avatar_path` at someone else's file | Members can't write storage or the avatar columns; paths must sit in the owner's own folder (database check)                                                                                   |
+| **D**enial of service      | Decompression bombs, huge files, upload floods                                | 5 MB limit, 40-megapixel cap, 6 MB action body limit, 10 uploads an hour per person                                                                                                            |
+| **E**levation / abuse      | Posting sexual content as an avatar                                           | Screened by Google Cloud Vision before anyone else sees it; anything possibly adult is refused and deleted; fails closed when screening is down or unconfigured                                |
+| **I**nformation disclosure | Screening provider keeps or reads photos                                      | Only the 512 px re-encoded copy is sent, with no metadata or user id; key sent in a header. Listed as a processor in the privacy policy (pending legal review)                                 |
+| **I**nformation disclosure | Audit log leaking profile text                                                | Audit rows record which privacy settings changed, never the text                                                                                                                               |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -77,3 +90,6 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 - Supabase Auth applies its per-IP limits to our server's IP for server-side calls; set dashboard limits generously before launch (D-019).
 - Back up `APP_ENCRYPTION_KEY` securely: without it, encrypted text can't be read (D-025).
 - The app must run behind a proxy that overwrites `X-Forwarded-For` (Vercel, Cloudflare), or per-IP rate limits can be bypassed (D-019).
+- Sign Google Cloud's data processing terms and name Google as a processor before launch; avatars are screened by Cloud Vision (D-026).
+- Rejected photos are deleted immediately. Phase 11's written CSAM procedure must decide whether flagged images are preserved for reporting (NCMEC, cybercrime.gov.in) instead.
+- Avatar screening runs in `after()` until Phase 7's job queue exists; a photo left pending is retried when its owner opens their profile (D-026).

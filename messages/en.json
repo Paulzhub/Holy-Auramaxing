@@ -21,7 +21,8 @@
     "forgotPassword": "Reset your password",
     "resetPassword": "Choose a new password",
     "confirm": "Confirm",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "editProfile": "Edit profile"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -94,8 +95,8 @@
       "lede": "Your profile and progress, visible only to people you choose.",
       "settingsLink": "Settings",
       "settingsBody": "Theme, language and privacy",
-      "emptyTitle": "Your profile is coming soon",
-      "emptyBody": "You’ll be able to add a photo, a favourite verse and choose who sees what."
+      "progressTitle": "Levels and badges",
+      "progressBody": "Your level, badges and streaks will appear here after your first check-ins."
     },
     "settings": {
       "title": "Settings",
@@ -605,6 +606,104 @@
       "join": "Join with an invite link",
       "comingSoon": "Coming soon. For now, you can start on your own.",
       "finish": "Go to Today"
+    }
+  },
+  "profile": {
+    "card": {
+      "joined": "@{handle} · Joined {date}",
+      "edit": "Edit profile",
+      "saved": "Your profile is saved.",
+      "about": "About me",
+      "verse": "Favourite verse",
+      "testimony": "My testimony",
+      "visibleTo": "Visible to: {who}",
+      "empty": "Not added yet.",
+      "privateNote": "Your profile is never public. Only people in your groups can see it, and only the parts you choose."
+    },
+    "visibility": {
+      "groups": "my groups",
+      "partners": "my accountability partners",
+      "nobody": "only me"
+    },
+    "visibilityOption": {
+      "groups": "My groups",
+      "partners": "My accountability partners only",
+      "nobody": "Only me"
+    },
+    "shareLevels": {
+      "checkin_only": "Only whether I checked in today",
+      "streak": "Whether I checked in, and my current streak",
+      "full": "Whether I checked in, my streak and how my day went"
+    },
+    "editor": {
+      "title": "Edit profile",
+      "lede": "Share as much or as little as you like. Everything here is optional except your handle.",
+      "detailsTitle": "About you",
+      "nameLabel": "Display name",
+      "nameHint": "How people in your groups will see you. Up to {max} characters.",
+      "handleLabel": "Handle",
+      "handleHint": "3–20 characters: lower-case letters, numbers and _. People in your groups can find you by it.",
+      "bioLabel": "About me",
+      "bioHint": "A few words about yourself. Up to {max} characters.",
+      "verseLabel": "Favourite verse",
+      "verseHint": "For example: John 8:36. Up to {max} characters.",
+      "testimonyLabel": "My testimony",
+      "testimonyHint": "What God has done in your life, if you’d like to share it. Up to {max} characters.",
+      "whoSeesBio": "Who can see “About me”",
+      "whoSeesVerse": "Who can see your favourite verse",
+      "whoSeesTestimony": "Who can see your testimony",
+      "privacyTitle": "Privacy",
+      "privacyLede": "Your profile is never public and never appears in search engines.",
+      "profileVisibilityLabel": "Who can see my profile",
+      "profileVisibilityHint": "If you choose “Only me”, other members see just your display name.",
+      "leaderboardLabel": "Show me on group leaderboards",
+      "leaderboardHint": "When this is off, you appear as a hidden member.",
+      "shareLevelLabel": "What my groups see about my check-ins, by default",
+      "shareLevelHint": "You can change this for each group when you join it. Your level is shown only with the streak or full option.",
+      "save": "Save profile",
+      "saving": "Saving",
+      "cancel": "Cancel",
+      "errorSummaryTitle": "Please check the following"
+    },
+    "avatar": {
+      "title": "Profile photo",
+      "hint": "JPG, PNG, WebP or HEIC, up to 5 MB. We remove location and camera details, and check every photo before anyone else sees it.",
+      "choose": "Choose a photo",
+      "upload": "Upload photo",
+      "uploading": "Uploading your photo",
+      "remove": "Remove photo",
+      "removing": "Removing",
+      "pending": "Checking your new photo. It will appear here once it’s ready.",
+      "rejected": "We couldn’t use that photo. Please choose a different one.",
+      "removed": "Your photo is removed.",
+      "ready": "Your new photo is ready.",
+      "cropTitle": "Crop your photo",
+      "cropDescription": "Use the sliders to choose what shows inside the circle.",
+      "zoom": "Zoom",
+      "horizontal": "Left and right",
+      "vertical": "Up and down",
+      "usePhoto": "Use this photo",
+      "cancel": "Cancel",
+      "close": "Close",
+      "heicUnsupported": "This browser can’t open HEIC photos. Please choose a JPG or PNG, or use Safari on your iPhone."
+    },
+    "errors": {
+      "nameTooLong": "Your display name can be up to 40 characters.",
+      "nameInvalid": "Your display name contains characters we can’t show.",
+      "handleInvalid": "Use 3–20 lower-case letters, numbers or _ for your handle.",
+      "handleTaken": "That handle is taken. Please try another.",
+      "handleReserved": "That handle isn’t available. Please try another.",
+      "bioTooLong": "“About me” can be up to 280 characters.",
+      "testimonyTooLong": "Your testimony can be up to 2,000 characters.",
+      "verseTooLong": "Your favourite verse can be up to 200 characters.",
+      "textInvalid": "This contains characters we can’t show.",
+      "choiceInvalid": "Please choose one of the options.",
+      "rateLimited": "That’s a lot of changes in a short time. Please wait a few minutes and try again.",
+      "saveFailed": "We couldn’t save that. Please try again.",
+      "avatarType": "Please choose a JPG, PNG, WebP or HEIC photo.",
+      "avatarSize": "Please choose a photo under 5 MB.",
+      "avatarUnreadable": "We couldn’t open that photo. Please try another one.",
+      "avatarTooSmall": "That photo is very small. Please choose one at least 64 pixels wide."
     }
   }
 }

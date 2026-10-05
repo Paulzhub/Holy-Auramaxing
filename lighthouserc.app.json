@@ -3,7 +3,12 @@
     "collect": {
       "startServerCommand": "npx next start -p 3200",
       "startServerReadyPattern": "Ready",
-      "url": ["http://localhost:3200/home", "http://localhost:3200/settings"],
+      "url": [
+        "http://localhost:3200/home",
+        "http://localhost:3200/settings",
+        "http://localhost:3200/me",
+        "http://localhost:3200/me/edit"
+      ],
       "numberOfRuns": 3,
       "settings": {
         "chromeFlags": "--no-sandbox --headless=new",

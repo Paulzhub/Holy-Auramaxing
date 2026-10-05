@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { THEME_COOKIE, THEME_MAX_AGE_SECONDS } from "@/lib/theme/theme";
 
 import { safeNextPath } from "../schemas";
-import { audit } from "./audit";
+import { audit } from "@/lib/server/audit";
 import { clearSignupCookies, readSignupTicket } from "./tickets";
 
 /**

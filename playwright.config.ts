@@ -51,7 +51,8 @@ export default defineConfig({
     command: `npx next start -p ${PORT}`,
     url: `${baseURL}/api/health`,
     reuseExistingServer: !process.env.CI,
-    env: { ENABLE_DEV_PAGES: "true" },
+    // Photos are approved by the stand-in screener, so tests never call Google (D-026).
+    env: { ENABLE_DEV_PAGES: "true", IMAGE_SCREENING_PROVIDER: process.env.IMAGE_SCREENING_PROVIDER ?? "stub" },
     timeout: 60_000,
   },
 });

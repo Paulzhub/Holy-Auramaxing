@@ -187,6 +187,7 @@ export type Database = {
         Row: {
           adult_confirmed_at: string;
           avatar_path: string | null;
+          avatar_pending_path: string | null;
           avatar_status: string;
           bio: string | null;
           created_at: string;
@@ -206,6 +207,7 @@ export type Database = {
         Insert: {
           adult_confirmed_at: string;
           avatar_path?: string | null;
+          avatar_pending_path?: string | null;
           avatar_status?: string;
           bio?: string | null;
           created_at?: string;
@@ -225,6 +227,7 @@ export type Database = {
         Update: {
           adult_confirmed_at?: string;
           avatar_path?: string | null;
+          avatar_pending_path?: string | null;
           avatar_status?: string;
           bio?: string | null;
           created_at?: string;
