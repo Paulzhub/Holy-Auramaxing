@@ -157,13 +157,14 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://127.0.0.1:3000"
+site_url = "http://localhost:3000"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+additional_redirect_urls = ["http://localhost:3000/**", "http://127.0.0.1:3000/**", "http://localhost:3100/**"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
-jwt_expiry = 3600
+# Short-lived access tokens, so "sign out everywhere" takes effect within 10 minutes (D-015).
+jwt_expiry = 600
 # JWT issuer URL. If not set, defaults to auth.external_url.
 # jwt_issuer = ""
 # Path to JWT signing key. DO NOT commit your signing keys file to git.
@@ -180,7 +181,8 @@ enable_anonymous_sign_ins = false
 # Allow/disallow testing manual linking of accounts
 enable_manual_linking = false
 # Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
-minimum_password_length = 6
+# NIST SP 800-63B: at least 8, no composition rules; breached passwords are checked by the app.
+minimum_password_length = 8
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
 # are: `letters_digits`, `lower_upper_letters_digits`, `lower_upper_letters_digits_symbols`
 password_requirements = ""
@@ -195,6 +197,9 @@ password_requirements = ""
 # rp_id = "localhost"
 # rp_origins = ["http://127.0.0.1:3000"]
 
+# Local and CI values, raised so the end-to-end suite (many sign-ins from one
+# machine) doesn't trip them. Production limits are set in the dashboard;
+# the app adds its own per-person limits on top (src/lib/security/rate-limit.ts).
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
 email_sent = 2
@@ -205,17 +210,21 @@ anonymous_users = 30
 # Number of sessions that can be refreshed in a 5 minute interval per IP address.
 token_refresh = 150
 # Number of sign up and sign-in requests that can be made in a 5 minute interval per IP address (excludes anonymous users).
-sign_in_sign_ups = 30
+sign_in_sign_ups = 500
 # Number of OTP / Magic link verifications that can be made in a 5 minute interval per IP address.
-token_verifications = 30
+token_verifications = 500
 # Number of Web3 logins that can be made in a 5 minute interval per IP address.
 web3 = 30
 
 # Configure one of the supported captcha providers: `hcaptcha`, `turnstile`.
+# Turnstile is OFF locally and in CI, and the app hides the widget when
+# NEXT_PUBLIC_TURNSTILE_SITE_KEY is unset. In production, turn it on in the
+# Supabase dashboard (Authentication → Attack protection → Turnstile) and set
+# the site key in the hosting environment. See README and D-018.
 # [auth.captcha]
 # enabled = true
-# provider = "hcaptcha"
-# secret = ""
+# provider = "turnstile"
+# secret = "env(SUPABASE_AUTH_CAPTCHA_SECRET)"
 
 [auth.email]
 # Allow/disallow new user signups via email to your project.
@@ -224,15 +233,34 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = false
+enable_confirmations = true
 # If enabled, users will need to reauthenticate or have logged in recently to change their password.
-secure_password_change = false
+secure_password_change = true
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
 max_frequency = "1s"
 # Number of characters used in the email OTP.
 otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
+
+# Discreet emails: neutral subjects, sender "Aura", nothing about what the app is for.
+# Links go to /confirm, which asks for one button press, so link scanners
+# can't use up the one-time token.
+[auth.email.template.confirmation]
+subject = "Confirm your email for Aura"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Reset your Aura password"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "Your Aura sign-in link"
+content_path = "./supabase/templates/magic_link.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your new email for Aura"
+content_path = "./supabase/templates/email_change.html"
 
 # Use a production-ready SMTP server
 # [auth.email.smtp]
@@ -337,6 +365,19 @@ email_optional = false
 
 # Allow Solana wallet holders to sign in to your project via the Sign in with Solana (SIWS, EIP-4361) standard.
 # You can configure "web3" rate limit in the [auth.rate_limit] section and set up [auth.captcha] if self-hosting.
+# Google sign-in. Create an OAuth client in Google Cloud Console with the
+# redirect URI http://127.0.0.1:54321/auth/v1/callback, then put its ID and
+# secret in supabase/.env (see supabase/.env.example). Never commit them.
+[auth.external.google]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+redirect_uri = ""
+url = ""
+# Required for local sign-in with Google.
+skip_nonce_check = true
+email_optional = false
+
 [auth.web3.solana]
 enabled = false
 

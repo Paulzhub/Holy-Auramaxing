@@ -3,16 +3,18 @@ import { NextRequest } from "next/server";
 
 import { routing } from "@/i18n/routing";
 import { buildCsp, createNonce } from "@/lib/security/csp";
+import { refreshSessionAndGate } from "@/lib/supabase/proxy";
 
 const handleI18nRouting = createIntlMiddleware(routing);
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const nonce = createNonce();
   const csp = buildCsp({
     nonce,
     isDev: process.env.NODE_ENV === "development",
     upgradeInsecure: request.nextUrl.protocol === "https:",
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    turnstile: Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY),
   });
 
   // Next.js reads the nonce from the request's CSP header and applies it to
@@ -21,9 +23,13 @@ export function proxy(request: NextRequest) {
   headers.set("x-nonce", nonce);
   headers.set("Content-Security-Policy", csp);
 
-  const response = handleI18nRouting(new NextRequest(request, { headers }));
+  const forwarded = new NextRequest(request, { headers });
+  const response = handleI18nRouting(forwarded);
   response.headers.set("Content-Security-Policy", csp);
-  return response;
+  // Pages that depend on who is signed in must never be stored by shared caches.
+  response.headers.set("Cache-Control", "private, no-store");
+
+  return refreshSessionAndGate(forwarded, response, routing.locales);
 }
 
 export const config = {

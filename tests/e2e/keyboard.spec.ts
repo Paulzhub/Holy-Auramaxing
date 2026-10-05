@@ -1,6 +1,6 @@
 import { type Page } from "@playwright/test";
 
-import { allRoutes, expect, setTheme, test, themes } from "./fixtures";
+import { allRoutes, authRoutes, expect, setTheme, signedOut, test, themes } from "./fixtures";
 
 interface FocusInfo {
   description: string;
@@ -40,6 +40,31 @@ async function inspectFocus(page: Page): Promise<FocusInfo> {
   });
 }
 
+async function checkFocusStops(page: Page, route: string) {
+  await page.goto(route);
+  await page.waitForLoadState("networkidle");
+  const failures: string[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < 160; i++) {
+    await page.keyboard.press("Tab");
+    const info = await inspectFocus(page);
+    if (info.isBody) break;
+    const key = `${info.description}#${i}`;
+    if (!info.visibleIndicator) failures.push(`no focus indicator: ${info.description}`);
+    if (info.obscured) failures.push(`hidden behind other content: ${info.description}`);
+    seen.add(key);
+    const id = await page.evaluate(() => {
+      const el = document.activeElement as HTMLElement & { __tabSeen?: boolean };
+      const again = Boolean(el.__tabSeen);
+      el.__tabSeen = true;
+      return again;
+    });
+    if (id) break; // wrapped around
+  }
+  expect(seen.size, "page should have focusable controls").toBeGreaterThan(0);
+  expect(failures).toEqual([]);
+}
+
 for (const theme of themes) {
   test.describe(`keyboard, ${theme} theme`, () => {
     test.beforeEach(async ({ context, baseURL }) => {
@@ -48,30 +73,18 @@ for (const theme of themes) {
 
     for (const route of allRoutes) {
       test(`${route}: every stop shows a focus ring and is not hidden`, async ({ page }) => {
-        await page.goto(route);
-        await page.waitForLoadState("networkidle");
-        const failures: string[] = [];
-        const seen = new Set<string>();
-        for (let i = 0; i < 160; i++) {
-          await page.keyboard.press("Tab");
-          const info = await inspectFocus(page);
-          if (info.isBody) break;
-          const key = `${info.description}#${i}`;
-          if (!info.visibleIndicator) failures.push(`no focus indicator: ${info.description}`);
-          if (info.obscured) failures.push(`hidden behind other content: ${info.description}`);
-          seen.add(key);
-          const id = await page.evaluate(() => {
-            const el = document.activeElement as HTMLElement & { __tabSeen?: boolean };
-            const again = Boolean(el.__tabSeen);
-            el.__tabSeen = true;
-            return again;
-          });
-          if (id) break; // wrapped around
-        }
-        expect(seen.size, "page should have focusable controls").toBeGreaterThan(0);
-        expect(failures).toEqual([]);
+        await checkFocusStops(page, route);
       });
     }
+
+    test.describe("signed out", () => {
+      test.use({ storageState: signedOut });
+      for (const route of authRoutes) {
+        test(`${route}: every stop shows a focus ring and is not hidden`, async ({ page }) => {
+          await checkFocusStops(page, route);
+        });
+      }
+    });
   });
 }
 

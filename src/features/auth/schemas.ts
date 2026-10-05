@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import type { AuthErrorKey } from "./form-state";
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "./policy";
 
 // Error messages are message keys under "auth.errors" (messages/en.json).
@@ -62,11 +63,12 @@ export const newPasswordFormSchema = z.object({
 export type FieldName = "adult" | "termsPrivacy" | "sensitiveData" | "email" | "password";
 
 /** First error message key for each field, from a failed parse. */
-export function fieldErrors(error: z.ZodError): Partial<Record<FieldName, string>> {
-  const out: Partial<Record<FieldName, string>> = {};
+export function fieldErrors(error: z.ZodError): Partial<Record<FieldName, AuthErrorKey>> {
+  const out: Partial<Record<FieldName, AuthErrorKey>> = {};
   for (const issue of error.issues) {
     const field = issue.path[0];
-    if (typeof field === "string" && !(field in out)) out[field as FieldName] = issue.message;
+    // Every schema message above is an AuthErrorKey (checked by schemas.test.ts).
+    if (typeof field === "string" && !(field in out)) out[field as FieldName] = issue.message as AuthErrorKey;
   }
   return out;
 }

@@ -2,16 +2,16 @@
 
 import { NextIntlClientProvider, useTranslations } from "next-intl";
 
-import messages from "../../messages/en.json";
+import { globalErrorMessages } from "./global-error-messages";
 import "./globals.css";
 
 // Last-resort boundary when the root layout itself fails, so the app's intl
-// provider isn't available: provide the English messages directly.
+// provider isn't available: provide the few English messages it needs directly.
 export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <html lang="en">
       <body>
-        <NextIntlClientProvider locale="en" messages={messages} timeZone="UTC">
+        <NextIntlClientProvider locale="en" messages={globalErrorMessages.en} timeZone="UTC">
           <GlobalErrorContent reset={reset} />
         </NextIntlClientProvider>
       </body>

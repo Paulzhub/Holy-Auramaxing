@@ -13,7 +13,7 @@ import { clientIp } from "@/lib/security/request-info";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { THEME_COOKIE, THEME_MAX_AGE_SECONDS } from "@/lib/theme/theme";
 
-import type { AuthFormState } from "../form-state";
+import type { AuthErrorKey, AuthFormState } from "../form-state";
 import {
   ageSchema,
   consentSchema,
@@ -25,7 +25,14 @@ import {
   safeNextPath,
 } from "../schemas";
 import { audit } from "./audit";
-import { clearSignupCookies, hasAdultAnswer, issueSignupTicket, readSignupTicket, rememberAdultAnswer } from "./tickets";
+import { verifyEmailLink } from "./oauth";
+import {
+  clearSignupCookies,
+  hasAdultAnswer,
+  issueSignupTicket,
+  readSignupTicket,
+  rememberAdultAnswer,
+} from "./tickets";
 
 // ---------------------------------------------------------------- helpers
 
@@ -50,7 +57,7 @@ function tooMany(retryAfterSeconds: number, email?: string): AuthFormState {
 }
 
 /** Maps Supabase Auth errors to message keys. Never echoes provider text to users. */
-function authErrorKey(error: AuthError): string {
+function authErrorKey(error: AuthError): AuthErrorKey {
   switch (error.code) {
     case "invalid_credentials":
       return "invalidCredentials";
@@ -241,7 +248,10 @@ export async function resendVerificationAction(_prev: AuthFormState, formData: F
   return sendEmailLink(formData, "verification");
 }
 
-async function sendEmailLink(formData: FormData, kind: "magicLink" | "passwordReset" | "verification"): Promise<AuthFormState> {
+async function sendEmailLink(
+  formData: FormData,
+  kind: "magicLink" | "passwordReset" | "verification",
+): Promise<AuthFormState> {
   const parsed = emailOnlySchema.safeParse({
     email: formData.get("email") ?? undefined,
     captchaToken: formData.get("captchaToken") || undefined,
@@ -255,7 +265,7 @@ async function sendEmailLink(formData: FormData, kind: "magicLink" | "passwordRe
   if (!byIp.ok) return tooMany(byIp.retryAfterSeconds, email);
   const byAddress = await consume("emailByAddress", email);
   // Same neutral answer when one address is being flooded: don't reveal it.
-  const sent: AuthFormState = { status: "sent", notice: `${kind}Sent`, email };
+  const sent: AuthFormState = { status: "sent", notice: `${kind}Sent` as const, email };
   if (!byAddress.ok) return sent;
 
   const supabase = await createSupabaseServerClient();
@@ -273,7 +283,11 @@ async function sendEmailLink(formData: FormData, kind: "magicLink" | "passwordRe
   } else if (kind === "passwordReset") {
     ({ error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: base, captchaToken }));
   } else {
-    ({ error } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: base, captchaToken } }));
+    ({ error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: base, captchaToken },
+    }));
   }
 
   // Unknown addresses look exactly like known ones. Only problems the person
@@ -320,4 +334,21 @@ export async function signOutAction(): Promise<void> {
   await supabase.auth.signOut({ scope: "local" });
   if (data?.claims.sub) await audit("auth.sign_out", data.claims.sub);
   await go("/?notice=signed-out");
+}
+
+const linkTypes = ["signup", "email", "magiclink", "recovery", "email_change"] as const;
+
+/** The "Continue" button on /confirm: verifies an email link's one-time token. */
+export async function confirmLinkAction(formData: FormData): Promise<void> {
+  const tokenHash = String(formData.get("token_hash") ?? "");
+  const type = String(formData.get("type") ?? "");
+  if (!/^[A-Za-z0-9_-]{8,256}$/.test(tokenHash) || !(linkTypes as readonly string[]).includes(type)) {
+    await go("/sign-in?notice=link-invalid");
+  }
+  const destination = await verifyEmailLink({
+    tokenHash,
+    type: type as (typeof linkTypes)[number],
+    next: formData.get("next") ? String(formData.get("next")) : null,
+  });
+  await go(destination);
 }

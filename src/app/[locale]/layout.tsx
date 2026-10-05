@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { clientMessages } from "@/i18n/client-messages";
 import { routing } from "@/i18n/routing";
 import { getThemePreference } from "@/lib/server/theme";
 import { colorSchemeContent, themeAttribute, themeBootScript } from "@/lib/theme/theme";
@@ -52,6 +53,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
 
   const theme = await getThemePreference();
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const messages = await clientMessages();
 
   return (
     <html
@@ -66,7 +68,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       </head>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

@@ -52,6 +52,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+        with:
+          version: 2.119.0
+      - name: Start Supabase (Auth, database, Mailpit)
+        run: supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor,realtime,storage-api,postgres-meta
+      - name: Point the app at local Supabase
+        shell: bash
+        run: |
+          eval "$(supabase status -o env)"
+          {
+            echo "NEXT_PUBLIC_SITE_URL=http://localhost:3100"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY"
+            echo "SUPABASE_SECRET_KEY=$SECRET_KEY"
+            echo "MAILPIT_URL=$MAILPIT_URL"
+          } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Playwright
         run: npm run test:e2e
@@ -74,6 +90,22 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+        with:
+          version: 2.119.0
+      - name: Start Supabase (Auth, database, Mailpit)
+        run: supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor,realtime,storage-api,postgres-meta
+      - name: Point the app at local Supabase
+        shell: bash
+        run: |
+          eval "$(supabase status -o env)"
+          {
+            echo "NEXT_PUBLIC_SITE_URL=http://localhost:3200"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY"
+            echo "SUPABASE_SECRET_KEY=$SECRET_KEY"
+            echo "MAILPIT_URL=$MAILPIT_URL"
+          } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Lighthouse CI
         run: npm run lighthouse
@@ -100,7 +132,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          supabase db lint --local --schema public,util --level warning --fail-on warning > db-lint.txt 2>&1
+          supabase db lint --local --schema public,util,private --level warning --fail-on warning > db-lint.txt 2>&1
           status=$?
           cat db-lint.txt
           if [ "$status" -ne 0 ]; then
@@ -112,6 +144,20 @@ jobs:
           exit "$status"
       - name: pgTAP
         run: supabase test db
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Generated database types are up to date
+        shell: bash
+        run: |
+          npm run db:types
+          npx prettier --write src/lib/supabase/database.types.ts
+          git diff --exit-code src/lib/supabase/database.types.ts || {
+            echo "::error title=Database types::src/lib/supabase/database.types.ts is out of date. Run npm run db:types and commit it."
+            exit 1
+          }
 
   secrets:
     name: Secret scan (gitleaks)

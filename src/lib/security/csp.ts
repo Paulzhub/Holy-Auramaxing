@@ -5,7 +5,11 @@ export interface CspOptions {
   upgradeInsecure: boolean;
   /** Supabase project URL, allowed for fetch and realtime websockets. */
   supabaseUrl?: string;
+  /** Allow Cloudflare Turnstile's script loader and challenge iframe. */
+  turnstile?: boolean;
 }
+
+const TURNSTILE_ORIGIN = "https://challenges.cloudflare.com";
 
 /** A fresh, unguessable nonce for each request (128 bits, base64). */
 export function createNonce(): string {
@@ -19,13 +23,18 @@ export const allowedStyleAttributeHashes = [
   "'sha256-PhrR5O1xWiklTp5YfH8xWeig83Y/rhbrdb5whLn1pSg='",
 ];
 
-export function buildCsp({ nonce, isDev, upgradeInsecure, supabaseUrl }: CspOptions): string {
+export function buildCsp({ nonce, isDev, upgradeInsecure, supabaseUrl, turnstile = false }: CspOptions): string {
   const connect = ["'self'"];
+  // "Continue with Google" posts to our server, which redirects to Supabase
+  // Auth and then to Google; browsers apply form-action to that whole chain.
+  const formAction = ["'self'"];
   if (supabaseUrl) {
     const url = new URL(supabaseUrl);
     connect.push(url.origin, `${url.protocol === "https:" ? "wss:" : "ws:"}//${url.host}`);
+    formAction.push(url.origin, "https://accounts.google.com");
   }
   if (isDev) connect.push("ws:");
+  if (turnstile) connect.push(TURNSTILE_ORIGIN);
 
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
@@ -45,9 +54,10 @@ export function buildCsp({ nonce, isDev, upgradeInsecure, supabaseUrl }: CspOpti
     "media-src": ["'self'"],
     "object-src": ["'none'"],
     "base-uri": ["'self'"],
-    "form-action": ["'self'"],
+    "form-action": formAction,
     "frame-ancestors": ["'none'"],
-    "frame-src": ["'none'"],
+    // Turnstile's challenge runs in a sandboxed iframe from Cloudflare.
+    "frame-src": turnstile ? [TURNSTILE_ORIGIN] : ["'none'"],
   };
 
   const policy = Object.entries(directives).map(([name, values]) => `${name} ${values.join(" ")}`);

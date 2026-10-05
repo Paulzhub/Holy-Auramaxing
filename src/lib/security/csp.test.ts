@@ -41,7 +41,11 @@ describe("buildCsp (production)", () => {
     expect(directive(csp, "frame-ancestors")).toBe("frame-ancestors 'none'");
     expect(directive(csp, "object-src")).toBe("object-src 'none'");
     expect(directive(csp, "base-uri")).toBe("base-uri 'self'");
-    expect(directive(csp, "form-action")).toBe("form-action 'self'");
+    // Supabase Auth and Google, for the "Continue with Google" redirect chain only.
+    expect(directive(csp, "form-action")).toBe(
+      "form-action 'self' https://xyz.supabase.co https://accounts.google.com",
+    );
+    expect(directive(csp, "frame-src")).toBe("frame-src 'none'");
   });
 
   it("allows the Supabase project for fetch and realtime only", () => {
@@ -51,6 +55,17 @@ describe("buildCsp (production)", () => {
 
   it("upgrades insecure requests on HTTPS", () => {
     expect(csp).toContain("upgrade-insecure-requests");
+  });
+});
+
+describe("buildCsp with Turnstile", () => {
+  const csp = buildCsp({ nonce: "n", isDev: false, upgradeInsecure: true, turnstile: true });
+
+  it("allows only Cloudflare's challenge frame and API, nothing else", () => {
+    expect(directive(csp, "frame-src")).toBe("frame-src https://challenges.cloudflare.com");
+    expect(directive(csp, "connect-src")).toBe("connect-src 'self' https://challenges.cloudflare.com");
+    expect(directive(csp, "script-src")).not.toContain("cloudflare");
+    expect(directive(csp, "frame-ancestors")).toBe("frame-ancestors 'none'");
   });
 });
 

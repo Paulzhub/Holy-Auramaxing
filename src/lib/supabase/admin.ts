@@ -2,6 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 
 import { readPublicEnv, readServerEnv } from "@/lib/env";
 
+import type { Database } from "./database.types";
+
 /**
  * Supabase client with the secret key. It bypasses row-level security, so use
  * it only in server code, only for the narrow jobs that need it (issuing
@@ -17,7 +19,7 @@ export function createSupabaseAdminClient() {
   if (!url || !key) {
     throw new Error("Supabase admin client is not configured (SUPABASE_SECRET_KEY). See README.");
   }
-  return createClient(url, key, {
+  return createClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   });
 }

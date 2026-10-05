@@ -1,41 +1,59 @@
 # Threat model (STRIDE)
 
-Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 1 (foundation), 2026-10-02.
+Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 2a (sign-up, sign-in and consent), 2026-10-05.
 
-## Scope in Phase 1
+## Scope
 
-There are no accounts or user data yet. What exists: the public landing page, the app shell and its placeholder pages, `/dev/components`, `/api/health`, a theme cookie, and the Supabase wiring (clients only, no tables beyond the `util` helper).
+**Phase 1:** public landing page, app shell, `/dev/components`, `/api/health`, theme cookie.
+
+**Phase 2a adds:** accounts (Supabase Auth: email + password, magic link, Google), the age gate and consent records, `profiles`, `privacy_settings`, `consents`, `audit_log`, sign-up tickets, session cookies, email links, rate limits, Turnstile (production), and draft policy pages.
 
 ## Assets (now and soon)
 
-| Asset                             | Sensitivity                                   | Arrives |
-| --------------------------------- | --------------------------------------------- | ------- |
-| Check-ins, urges, triggers, notes | Special-category (sexual behaviour, religion) | Phase 4 |
-| Journal entries                   | Special-category, author-only                 | Phase 8 |
-| Group membership                  | Reveals faith and the struggle                | Phase 3 |
-| Accounts, sessions, email         | Personal data                                 | Phase 2 |
-| Theme preference cookie           | Not sensitive                                 | Phase 1 |
+| Asset                             | Sensitivity                                   | Arrives  |
+| --------------------------------- | --------------------------------------------- | -------- |
+| Check-ins, urges, triggers, notes | Special-category (sexual behaviour, religion) | Phase 4  |
+| Journal entries                   | Special-category, author-only                 | Phase 8  |
+| Group membership                  | Reveals faith and the struggle                | Phase 3  |
+| Accounts, sessions, email         | Personal data                                 | Phase 2a |
+| Consent records, 18+ confirmation | Legal evidence; must be accurate              | Phase 2a |
+| Profile fields (bio, testimony)   | Personal; testimony may be sensitive          | Phase 2a |
+| Theme preference cookie           | Not sensitive                                 | Phase 1  |
 
 ## Trust boundaries
 
-Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Postgres with RLS, Auth, Storage). The publishable key is public. The secret key stays server-side only and isn't used yet.
+Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Postgres with RLS, Auth, Storage). The publishable key is public. The secret key is used only in server code (`src/lib/supabase/admin.ts`) for issuing sign-up tickets, finishing Google sign-ups, deleting orphaned auth users and writing the audit log.
 
 ## STRIDE
 
-| Threat                     | Example                            | Mitigation in place                                                                                                                                                | Planned                                                                                         |
-| -------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| **S**poofing               | Account takeover                   | —                                                                                                                                                                  | Phase 2: Supabase Auth, MFA, Turnstile, rate limits, breached-password check, new-device alerts |
-| **T**ampering              | Forged theme or form posts         | Theme values allow-listed (zod on the server, type guard on the client); Server Actions check the Origin header (CSRF)                                             | Zod on every server boundary                                                                    |
-| **T**ampering              | Supply-chain compromise            | Lockfile, `npm ci`, Dependabot, CodeQL, `npm audit` (production dependencies), GitHub Actions pinned to commit SHAs                                                | OSV and ZAP baseline in Phase 11                                                                |
-| **R**epudiation            | Admin denies an action             | —                                                                                                                                                                  | `audit_log` from Phase 2/3                                                                      |
-| **I**nformation disclosure | XSS stealing session data          | Nonce CSP with `strict-dynamic`; no `unsafe-inline` or `unsafe-eval` for scripts; style attributes limited to two reviewed hashes; React escapes output by default | DOMPurify only if rich text is ever added                                                       |
-| **I**nformation disclosure | Shoulder-surfing via the tab title | Tab titles use the neutral "Aura" (tested)                                                                                                                         | Discreet manifest, notifications and emails (Phases 7 and 10)                                   |
-| **I**nformation disclosure | Indexing of private pages          | `noindex` on every app route (tested); the health endpoint reveals no configuration (tested)                                                                       | Sitemap and robots in Phase 9                                                                   |
-| **I**nformation disclosure | Cross-group data leak              | —                                                                                                                                                                  | Phase 3: RLS and an isolation test suite                                                        |
-| **I**nformation disclosure | Leaking secrets                    | `.env*` ignored (except `.env.example`), gitleaks in CI, secret key never imported client-side                                                                     | —                                                                                               |
-| **D**enial of service      | Floods on public endpoints         | —                                                                                                                                                                  | Upstash rate limits, Cloudflare WAF                                                             |
-| **E**levation of privilege | Member → admin                     | Deny by default (no tables yet)                                                                                                                                    | RLS plus server checks and pgTAP from Phase 2                                                   |
-| **E**levation of privilege | Clickjacking                       | `frame-ancestors 'none'`, `X-Frame-Options: DENY`                                                                                                                  | —                                                                                               |
+| Threat                     | Example                                     | Mitigation in place                                                                                                                                                                                                                                                                                   | Planned                                                       |
+| -------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **S**poofing               | Account takeover                            | Supabase Auth; NIST passwords + breached-password check (D-017); per-IP and per-email rate limits with a 15-minute lock after 5 failures (D-019); Turnstile in production (D-018); refresh-token rotation with reuse detection; 10-minute access tokens; password reset signs out every other session | Two-factor, passkeys, sessions page, new-device alerts (2d)   |
+| **T**ampering              | Forged theme or form posts                  | Theme values allow-listed (zod on the server, type guard on the client); Server Actions check the Origin header (CSRF)                                                                                                                                                                                | Zod on every server boundary                                  |
+| **T**ampering              | Supply-chain compromise                     | Lockfile, `npm ci`, Dependabot, CodeQL, `npm audit` (production dependencies), GitHub Actions pinned to commit SHAs                                                                                                                                                                                   | OSV and ZAP baseline in Phase 11                              |
+| **R**epudiation            | User or admin denies an action              | `audit_log`: sign-ups, sign-ins, failures, sign-outs, password changes; insert-only, unreadable through the API, kept 1 year, no IPs (D-016)                                                                                                                                                          | Role changes (3), admin actions (11)                          |
+| **I**nformation disclosure | XSS stealing session data                   | Nonce CSP with `strict-dynamic`; no `unsafe-inline` or `unsafe-eval` for scripts; style attributes limited to two reviewed hashes; React escapes output by default                                                                                                                                    | DOMPurify only if rich text is ever added                     |
+| **I**nformation disclosure | Shoulder-surfing via the tab title          | Tab titles use the neutral "Aura" (tested)                                                                                                                                                                                                                                                            | Discreet manifest, notifications and emails (Phases 7 and 10) |
+| **I**nformation disclosure | Indexing of private pages                   | `noindex` on every app route (tested); the health endpoint reveals no configuration (tested)                                                                                                                                                                                                          | Sitemap and robots in Phase 9                                 |
+| **I**nformation disclosure | Cross-group data leak                       | —                                                                                                                                                                                                                                                                                                     | Phase 3: RLS and an isolation test suite                      |
+| **I**nformation disclosure | Leaking secrets                             | `.env*` ignored (except `.env.example`), gitleaks in CI, secret key never imported client-side                                                                                                                                                                                                        | —                                                             |
+| **D**enial of service      | Floods on public endpoints                  | —                                                                                                                                                                                                                                                                                                     | Upstash rate limits, Cloudflare WAF                           |
+| **E**levation of privilege | Reading or editing another person's profile | RLS owner-only on `profiles`, `privacy_settings`, `consents`; column-level grants (no self-service age, avatar or deletion changes); others read only through `profile_cards`; 34 pgTAP checks                                                                                                        | Group-scoped RLS (3)                                          |
+| **E**levation of privilege | Clickjacking                                | `frame-ancestors 'none'`, `X-Frame-Options: DENY`                                                                                                                                                                                                                                                     | —                                                             |
+
+## Phase 2a additions
+
+| Threat                     | Example                                                           | Mitigation                                                                                                                                                                      |
+| -------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **S**poofing               | Under-18 or consent-less account via direct Auth API calls        | Database trigger requires a single-use sign-up ticket from the age and consent steps; Google users without a ticket are deleted in the callback; hourly orphan clean-up (D-014) |
+| **S**poofing               | Open redirect after sign-in (`?next=//evil`)                      | `safeNextPath` accepts same-site paths only (unit-tested and e2e-tested)                                                                                                        |
+| **T**ampering              | CSRF on sign-in and sign-out                                      | Server Actions (Origin check); the only GET that changes state signs out a session _without_ a profile                                                                          |
+| **T**ampering              | Forged consent or age records                                     | No API role can insert or update `consents` or age fields; only security-definer functions write them                                                                           |
+| **I**nformation disclosure | Account enumeration                                               | Sign-up, magic link, reset and resend give the same answer for known and unknown addresses                                                                                      |
+| **I**nformation disclosure | Email link scanners using up tokens, or links leaking via Referer | Links open `/confirm`, which needs a button press; `Referrer-Policy: strict-origin-when-cross-origin` (D-020)                                                                   |
+| **I**nformation disclosure | Session theft through XSS                                         | httpOnly session cookies; nonce CSP                                                                                                                                             |
+| **I**nformation disclosure | Emails revealing the app's purpose                                | Discreet templates and sender name, checked by an e2e test                                                                                                                      |
+| **D**enial of service      | Credential stuffing, email flooding                               | Rate limits per IP, per address and per user; Supabase Auth limits; Turnstile in production                                                                                     |
 
 ## Headers sent on every response
 
@@ -46,3 +64,6 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 - `require-trusted-types-for 'script'` is not enabled yet; test Next.js and React compatibility in Phase 11.
 - There is no CSP violation reporting endpoint yet; add it alongside Sentry (Phase 12).
 - `security.txt` and the disclosure page come in Phase 11.
+- Turnstile is not exercised by automated tests (off in CI); verify it by hand on the first preview deploy (D-018).
+- Supabase Auth applies its per-IP limits to our server's IP for server-side calls; set dashboard limits generously before launch (D-019).
+- The app must run behind a proxy that overwrites `X-Forwarded-For` (Vercel, Cloudflare), or per-IP rate limits can be bypassed (D-019).

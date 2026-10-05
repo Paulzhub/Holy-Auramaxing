@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 
 import { readPublicEnv } from "@/lib/env";
 
+import type { Database } from "./database.types";
+
 import { sessionCookieOptions } from "./cookies";
 
 /**
@@ -17,7 +19,7 @@ export async function createSupabaseServerClient() {
   }
   const cookieStore = await cookies();
 
-  return createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
+  return createServerClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
     cookieOptions: sessionCookieOptions(),
     cookies: {
       getAll: () => cookieStore.getAll(),

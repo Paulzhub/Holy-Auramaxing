@@ -37,7 +37,11 @@ export const getAccount = cache(async (): Promise<Account | null> => {
     .eq("id", claims.sub)
     .maybeSingle<AccountProfile>();
 
-  return { userId: claims.sub, email: typeof claims.email === "string" ? claims.email : null, profile: profile ?? null };
+  return {
+    userId: claims.sub,
+    email: typeof claims.email === "string" ? claims.email : null,
+    profile: profile ?? null,
+  };
 });
 
 /**

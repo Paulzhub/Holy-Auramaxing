@@ -14,7 +14,13 @@
     "settings": "Settings",
     "components": "Components",
     "notFound": "Page not found",
-    "error": "Something went wrong"
+    "error": "Something went wrong",
+    "signUp": "Create your account",
+    "signIn": "Sign in",
+    "checkEmail": "Check your email",
+    "forgotPassword": "Reset your password",
+    "resetPassword": "Choose a new password",
+    "confirm": "Confirm"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -51,8 +57,9 @@
   "landing": {
     "title": "Freedom grows one day at a time",
     "lede": "A grace-centred space where friends check in each day, pray for each other and keep walking together.",
-    "cta": "Open the app",
-    "graceLine": "A slip resets a streak, never a person."
+    "cta": "Get started",
+    "graceLine": "A slip resets a streak, never a person.",
+    "signIn": "Sign in"
   },
   "pages": {
     "home": {
@@ -95,7 +102,9 @@
       "appearance": "Appearance",
       "appearanceBody": "System follows your device’s light or dark setting.",
       "language": "Language",
-      "languageBody": "English is the only language for now. Hindi is planned."
+      "languageBody": "English is the only language for now. Hindi is planned.",
+      "account": "Account",
+      "accountBody": "Signing out removes your session from this device."
     }
   },
   "errors": {
@@ -262,6 +271,288 @@
       "b": "Joel Marak",
       "c": "Priya Lal",
       "d": "Daniel Vaiphei"
+    }
+  },
+  "auth": {
+    "errorSummaryTitle": "Please check the following",
+    "showPassword": "Show password",
+    "captchaUnavailable": "Our quick security check couldn’t load. Check your connection, then try again.",
+    "fields": {
+      "email": "Email address",
+      "password": "Password",
+      "newPassword": "Create a password",
+      "newPasswordHint": "At least {min} characters. A short sentence of {recommended} or more is strong and easy to remember. Spaces and any characters are fine.",
+      "linkEmail": "Email address for the sign-in link"
+    },
+    "errors": {
+      "ageRequired": "Choose whether you are 18 or older.",
+      "consentTermsRequired": "Tick the box to agree to the Terms and Privacy Policy.",
+      "consentSensitiveRequired": "Tick the box to let us look after your check-ins and faith details. We can’t run your account without it.",
+      "emailRequired": "Enter your email address.",
+      "emailInvalid": "Enter an email address like name@example.com.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "Use at least 8 characters.",
+      "passwordTooLong": "Use 256 characters or fewer.",
+      "passwordBreached": "This password has appeared in a data breach somewhere online, so it isn’t safe to use. Please choose a different one.",
+      "samePassword": "That’s your current password. Choose a new one.",
+      "invalidCredentials": "That email and password don’t match. Check them and try again, or reset your password.",
+      "emailNotConfirmed": "Please confirm your email address first. We’ve sent you a link; you can ask for a new one on the sign-up page.",
+      "captchaFailed": "Our security check didn’t go through. Please try again.",
+      "tooManyAttempts": "Too many attempts. Please wait {minutes, plural, one {# minute} other {# minutes}} and try again.",
+      "tooManyEmails": "We’ve sent several emails already. Please wait a little before asking for another.",
+      "signupExpired": "Your sign-up took a little too long. Please start again.",
+      "somethingWentWrong": "Something went wrong on our side. Your information is safe. Please try again."
+    },
+    "notices": {
+      "magicLinkSent": "If that address has an account, a sign-in link is on its way. It works once and expires in an hour.",
+      "passwordResetSent": "If that address has an account, a reset link is on its way. It works once and expires in an hour.",
+      "verificationSent": "If that address is waiting to be confirmed, a new link is on its way."
+    },
+    "redirectNotices": {
+      "expired": "Your sign-up timed out, so we’ve started again. It only takes a minute.",
+      "start-here": "To create an account, start here. It only takes a minute.",
+      "signed-out": "You’re signed out. See you soon.",
+      "link-invalid": "That link has expired or was already used. You can ask for a new one.",
+      "google": "We couldn’t reach Google just now. Please try again.",
+      "google-cancelled": "Google sign-in was cancelled. You can try again or use your email.",
+      "password-updated": "Your password is updated, and you’re signed out everywhere else.",
+      "email-confirmed": "Your email is confirmed. Welcome!",
+      "email-changed": "Your email address is updated."
+    },
+    "signUp": {
+      "step": "Step {current} of {total}",
+      "haveAccount": "Already have an account? <link>Sign in</link>",
+      "age": {
+        "title": "Before we begin",
+        "lede": "This is a space for adults.",
+        "question": "Are you 18 or older?",
+        "why": "We ask because the app deals with sensitive topics and we can’t accept accounts from anyone under 18.",
+        "yes": "Yes, I’m 18 or older",
+        "no": "No, I’m under 18",
+        "submit": "Continue",
+        "pending": "Continuing"
+      },
+      "consent": {
+        "title": "Your privacy, in plain words",
+        "lede": "Please read this short summary. It matters to us that you know what you’re sharing.",
+        "collectTitle": "What we keep",
+        "collect": {
+          "account": "Your email address and the name you choose to show.",
+          "checkins": "Your daily check-ins, and any mood, urge or trigger notes you add. These are about your private life, so we treat them as sensitive.",
+          "groups": "Which groups you join and what you share there, only with the people in them.",
+          "faith": "Using this app shows you follow Jesus. We treat that as sensitive too."
+        },
+        "promiseTitle": "Our promises",
+        "promise": {
+          "noSale": "We never sell or share your information.",
+          "noAds": "No ads, no trackers, no tracking pixels.",
+          "noTraining": "We never use what you write to train AI.",
+          "delete": "You can download or delete everything at any time."
+        },
+        "notMedical": "This app is a companion for your walk, not a medical service. It doesn’t diagnose or treat anything, and it isn’t a substitute for a counsellor, doctor or pastor.",
+        "readMore": "The details are in our <privacy>Privacy Policy</privacy>, <terms>Terms</terms> and <yourData>Your data</yourData> page.",
+        "termsLabel": "I agree to the Terms and the Privacy Policy.",
+        "sensitiveLabel": "I agree that you may store and use my check-ins, notes and faith details to run my account and the groups I join.",
+        "sensitiveHint": "You can withdraw this at any time in Settings. Because the app can’t work without it, withdrawing will close your account.",
+        "submit": "I agree, continue",
+        "pending": "Saving your choices"
+      },
+      "account": {
+        "title": "Create your account",
+        "lede": "Choose how you’d like to sign in.",
+        "or": "or use your email",
+        "submit": "Create account",
+        "pending": "Creating your account"
+      }
+    },
+    "underEighteen": {
+      "title": "Thank you for being honest",
+      "lede": "This app is for adults, so we can’t create an account for you.",
+      "body": "That doesn’t mean you’re on your own. Struggles like these are common, and there is no shame in asking for help. Talking to someone you trust is a brave first step.",
+      "verseText": "There is therefore now no condemnation for those who are in Christ Jesus.",
+      "verseReference": "Romans 8:1 (WEB)",
+      "resourcesTitle": "People who can help",
+      "resources": {
+        "parent": "A parent, guardian or another adult you trust",
+        "pastor": "A youth pastor, school counsellor or teacher",
+        "teleManas": "India: Tele-MANAS, free and confidential, 14416",
+        "us988": "United States: call or text 988",
+        "findAHelpline": "Anywhere else: findahelpline.com lists free helplines near you"
+      },
+      "nothingStored": "Nothing you entered here has been saved."
+    },
+    "checkEmail": {
+      "title": "Check your email",
+      "lede": "We’ve sent you a link to confirm your address.",
+      "body": "Open the email and press the link to finish. It comes from “Aura” and says nothing about what the app is for. If you can’t see it, check your spam folder.",
+      "resendTitle": "Didn’t get it?",
+      "resendBody": "Enter your email and we’ll send a fresh link.",
+      "wrongEmail": "Used the wrong address? <link>Go back and change it</link>."
+    },
+    "signIn": {
+      "title": "Welcome back",
+      "lede": "Every day is a fresh start.",
+      "forgot": "Forgot your password?",
+      "submit": "Sign in",
+      "pending": "Signing in",
+      "or": "or",
+      "magicLinkTitle": "Email me a sign-in link instead",
+      "magicLinkBody": "No password needed. We’ll send a link that signs you in once.",
+      "noAccount": "New here? <link>Create an account</link>"
+    },
+    "emailLink": {
+      "pending": "Sending",
+      "magicLink": {
+        "submit": "Email me a link",
+        "again": "Send another link"
+      },
+      "passwordReset": {
+        "submit": "Send reset link",
+        "again": "Send another link"
+      },
+      "verification": {
+        "submit": "Send a new link",
+        "again": "Send another link"
+      }
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "lede": "Enter your email and we’ll send you a link to choose a new one.",
+      "back": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Choose a new password",
+      "lede": "You’ll stay signed in here, and we’ll sign you out everywhere else.",
+      "submit": "Save new password",
+      "pending": "Saving"
+    },
+    "confirm": {
+      "submit": "Continue",
+      "pending": "Checking your link",
+      "invalidTitle": "This link isn’t complete",
+      "invalidLede": "It may have been cut short. Try opening it again from your email, or ask for a new one.",
+      "toSignIn": "Go to sign in",
+      "signup": {
+        "title": "Confirm your email",
+        "lede": "One more step: press Continue to confirm your address and finish signing up."
+      },
+      "signIn": {
+        "title": "Sign in",
+        "lede": "Press Continue to sign in."
+      },
+      "recovery": {
+        "title": "Reset your password",
+        "lede": "Press Continue to choose a new password."
+      },
+      "emailChange": {
+        "title": "Confirm your new email",
+        "lede": "Press Continue to confirm your new email address."
+      }
+    },
+    "google": {
+      "continue": "Continue with Google",
+      "pending": "Opening Google"
+    },
+    "signOut": {
+      "button": "Sign out"
+    },
+    "footer": {
+      "label": "Policies",
+      "notMedical": "Not a medical service. If you’re in crisis, please contact a local helpline or emergency services."
+    }
+  },
+  "legal": {
+    "draftNotice": "Draft: this page is waiting for legal review and may change before launch.",
+    "updated": "Last updated {date}",
+    "updatedDate": "5 October 2026",
+    "privacy": {
+      "short": "Privacy",
+      "title": "Privacy Policy",
+      "lede": "How we collect, use and protect your information.",
+      "sections": {
+        "whoWeAre": {
+          "heading": "Who we are",
+          "body": "Holy Auramaxxxing (“Aura”, “we”) is a small, grace-centred app run for friends walking together toward freedom. For anything about your data, contact our grievance officer at the address below."
+        },
+        "whatWeCollectAndWhy": {
+          "heading": "What we collect, and why",
+          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nSecurity records: sign-ins, password changes, exports and deletions, kept for one year to protect your account. We do not store your IP address."
+        },
+        "whatWeNeverDo": {
+          "heading": "What we never do",
+          "body": "We never sell or share your information, never show ads, never use trackers or fingerprinting, and never use what you write to train AI. We only set cookies that the app needs to work."
+        },
+        "whoProcessesDataForUs": {
+          "heading": "Who processes data for us",
+          "body": "Supabase (database and sign-in, hosted in Mumbai, India), Cloudflare (bot protection), our email provider, and our web host. Each processes data only on our instructions under a data processing agreement."
+        },
+        "howLongWeKeepIt": {
+          "heading": "How long we keep it",
+          "body": "While your account is open. If you delete your account, we wait 14 days in case you change your mind, then permanently delete your personal data. Anything you posted in a group is anonymised. Backups roll over within 30 days."
+        },
+        "yourRights": {
+          "heading": "Your rights",
+          "body": "You can see, correct, download and delete your data, withdraw consent, and nominate someone to act for you, from Settings or by writing to us. We reply within 30 days. You can also complain to your data protection authority, such as the Data Protection Board of India."
+        },
+        "children": {
+          "heading": "Children",
+          "body": "The app is only for adults. We do not knowingly collect data from anyone under 18, and the sign-up does not create an account for anyone who says they are under 18."
+        },
+        "grievanceOfficer": {
+          "heading": "Grievance officer",
+          "body": "Name and email to be confirmed before launch."
+        }
+      }
+    },
+    "terms": {
+      "short": "Terms",
+      "title": "Terms of Use",
+      "lede": "The simple rules for using the app together.",
+      "sections": {
+        "whoCanUseTheApp": {
+          "heading": "Who can use the app",
+          "body": "You must be 18 or older and give honest answers when you sign up."
+        },
+        "notAMedicalService": {
+          "heading": "Not a medical service",
+          "body": "The app supports your journey with check-ins, encouragement and Scripture. It does not diagnose or treat any condition and is not a substitute for a counsellor, doctor or pastor. If you are in crisis, contact a local helpline or emergency services."
+        },
+        "lookingAfterEachOther": {
+          "heading": "Looking after each other",
+          "body": "Be kind, keep what others share in confidence, and never post sexual content. We remove content and accounts that break these rules, and we report child sexual abuse material to the authorities."
+        },
+        "yourAccount": {
+          "heading": "Your account",
+          "body": "Keep your password safe and tell us if you think someone else has used your account. You can delete your account at any time."
+        },
+        "changes": {
+          "heading": "Changes",
+          "body": "If these terms change in a way that matters, we will tell you in the app before the change takes effect."
+        }
+      }
+    },
+    "yourData": {
+      "short": "Your data",
+      "title": "Your data, in plain words",
+      "lede": "A short, honest summary of what happens to what you share.",
+      "sections": {
+        "privateByDefault": {
+          "heading": "Private by default",
+          "body": "Nothing you do is public. Your profile is only visible to people in your groups, field by field as you choose. Check-in details are shared only at the level you pick for each group."
+        },
+        "discreetEverywhere": {
+          "heading": "Discreet everywhere",
+          "body": "Browser tabs, emails and notifications use the neutral name “Aura” and never mention what the app is about."
+        },
+        "yoursToTakeOrDelete": {
+          "heading": "Yours to take or delete",
+          "body": "You can download everything as a file, or delete your account. Deletion is final after 14 days."
+        },
+        "protected": {
+          "heading": "Protected",
+          "body": "Your sign-in uses secure, encrypted cookies. Passwords are checked against known data breaches without ever sending your password anywhere. The most sensitive notes are encrypted before they are stored."
+        }
+      }
     }
   }
 }

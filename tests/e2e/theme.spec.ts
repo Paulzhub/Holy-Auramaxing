@@ -55,6 +55,8 @@ test("no flash: the first frame already has the right theme", async ({ browser, 
 });
 
 test("the local cache restores the theme if the cookie was cleared", async ({ page }) => {
+  // Signing in sets the cookie from the profile (D-006), so clear it for this case.
+  await page.context().clearCookies({ name: "theme" });
   await page.addInitScript(() => localStorage.setItem("theme", "dark"));
   await page.goto("/home");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
