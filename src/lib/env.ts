@@ -29,6 +29,8 @@ const serverEnvSchema = z.object({
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
   /** Skip the Have I Been Pwned lookup (offline development and sandboxed tests only). */
   HIBP_DISABLED: z.enum(["true", "false"]).optional(),
+  /** 32 random bytes, base64. Encrypts private text such as "my why" (D-025). */
+  APP_ENCRYPTION_KEY: z.string().min(1).optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -41,6 +43,7 @@ export function readServerEnv(): ServerEnv {
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL || undefined,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN || undefined,
     HIBP_DISABLED: process.env.HIBP_DISABLED || undefined,
+    APP_ENCRYPTION_KEY: process.env.APP_ENCRYPTION_KEY || undefined,
   });
 }
 

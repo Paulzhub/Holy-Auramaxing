@@ -60,6 +60,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      notification_settings: {
+        Row: {
+          discreet_mode: boolean;
+          quiet_hours_end: string;
+          quiet_hours_start: string;
+          reminder_time: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          discreet_mode?: boolean;
+          quiet_hours_end?: string;
+          quiet_hours_start?: string;
+          reminder_time?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          discreet_mode?: boolean;
+          quiet_hours_end?: string;
+          quiet_hours_start?: string;
+          reminder_time?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notification_settings_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notification_settings_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       privacy_settings: {
         Row: {
           bio_visibility: string;
@@ -101,6 +143,39 @@ export type Database = {
           },
           {
             foreignKeyName: "privacy_settings_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      profile_private: {
+        Row: {
+          my_why_encrypted: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          my_why_encrypted?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          my_why_encrypted?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profile_private_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profile_private_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: true;
             referencedRelation: "profiles";
@@ -186,6 +261,7 @@ export type Database = {
     };
     Functions: {
       complete_oauth_signup: { Args: { p_token: string; p_user_id: string }; Returns: boolean };
+      complete_onboarding: { Args: Record<PropertyKey, never>; Returns: undefined };
       create_signup_ticket: {
         Args: { p_policy_version: string; p_timezone?: string; p_token_hash: string; p_ttl_minutes?: number };
         Returns: undefined;

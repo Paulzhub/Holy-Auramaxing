@@ -20,7 +20,8 @@
     "checkEmail": "Check your email",
     "forgotPassword": "Reset your password",
     "resetPassword": "Choose a new password",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "welcome": "Welcome"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -553,6 +554,57 @@
           "body": "Your sign-in uses secure, encrypted cookies. Passwords are checked against known data breaches without ever sending your password anywhere. The most sensitive notes are encrypted before they are stored."
         }
       }
+    }
+  },
+  "onboarding": {
+    "progress": "Step {current} of {total}",
+    "continue": "Continue",
+    "saving": "Saving",
+    "skipStep": "Skip this step",
+    "skipSetup": "Skip setup",
+    "errors": {
+      "nameTooLong": "Use 40 characters or fewer.",
+      "nameInvalid": "That name has characters we can't show. Try letters, numbers or spaces.",
+      "whyTooLong": "Keep it to 500 characters or fewer.",
+      "timeInvalid": "Choose a time like 21:00, or leave it empty for no reminder.",
+      "timezoneInvalid": "Choose a time zone from the list.",
+      "saveFailed": "We couldn't save that just now. Please try again."
+    },
+    "welcome": {
+      "title": "Welcome. You're not alone.",
+      "lede": "This is a place of grace. Every day is a fresh start, and a slip never defines you.",
+      "verseText": "It is because of Yahweh's loving kindnesses that we are not consumed, because his mercies don't fail. They are new every morning. Great is your faithfulness.",
+      "verseReference": "Lamentations 3:22–23 (WEB)",
+      "nameLabel": "What should we call you?",
+      "nameHint": "This is the name your groups will see. A first name or nickname is perfect. You can change it later."
+    },
+    "why": {
+      "title": "Your why",
+      "lede": "Why do you want to be free? Writing it down can help on hard days.",
+      "label": "My why (optional)",
+      "hint": "Only you can see this. It's encrypted before it's saved. Up to {max} characters."
+    },
+    "reminder": {
+      "title": "A daily reminder",
+      "lede": "A gentle nudge to check in each day. Most people choose an evening time.",
+      "timeLabel": "Reminder time",
+      "timeHint": "Clear the time if you'd rather not get a reminder.",
+      "timezoneLabel": "Your time zone",
+      "timezoneHint": "Your day, streak and reminders follow this time zone."
+    },
+    "discreet": {
+      "title": "Keep it discreet",
+      "lede": "Notifications and emails can appear on your lock screen or be seen by others.",
+      "label": "Use discreet mode (recommended)",
+      "hint": "Notifications and emails only say things like \"You have a new message from your group\", never what the app is about or your streak."
+    },
+    "group": {
+      "title": "Walk with others",
+      "lede": "Groups are where friends check in, pray and encourage each other.",
+      "create": "Start a group",
+      "join": "Join with an invite link",
+      "comingSoon": "Coming soon. For now, you can start on your own.",
+      "finish": "Go to Today"
     }
   }
 }

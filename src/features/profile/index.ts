@@ -1,7 +1,10 @@
 /**
- * profile module — Profile, avatar pipeline and privacy settings (CLAUDE.md §7.3). Phase 2.
+ * profile module — onboarding, profile, avatar pipeline and privacy settings
+ * (CLAUDE.md §7.2, §7.3). Phase 2.
  *
- * This file is the module's public API. Other modules import only from
- * "@/features/profile", never from its internal folders (enforced by ESLint).
+ * Public API, in two entry points (other modules may import only these):
+ *   "@/features/profile"     server code and server components (this file)
+ *   "@/features/profile/ui"  client components
  */
-export {};
+export { onboardingSteps, parseStep, type OnboardingStep } from "./onboarding";
+export { FinishOnboardingButton, SkipSetupButton } from "./components/finish-onboarding";

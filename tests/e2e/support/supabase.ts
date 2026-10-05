@@ -26,7 +26,11 @@ export function strongPassword(): string {
 }
 
 /** Creates a confirmed account through the real sign-up ticket path. */
-export async function createConfirmedUser(email: string, password: string): Promise<string> {
+export async function createConfirmedUser(
+  email: string,
+  password: string,
+  { onboarded = true }: { onboarded?: boolean } = {},
+): Promise<string> {
   const token = randomBytes(32).toString("base64url");
   const client = admin();
   const { error: ticketError } = await client.rpc("create_signup_ticket", {
@@ -43,6 +47,9 @@ export async function createConfirmedUser(email: string, password: string): Prom
     user_metadata: { signup_ticket: token },
   });
   if (error || !data.user) throw error ?? new Error("createUser failed");
+  // Most tests start after onboarding; onboarding.spec.ts covers it directly.
+  if (onboarded)
+    await client.from("profiles").update({ onboarded_at: new Date().toISOString() }).eq("id", data.user.id);
   return data.user.id;
 }
 

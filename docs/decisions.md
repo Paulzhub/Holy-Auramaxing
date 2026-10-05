@@ -159,3 +159,25 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
   - Playwright has a `setup` project that creates a confirmed test member through the real ticket path and signs in through the form. App specs reuse that session, and auth specs run signed out.
   - `npm run lighthouse` audits the public page, the sign-in and sign-up pages (signed out), and `/home` and `/settings` (signed in). `scripts/lighthouse-session.mjs` signs in a local test member and writes a config with its cookie into `.lighthouseci/`; it refuses to run against a non-local Supabase.
   - The e2e and Lighthouse CI jobs start local Supabase.
+
+## D-025 · Phase 2b · Onboarding and application-level encryption
+
+- **Onboarding** lives at `/welcome` and has five steps, each optional:
+  1. Welcome: a grace message, a verse and a display name.
+  2. "My why": private.
+  3. Reminder time and time zone.
+  4. Discreet mode: on by default.
+  5. Groups: a placeholder until Phase 3.
+
+  "Skip setup" in the header finishes at any time. The app layout sends anyone with `profiles.onboarded_at` unset to `/welcome`. Email confirmation and a first Google sign-in land there directly. `public.complete_onboarding()` is the only way to set `onboarded_at`; members can't write that column.
+
+- **New tables** (data-model additions approved in the Phase 2 plan):
+  - `profile_private`: the encrypted "my why", readable only by its author. Admins can't read it either.
+  - `notification_settings`: reminder time, discreet mode and quiet hours (22:00–07:00). Every account gets a row at sign-up, existing ones were backfilled, and Phase 7 extends it.
+- **Encryption:** `src/lib/security/encryption.ts`, AES-256-GCM with a random 96-bit IV per value.
+  - The user's id is bound in as associated data, so a value copied to another row won't decrypt.
+  - The format is `v1:<iv>:<tag>:<ciphertext>`; the version allows key rotation later.
+  - The key comes from `APP_ENCRYPTION_KEY` (32 bytes, base64), an environment secret. It stays outside the database and Git; the spec allows "Vault or a KMS" and this is the KMS-style option.
+  - The database refuses anything not in the encrypted format.
+  - **Losing the key makes stored text unreadable.** Keep a secure backup of the production key.
+- **Time zones:** the dropdown lists the runtime's IANA zones, plus UTC and the person's current zone, so their real setting always shows. Postgres validates the value (`profiles` trigger).

@@ -1,6 +1,6 @@
 # Threat model (STRIDE)
 
-Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 2a (sign-up, sign-in and consent), 2026-10-05.
+Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 2b (onboarding), 2026-10-05.
 
 ## Scope
 
@@ -55,6 +55,15 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 | **I**nformation disclosure | Emails revealing the app's purpose                                | Discreet templates and sender name, checked by an e2e test                                                                                                                      |
 | **D**enial of service      | Credential stuffing, email flooding                               | Rate limits per IP, per address and per user; Supabase Auth limits; Turnstile in production                                                                                     |
 
+## Phase 2b additions
+
+| Threat                     | Example                                                       | Mitigation                                                                                                        |
+| -------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | Reading someone's "my why" (database leak, admin, other user) | Encrypted in the app with AES-256-GCM before storage; author-only RLS; the key lives outside the database (D-025) |
+| **T**ampering              | Moving one person's encrypted text onto another row           | The user id is bound into each value as associated data, so a moved value fails to decrypt                        |
+| **T**ampering              | Skipping onboarding checks or forging `onboarded_at`          | Column not writable by members; only `complete_onboarding()` sets it, for the caller only                         |
+| **I**nformation disclosure | Reminder or notification text revealing the topic             | Discreet mode on by default, with an explicit opt-out                                                             |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -66,4 +75,5 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 - `security.txt` and the disclosure page come in Phase 11.
 - Turnstile is not exercised by automated tests (off in CI); verify it by hand on the first preview deploy (D-018).
 - Supabase Auth applies its per-IP limits to our server's IP for server-side calls; set dashboard limits generously before launch (D-019).
+- Back up `APP_ENCRYPTION_KEY` securely: without it, encrypted text can't be read (D-025).
 - The app must run behind a proxy that overwrites `X-Forwarded-For` (Vercel, Cloudflare), or per-IP rate limits can be bypassed (D-019).

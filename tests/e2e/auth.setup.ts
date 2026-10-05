@@ -19,6 +19,7 @@ setup("sign in the shared test member", async ({ page }) => {
   if (existing) {
     const { admin } = await import("./support/supabase");
     await admin().auth.admin.updateUserById(existing, { password });
+    await admin().from("profiles").update({ onboarded_at: new Date().toISOString() }).eq("id", existing);
   } else {
     await createConfirmedUser(MEMBER_EMAIL, password);
   }

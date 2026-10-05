@@ -125,7 +125,10 @@ test("sign up with email, confirm, sign out, sign in again", async ({ page }) =>
   await openEmailLink(page, link);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Confirm your email");
   await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page).toHaveURL(/\/home\?notice=email-confirmed$/);
+  // New accounts start with onboarding; skipping it goes to Today.
+  await expect(page).toHaveURL(/\/welcome$/);
+  await page.getByRole("button", { name: "Skip setup" }).click();
+  await expect(page).toHaveURL(/\/home$/);
 
   // The account exists with an 18+ confirmation and both consents.
   const userId = (await findUserId(email))!;
@@ -310,7 +313,7 @@ test("sign-up and sign-in work with the keyboard alone", async ({ page }) => {
   await openEmailLink(page, link);
   await tabTo(page, "main form button[type=submit]");
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/home/);
+  await expect(page).toHaveURL(/\/welcome$/);
 
   await page.context().clearCookies();
   await page.goto("/sign-in");
@@ -319,7 +322,8 @@ test("sign-up and sign-in work with the keyboard alone", async ({ page }) => {
   await tabTo(page, "#current-password");
   await page.keyboard.type(password);
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/home$/);
+  // Not onboarded yet, so signing in continues onboarding.
+  await expect(page).toHaveURL(/\/welcome$/);
 });
 
 test("forms are built for password managers: stable ids, autocomplete, paste allowed", async ({ page }) => {
