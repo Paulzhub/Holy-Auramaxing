@@ -2,7 +2,7 @@
 
 A grace-centred web app and installable PWA for daily check-ins, small-group challenges, accountability and Scripture. The full product spec is in [`CLAUDE.md`](CLAUDE.md), and the build is split into phases in [`PROMPTS.md`](PROMPTS.md).
 
-**Status:** Phase 1 (foundation and design system) is done. Phase 2a (sign-up, sign-in and consent) is in review; profiles, onboarding, security settings and account deletion follow in 2b–2e.
+**Status:** Phases 1 and 2a are done. Phase 2b (onboarding) is in review; profiles, security settings and account deletion follow in 2c–2e.
 
 ## What you need
 
@@ -60,6 +60,7 @@ Then open <http://localhost:3000>. Useful pages:
 - `/`: public landing placeholder
 - `/sign-up`: create an account (age question → consent → Google or email). Then confirm the email from Mailpit.
 - `/sign-in`: password, Google or an emailed link; `/forgot-password` for resets
+- `/welcome`: onboarding for new accounts (five optional steps)
 - `/home`: the app shell (Home, Groups, Check in, Alerts, Me, Settings). You need to be signed in.
 - `/privacy`, `/terms`, `/your-data`: draft policies (waiting for legal review)
 - `/dev/components`: every component in every state. It's on automatically in `npm run dev`; in a production build it needs `ENABLE_DEV_PAGES=true`.
@@ -146,5 +147,6 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
   - Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in the host.
   - Enable Turnstile with the secret key in Supabase (Authentication → Attack protection).
 - **Email:** connect a real SMTP sender (Resend) with the sender name "Aura".
+- **Encryption key:** set `APP_ENCRYPTION_KEY` (32 random bytes, base64) in the host and keep a secure backup; see `.env.example`.
 - **Upstash:** set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 - **Before launch:** consider moving the grievance contact on `/privacy` (currently Paulz, a personal Gmail) to a dedicated address such as `privacy@<domain>`, and have all three policy pages reviewed by a lawyer.

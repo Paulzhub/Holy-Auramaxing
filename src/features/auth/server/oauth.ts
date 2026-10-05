@@ -50,7 +50,7 @@ export async function finishOAuthSignIn(input: {
     }
     await clearSignupCookies();
     await audit("auth.sign_in", user.id, { method: "google", first: true });
-    return "/home";
+    return "/welcome";
   }
 
   await audit("auth.sign_in", user.id, { method: "google" });
@@ -105,7 +105,7 @@ export async function verifyEmailLink(input: {
     case "email_change":
       return "/settings?notice=email-changed";
     case "signup":
-      return "/home?notice=email-confirmed";
+      return "/welcome";
     default:
       return safeNextPath(input.next);
   }

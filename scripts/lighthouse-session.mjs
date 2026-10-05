@@ -40,6 +40,9 @@ if (existing) {
   });
   if (error) throw error;
 }
+const { data: again } = await admin.auth.admin.listUsers({ perPage: 1000 });
+const member = again.users.find((u) => u.email === email);
+await admin.from("profiles").update({ onboarded_at: new Date().toISOString() }).eq("id", member.id);
 
 const jar = new Map();
 const client = createServerClient(url, publishable, {

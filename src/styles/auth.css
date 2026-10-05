@@ -369,3 +369,29 @@
     }
   }
 }
+
+/* ---------- onboarding (/welcome) ---------- */
+@layer components {
+  .onboarding-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .onboarding-textarea {
+    min-block-size: 8rem;
+    resize: vertical;
+    line-height: var(--leading-body);
+  }
+
+  .onboarding-options {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .onboarding-options .ui-card {
+    display: grid;
+    gap: var(--space-1);
+  }
+}
