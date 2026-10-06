@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/text-field";
 import { Link } from "@/i18n/navigation";
 
-import { DISPLAY_NAME_MAX, MY_WHY_MAX, type OnboardingFormState } from "../onboarding";
+import { DISPLAY_NAME_MAX, MY_WHY_MAX } from "../limits";
+import type { OnboardingFormState } from "../onboarding";
 import { saveDiscreetAction, saveReminderAction, saveWelcomeAction, saveWhyAction } from "../server/onboarding-actions";
 
 const initial: OnboardingFormState = {};

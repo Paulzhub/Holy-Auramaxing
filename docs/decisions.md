@@ -181,3 +181,34 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
   - The database refuses anything not in the encrypted format.
   - **Losing the key makes stored text unreadable.** Keep a secure backup of the production key.
 - **Time zones:** the dropdown lists the runtime's IANA zones, plus UTC and the person's current zone, so their real setting always shows. Postgres validates the value (`profiles` trigger).
+
+## D-026 · Phase 2c · Avatars, screening and the profile editor
+
+- **Screening provider:** Google Cloud Vision SafeSearch, chosen by the owner on 2026-10-05 over self-hosted NSFWJS (better accuracy, no server to run, low cost at our volumes). It sits behind a small `ImageScreener` interface (`src/features/profile/avatar/screening.ts`), so swapping providers touches one file.
+  - **Policy (zero tolerance, §7.11):** refuse if `adult` is POSSIBLE or higher, or `racy` or `violence` is LIKELY or higher.
+  - **Fails closed:** if Google is down, errors, or no key is configured in a production build, the photo stays pending and is never shown. It is retried whenever its owner opens their profile.
+  - **Configuration:** `GOOGLE_CLOUD_VISION_API_KEY` (server-only, restricted to the Vision API, sent in the `x-goog-api-key` header, never the URL). `IMAGE_SCREENING_PROVIDER=stub` is used by `npm run dev` and the e2e suite: it approves everything except a solid magenta image, so tests can exercise a rejection without calling Google.
+- **Pipeline:**
+  1. **Browser:** square crop with sliders (no drag-only control), shrink to 768 px, WebP (JPEG on older Safari). HEIC is converted here when the browser can decode it (Safari); other browsers show a kind message. The cropper loads only when a photo is picked.
+  2. **Server:** 5 MB limit, magic-byte allow-list (JPEG, PNG, WebP; never SVG or HEIC), full decode with sharp (`failOn: "error"`, 40-megapixel cap), EXIF orientation applied, then three square WebP sizes (96, 256, 512 px). Re-encoding removes all metadata, GPS included.
+  3. **Storage:** private `avatars` bucket with no user policies; only the server writes. Files are `<user id>/<128-bit random>-<px>.webp`.
+  4. **Screening:** runs in `after()`, once the response is sent. Phase 7's job queue takes it over.
+  5. **Publish:** only an approved photo becomes `avatar_path`. The old avatar stays visible while a new one is checked. Rejected photos are deleted at once; the person sees one gentle line.
+- **Serving:** `/api/avatar/<id>?px=&v=` checks `profile_cards` as the viewer (so privacy settings and group membership decide), then streams the file with `private` caching, `nosniff`, `Content-Security-Policy: sandbox` and `Cross-Origin-Resource-Policy: same-origin`. Hidden, unknown and missing avatars all return 404; signed-out requests 401.
+  - **Departure from §10 ("a separate storage domain"):** files are stored on Supabase's domain but served through the app's own origin. Serving them only after a permission check matters more for a private app, and every file is a re-encoded WebP sent with `nosniff` and a sandbox CSP, so it can never run as a page. Revisit if user uploads ever include other file types.
+- **Data-model additions:** `profiles.avatar_pending_path`; a check that both avatar paths sit in the owner's own folder; `avatar_status` loses the unused `processing` value. `profile_cards` now shows `avatar_path` whenever it is set.
+- **Server Action body limit** raised to 6 MB (for no-JavaScript uploads of an original photo). Each action still has its own rate limit.
+- **Profile editor:** `/me/edit`. Every optional field has its own "who can see this" control; the privacy section covers profile visibility, leaderboards and the default share level. Writes go through RLS as the user. The audit log records which privacy settings changed, never the text.
+- **Zod in the browser:** client components took constants from Zod schema files, which shipped Zod (and its CSP-breaking `eval` check) to `/welcome` since 2b. Constants now live in `src/features/profile/limits.ts`, and `src/test/client-bundle.test.ts` fails if any client component pulls in Zod again.
+- **JavaScript budget:** `/me/edit` loads 159 KB of JavaScript at gzip -9 (170.9 KB in Lighthouse's local measure, which includes headers and `next start`'s lighter compression). That is within the 170 KB budget, but the closest page so far; move heavier editor parts behind `import()` if it grows.
+- **`audit()` moved** from the auth module to `src/lib/server/audit.ts`, since every module writes to the platform audit log. It now also works inside `after()`, where request headers are unavailable.
+
+## D-027 · Phase 2c · Accountability settings belong to the group, not the person
+
+- **Context:** The 2c editor offered two per-person settings from the spec: "Show me on group leaderboards" and a default share level for check-ins. The owner felt they weaken accountability, which is the point of joining a group.
+- **Decision (owner, 2026-10-06):** each group decides, as part of its covenant.
+  - Phase 3 adds `groups.min_share_level` (checkin_only / streak / full) and `groups.leaderboard_hiding_allowed`. Both are shown with the covenant before someone joins, so taking part is still an informed choice.
+  - A member may share more than the group's minimum, never less.
+  - `privacy_settings.show_in_leaderboards` and `default_share_level` are dropped (migration `20261006000100`), and the two controls are gone from `/me/edit`.
+  - CLAUDE.md §6, §7.4 and §7.6 are updated to match.
+- **Unchanged:** profile visibility and per-field visibility stay personal. Privacy by default (§2.3) still holds for anything outside a group's covenant, and a level is still shown only at the streak or full share level, so a 10-level drop never gives away a slip at check-in-only groups.

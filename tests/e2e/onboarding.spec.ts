@@ -1,21 +1,12 @@
 import { type Page } from "@playwright/test";
 
 import { expect, expectNoAxeViolations, signedOut, test, themes, setTheme } from "./fixtures";
-import { admin, createConfirmedUser, findUserId, strongPassword, uniqueEmail } from "./support/supabase";
+import { signInNewMember as signIn } from "./support/session";
+import { admin } from "./support/supabase";
 
 test.use({ storageState: signedOut });
 
-async function signInNewMember(page: Page, label: string) {
-  const email = uniqueEmail(label);
-  const password = strongPassword();
-  await createConfirmedUser(email, password, { onboarded: false });
-  await page.goto("/sign-in");
-  await page.locator("#email").fill(email);
-  await page.locator("#current-password").fill(password);
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await expect(page).toHaveURL(/\/welcome$/);
-  return { email, userId: (await findUserId(email))! };
-}
+const signInNewMember = (page: Page, label: string) => signIn(page, label, { onboarded: false });
 
 test("a new member goes through all five steps and lands on Today", async ({ page }) => {
   const { userId } = await signInNewMember(page, "onboard");

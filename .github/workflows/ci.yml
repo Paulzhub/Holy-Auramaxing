@@ -55,8 +55,8 @@ jobs:
       - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
         with:
           version: 2.119.0
-      - name: Start Supabase (Auth, database, Mailpit)
-        run: supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor,realtime,storage-api,postgres-meta
+      - name: Start Supabase (Auth, database, Storage, Mailpit)
+        run: supabase start -x studio,imgproxy,logflare,vector,edge-runtime,supavisor,realtime,postgres-meta
       - name: Point the app at local Supabase
         shell: bash
         run: |

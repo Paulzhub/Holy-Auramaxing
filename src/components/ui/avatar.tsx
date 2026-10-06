@@ -16,7 +16,7 @@ export function initialsFor(name: string): string {
 export interface AvatarProps {
   name: string;
   src?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   /** True when the name is already shown next to the avatar. */
   decorative?: boolean;
   className?: string;

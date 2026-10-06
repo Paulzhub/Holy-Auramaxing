@@ -2,7 +2,7 @@
 
 A grace-centred web app and installable PWA for daily check-ins, small-group challenges, accountability and Scripture. The full product spec is in [`CLAUDE.md`](CLAUDE.md), and the build is split into phases in [`PROMPTS.md`](PROMPTS.md).
 
-**Status:** Phases 1 and 2a are done. Phase 2b (onboarding) is in review; profiles, security settings and account deletion follow in 2c–2e.
+**Status:** Phases 1, 2a and 2b are done. Phase 2c (profiles and photos) is in review; security settings and account deletion follow in 2d–2e.
 
 ## What you need
 
@@ -49,6 +49,18 @@ Supabase sends sign-up, magic-link and password-reset emails to a local inbox, *
 
 Without these, everything else works; only the Google button fails.
 
+### Profile photo screening (optional locally)
+
+Under `npm run dev`, photos are approved by a stand-in screener, so you don't need Google. To try the real check, or in production:
+
+1. In the same Google Cloud project, enable the **Cloud Vision API** (billing must be on, even for the free tier).
+2. Create an **API key** under APIs & Services → Credentials and restrict it to the Cloud Vision API.
+3. Put it in `.env.local` as `GOOGLE_CLOUD_VISION_API_KEY=…`. Never commit it. An API key starts with `AIza`; the OAuth client secret (`GOCSPX-…`) from Google sign-in is a different thing and won't work.
+
+A production build with no key keeps every new photo unpublished (D-026). To try a production build on your own computer (`npm run build` then `npm start`) without a key, add `IMAGE_SCREENING_PROVIDER=stub` to `.env.local`. Never set that in a real deployment.
+
+When something can't be saved under `npm run dev`, the terminal running it explains why (lines starting `[avatar]`, `[profile]` or `[onboarding]`); people only ever see a gentle message.
+
 Run the app:
 
 ```bash
@@ -61,11 +73,23 @@ Then open <http://localhost:3000>. Useful pages:
 - `/sign-up`: create an account (age question → consent → Google or email). Then confirm the email from Mailpit.
 - `/sign-in`: password, Google or an emailed link; `/forgot-password` for resets
 - `/welcome`: onboarding for new accounts (five optional steps)
+- `/me` and `/me/edit`: your profile, photo and privacy settings
 - `/home`: the app shell (Home, Groups, Check in, Alerts, Me, Settings). You need to be signed in.
 - `/privacy`, `/terms`, `/your-data`: draft policies (waiting for legal review)
 - `/dev/components`: every component in every state. It's on automatically in `npm run dev`; in a production build it needs `ENABLE_DEV_PAGES=true`.
 - `/api/health`: shows whether Supabase is configured and reachable
 - Supabase Studio: <http://127.0.0.1:54323>
+
+### After pulling a new phase
+
+Each phase may add database tables, settings or packages. After switching branch or pulling:
+
+```bash
+npm ci                         # new packages
+npx supabase migration up      # new tables; keeps your local accounts
+```
+
+Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`), and restart `npm run dev`: environment files are read only at start-up.
 
 > **Windows tips**
 >

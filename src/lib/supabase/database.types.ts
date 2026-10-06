@@ -105,9 +105,7 @@ export type Database = {
       privacy_settings: {
         Row: {
           bio_visibility: string;
-          default_share_level: string;
           profile_visibility: string;
-          show_in_leaderboards: boolean;
           testimony_visibility: string;
           updated_at: string;
           user_id: string;
@@ -115,9 +113,7 @@ export type Database = {
         };
         Insert: {
           bio_visibility?: string;
-          default_share_level?: string;
           profile_visibility?: string;
-          show_in_leaderboards?: boolean;
           testimony_visibility?: string;
           updated_at?: string;
           user_id: string;
@@ -125,9 +121,7 @@ export type Database = {
         };
         Update: {
           bio_visibility?: string;
-          default_share_level?: string;
           profile_visibility?: string;
-          show_in_leaderboards?: boolean;
           testimony_visibility?: string;
           updated_at?: string;
           user_id?: string;
@@ -187,6 +181,7 @@ export type Database = {
         Row: {
           adult_confirmed_at: string;
           avatar_path: string | null;
+          avatar_pending_path: string | null;
           avatar_status: string;
           bio: string | null;
           created_at: string;
@@ -206,6 +201,7 @@ export type Database = {
         Insert: {
           adult_confirmed_at: string;
           avatar_path?: string | null;
+          avatar_pending_path?: string | null;
           avatar_status?: string;
           bio?: string | null;
           created_at?: string;
@@ -225,6 +221,7 @@ export type Database = {
         Update: {
           adult_confirmed_at?: string;
           avatar_path?: string | null;
+          avatar_pending_path?: string | null;
           avatar_status?: string;
           bio?: string | null;
           created_at?: string;

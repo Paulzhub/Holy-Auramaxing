@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { DISPLAY_NAME_MAX, MY_WHY_MAX } from "./limits";
+
 /** The onboarding steps, in order (CLAUDE.md §7.2). Every step can be skipped. */
 export const onboardingSteps = ["welcome", "why", "reminder", "discreet", "group"] as const;
 export type OnboardingStep = (typeof onboardingSteps)[number];
@@ -13,8 +15,7 @@ export function nextStep(step: OnboardingStep): OnboardingStep | undefined {
   return onboardingSteps[onboardingSteps.indexOf(step) + 1];
 }
 
-export const MY_WHY_MAX = 500;
-export const DISPLAY_NAME_MAX = 40;
+export { DISPLAY_NAME_MAX, MY_WHY_MAX } from "./limits";
 
 // Messages are keys under "onboarding.errors".
 // Display names allow any script; control characters are refused.

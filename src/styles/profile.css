@@ -1,0 +1,181 @@
+/* ---------- profile (/me, /me/edit) ---------- */
+@layer components {
+  .profile-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .profile-hero__name {
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--text-2xl);
+    line-height: var(--leading-snug);
+    overflow-wrap: anywhere;
+  }
+
+  .profile-hero__meta {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+
+  .profile-field {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .profile-field__body {
+    margin: 0;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+
+  .profile-field__who {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .profile-form {
+    display: grid;
+    gap: var(--space-6);
+    max-inline-size: 44rem;
+  }
+
+  .profile-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .profile-section {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: var(--space-5);
+    min-inline-size: 0;
+    border: 1px solid var(--color-line-subtle);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+  }
+
+  /* A floated legend sits inside the box like a heading instead of on its border. */
+  .profile-section > legend.profile-section__title {
+    float: inline-start;
+    inline-size: 100%;
+  }
+
+  .profile-section__title {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+  }
+
+  /* A field and its "who can see this" control. */
+  .profile-pair {
+    display: grid;
+    gap: var(--space-3);
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--color-line-subtle);
+  }
+
+  .profile-avatar {
+    display: grid;
+    gap: var(--space-4);
+    max-inline-size: 44rem;
+    padding: var(--space-5);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+  }
+
+  .profile-avatar__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .profile-avatar__controls {
+    flex: 1 1 16rem;
+    min-inline-size: 0;
+  }
+
+  .profile-avatar__file {
+    max-inline-size: 100%;
+    min-block-size: 2.75rem;
+    font: inherit;
+  }
+
+  .profile-avatar__file::file-selector-button {
+    min-block-size: 2.75rem;
+    margin-inline-end: var(--space-3);
+    padding-inline: var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .profile-avatar__status:empty {
+    display: none;
+  }
+
+  .profile-avatar__status {
+    margin: 0;
+  }
+
+  .profile-cropper {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .profile-cropper__frame {
+    position: relative;
+    inline-size: min(16rem, 100%);
+    aspect-ratio: 1;
+    margin-inline: auto;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  /* Dims the corners so the circle shows what the avatar will look like. */
+  .profile-cropper__frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle closest-side, transparent 98%, rgb(0 0 0 / 0.45) 100%);
+    pointer-events: none;
+  }
+
+  .profile-cropper__canvas {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .profile-cropper__slider {
+    inline-size: 100%;
+    min-block-size: 2.75rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .profile-cropper__frame::after {
+    background: none;
+    border: 2px solid CanvasText;
+    border-radius: 50%;
+  }
+}

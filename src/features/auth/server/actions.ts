@@ -24,7 +24,7 @@ import {
   passwordSignInSchema,
   safeNextPath,
 } from "../schemas";
-import { audit } from "./audit";
+import { audit } from "@/lib/server/audit";
 import { verifyEmailLink } from "./oauth";
 import {
   clearSignupCookies,

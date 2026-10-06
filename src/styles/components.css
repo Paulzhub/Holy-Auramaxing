@@ -623,6 +623,9 @@
   .ui-avatar--lg {
     --avatar-size: 4rem;
   }
+  .ui-avatar--xl {
+    --avatar-size: 6rem;
+  }
 
   /* ---------- progress ring ---------- */
   .ui-ring {

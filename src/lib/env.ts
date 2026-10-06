@@ -31,6 +31,10 @@ const serverEnvSchema = z.object({
   HIBP_DISABLED: z.enum(["true", "false"]).optional(),
   /** 32 random bytes, base64. Encrypts private text such as "my why" (D-025). */
   APP_ENCRYPTION_KEY: z.string().min(1).optional(),
+  /** Google Cloud Vision API key, restricted to the Vision API. Screens uploaded photos (D-026). */
+  GOOGLE_CLOUD_VISION_API_KEY: z.string().min(1).optional(),
+  /** Overrides the screener: "stub" approves everything (dev and CI only), "none" holds every photo. */
+  IMAGE_SCREENING_PROVIDER: z.enum(["google", "stub", "none"]).optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -44,6 +48,8 @@ export function readServerEnv(): ServerEnv {
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN || undefined,
     HIBP_DISABLED: process.env.HIBP_DISABLED || undefined,
     APP_ENCRYPTION_KEY: process.env.APP_ENCRYPTION_KEY || undefined,
+    GOOGLE_CLOUD_VISION_API_KEY: process.env.GOOGLE_CLOUD_VISION_API_KEY || undefined,
+    IMAGE_SCREENING_PROVIDER: process.env.IMAGE_SCREENING_PROVIDER || undefined,
   });
 }
 

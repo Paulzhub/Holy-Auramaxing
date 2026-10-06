@@ -24,6 +24,10 @@ export const rateLimitRules = {
   /** The age and consent steps, which issue sign-up tickets. */
   signUpTicketByIp: { limit: 20, windowSeconds: 60 * 60 },
   passwordChangeByUser: { limit: 5, windowSeconds: 60 * 60 },
+  /** New profile photos (each one is re-encoded and screened). */
+  avatarUploadByUser: { limit: 10, windowSeconds: 60 * 60 },
+  /** Profile and privacy saves. */
+  profileSaveByUser: { limit: 60, windowSeconds: 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;
