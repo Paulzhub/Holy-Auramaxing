@@ -35,14 +35,24 @@ const serverEnvSchema = z.object({
   GOOGLE_CLOUD_VISION_API_KEY: z.string().min(1).optional(),
   /** Overrides the screener: "stub" approves everything (dev and CI only), "none" holds every photo. */
   IMAGE_SCREENING_PROVIDER: z.enum(["google", "stub", "none"]).optional(),
-  /** Which service sends the app's own emails (D-030). Unset: resend with a key, else mailpit with a URL, else none. */
-  EMAIL_PROVIDER: z.enum(["resend", "mailpit", "none"]).optional(),
+  /**
+   * Which service sends the app's own emails (D-030, D-031). Unset: resend with a key, else smtp with a host,
+   * else mailpit with a URL, else none.
+   */
+  EMAIL_PROVIDER: z.enum(["resend", "smtp", "mailpit", "none"]).optional(),
   /** Sender, e.g. "Aura <hello@example.com>". Without a verified domain Resend only accepts onboarding@resend.dev. */
   EMAIL_FROM: z.string().min(3).max(200).optional(),
   /** Resend API key (server-only). */
   RESEND_API_KEY: z.string().min(1).optional(),
   /** Local Mailpit inbox (development and tests). */
   MAILPIT_URL: z.url().optional(),
+  /** SMTP server for EMAIL_PROVIDER=smtp, e.g. smtp.gmail.com (D-031). */
+  SMTP_HOST: z.string().min(1).max(255).optional(),
+  /** 465 (TLS from the start) or 587 (STARTTLS). Default 465. */
+  SMTP_PORT: z.coerce.number().int().min(1).max(65535).optional(),
+  SMTP_USER: z.string().min(1).max(320).optional(),
+  /** Server-only. For Gmail, an app password (not the account password). */
+  SMTP_PASSWORD: z.string().min(1).max(1024).optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -62,6 +72,10 @@ export function readServerEnv(): ServerEnv {
     EMAIL_FROM: process.env.EMAIL_FROM || undefined,
     RESEND_API_KEY: process.env.RESEND_API_KEY || undefined,
     MAILPIT_URL: process.env.MAILPIT_URL || undefined,
+    SMTP_HOST: process.env.SMTP_HOST || undefined,
+    SMTP_PORT: process.env.SMTP_PORT || undefined,
+    SMTP_USER: process.env.SMTP_USER || undefined,
+    SMTP_PASSWORD: process.env.SMTP_PASSWORD || undefined,
   });
 }
 

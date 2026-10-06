@@ -1,3 +1,5 @@
+import { createTransport, type Transporter } from "nodemailer";
+
 import { readServerEnv, type ServerEnv } from "@/lib/env";
 import { devLog } from "@/lib/server/dev-log";
 
@@ -7,6 +9,8 @@ import { devLog } from "@/lib/server/dev-log";
  * everything else, starting with security alerts.
  *
  *  - resend:  production, through Resend's HTTP API (one fetch, no SDK).
+ *  - smtp:    any SMTP server, e.g. a dedicated Gmail account with an app
+ *             password while there's no sending domain (D-031).
  *  - mailpit: local development and tests, into the Mailpit inbox that
  *             `supabase start` runs.
  *  - none:    nothing is sent (a development log line explains why).
@@ -21,7 +25,7 @@ export interface EmailMessage {
 }
 
 export interface EmailSender {
-  readonly name: "resend" | "mailpit" | "none";
+  readonly name: "resend" | "smtp" | "mailpit" | "none";
   send(message: EmailMessage): Promise<void>;
 }
 
@@ -61,6 +65,44 @@ class ResendSender implements EmailSender {
   }
 }
 
+export interface SmtpSettings {
+  host: string;
+  /** 465: TLS from the start. Anything else (587): STARTTLS, which is required. */
+  port: number;
+  user: string;
+  password: string;
+  from: string;
+}
+
+class SmtpSender implements EmailSender {
+  readonly name = "smtp" as const;
+  private transporter: Transporter | undefined;
+
+  constructor(private readonly settings: SmtpSettings) {}
+
+  async send(message: EmailMessage) {
+    const { host, port, user, password, from } = this.settings;
+    this.transporter ??= createTransport({
+      host,
+      port,
+      secure: port === 465,
+      // On 587, refuse to send unless the connection is upgraded to TLS.
+      requireTLS: port !== 465,
+      auth: { user, pass: password },
+      connectionTimeout: TIMEOUT_MS,
+      greetingTimeout: TIMEOUT_MS,
+      socketTimeout: TIMEOUT_MS * 2,
+    });
+    await this.transporter.sendMail({
+      from,
+      to: message.to,
+      subject: message.subject,
+      html: message.html,
+      text: message.text,
+    });
+  }
+}
+
 class MailpitSender implements EmailSender {
   readonly name = "mailpit" as const;
   constructor(
@@ -90,13 +132,29 @@ class MailpitSender implements EmailSender {
 class NoSender implements EmailSender {
   readonly name = "none" as const;
   async send() {
-    devLog("email", "No email provider is configured (EMAIL_PROVIDER / RESEND_API_KEY / MAILPIT_URL); not sent.");
+    devLog(
+      "email",
+      "No email provider is configured (EMAIL_PROVIDER / RESEND_API_KEY / SMTP_* / MAILPIT_URL); not sent.",
+    );
   }
 }
 
 /** Picks the sender from configuration. Exported for tests. */
 export function selectSender(env: ServerEnv): EmailSender {
-  const provider = env.EMAIL_PROVIDER ?? (env.RESEND_API_KEY ? "resend" : env.MAILPIT_URL ? "mailpit" : "none");
+  const provider =
+    env.EMAIL_PROVIDER ??
+    (env.RESEND_API_KEY ? "resend" : env.SMTP_HOST ? "smtp" : env.MAILPIT_URL ? "mailpit" : "none");
+  if (provider === "smtp") {
+    if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASSWORD) return new NoSender();
+    return new SmtpSender({
+      host: env.SMTP_HOST,
+      port: env.SMTP_PORT ?? 465,
+      user: env.SMTP_USER,
+      password: env.SMTP_PASSWORD,
+      // Gmail sends only as the signed-in account, so that address is the default.
+      from: env.EMAIL_FROM ?? `Aura <${env.SMTP_USER}>`,
+    });
+  }
   if (provider === "resend") {
     if (!env.RESEND_API_KEY) return new NoSender();
     return new ResendSender(env.RESEND_API_KEY, env.EMAIL_FROM ?? DEFAULT_RESEND_FROM);
