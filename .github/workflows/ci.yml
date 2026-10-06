@@ -72,6 +72,7 @@ jobs:
             # Phase 2d: passkeys on; the app's own emails go to Mailpit.
             echo "PASSKEYS_ENABLED=true"
             echo "EMAIL_PROVIDER=mailpit"
+            echo "CRON_SECRET=$(openssl rand -hex 32)"
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Playwright
@@ -115,6 +116,7 @@ jobs:
             # Phase 2d: passkeys on; the app's own emails go to Mailpit.
             echo "PASSKEYS_ENABLED=true"
             echo "EMAIL_PROVIDER=mailpit"
+            echo "CRON_SECRET=$(openssl rand -hex 32)"
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Lighthouse CI

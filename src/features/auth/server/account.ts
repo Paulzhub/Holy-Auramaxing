@@ -61,12 +61,20 @@ export const getAccount = cache(async (): Promise<Account | null> => {
   };
 });
 
+/** Keep equal to util.account_deletion_grace() in the database (D-033). */
+export const ACCOUNT_DELETION_GRACE_DAYS = 14;
+
+/** When an account scheduled for deletion will be erased. */
+export function deletionDate(requestedAt: string): Date {
+  return new Date(new Date(requestedAt).getTime() + ACCOUNT_DELETION_GRACE_DAYS * 24 * 60 * 60 * 1000);
+}
+
 /**
- * For pages inside the app: returns a complete account or redirects.
- * Server Actions must call this too (or getAccount) rather than trusting
- * that the proxy already checked.
+ * A complete, signed-in account, or a redirect: to sign-in, the two-step
+ * code page, or sign-out. Unlike requireAccount() it lets through an account
+ * that is scheduled for deletion (the account-closing page and its actions).
  */
-export async function requireAccount(): Promise<Account & { profile: AccountProfile }> {
+export async function requireSignedInAccount(): Promise<Account & { profile: AccountProfile }> {
   const account = await getAccount();
   if (!account) redirect("/sign-in");
   // Two-step sign-in is on and the code hasn't been entered yet.
@@ -76,6 +84,18 @@ export async function requireAccount(): Promise<Account & { profile: AccountProf
   // Signed in, but sign-up was never finished: sign out and start again.
   if (!account.profile) redirect("/api/auth/sign-out?reason=incomplete");
   return account as Account & { profile: AccountProfile };
+}
+
+/**
+ * For pages inside the app: returns a complete account or redirects.
+ * Server Actions must call this too (or getAccount) rather than trusting
+ * that the proxy already checked. An account scheduled for deletion sees
+ * only the account-closing page until it is kept or erased (D-033).
+ */
+export async function requireAccount(): Promise<Account & { profile: AccountProfile }> {
+  const account = await requireSignedInAccount();
+  if (account.profile.deletion_requested_at) redirect("/account-closing");
+  return account;
 }
 
 /** Where the code page (/sign-in/verify) stands for this browser. */

@@ -294,3 +294,41 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
   - Google may lock an account that suddenly sends a lot of automated mail.
   - The app password is a full credential for that mailbox: it lives only in the host's environment settings and in Supabase. Use the Gmail account for nothing else, so a leak exposes nothing else.
 - **Later:** buy a domain, verify it in Resend, and set `EMAIL_PROVIDER=resend` (and Supabase SMTP to Resend). Nothing else changes.
+
+## D-032 · Phase 2e · "Download my data": one zip with JSON and CSV
+
+- **Decision (owner, 2026-10-06):** Settings → Your data → **Download my data** gives one file, `aura-data-YYYY-MM-DD.zip` (a neutral name, §2.3), with:
+  - `data.json`: every section in one file;
+  - `csv/<section>.csv`: one CSV per section (UTF-8 with a byte-order mark for Excel; cells starting with `= + - @` get a leading apostrophe so spreadsheets never run them as formulas);
+  - `files/avatar.webp`: the current profile photo, if there is one;
+  - `README.txt`: what everything is, in plain words.
+- **Contents today:** account (email, sign-in methods, whether two-step sign-in is on), profile, privacy and notification settings, the "my why" (decrypted: it is the person's own), consent records, passkey names and dates, current devices, and the person's own security events (`public.my_audit_events()`: action, time, device label).
+- **Never in it:** password hashes, two-step secrets, recovery codes (only their hashes exist), tokens, IPs (none are stored), anything about another person.
+- **How:**
+  - Each module exports its own part (`exportAuthData()`, `exportProfileData()`); the route `POST /api/account/export` combines them. **Phase 3 onwards add their part there** (groups, check-ins, journal…).
+  - Reads go through RLS as the signed-in person, so the export can only contain what they may already see. `util.session_ok()` applies: no export before the two-step code is entered.
+  - The zip is written by a small stored-only writer (`src/lib/zip.ts`, about 80 lines, unit-tested against Python's `zipfile` and `unzip -t` by hand), so there is no new dependency.
+  - A plain form POST, so it needs no JavaScript. CSRF: Origin must name this host, and `Sec-Fetch-Site` must be same-origin when sent (the same check Server Actions make).
+  - 3 exports an hour per person; `account.exported` in the audit log; `Cache-Control: private, no-store`.
+- **Not done (owner chose to skip, 2026-10-06):** asking for a fresh sign-in before export or deletion. Two-step sign-in (when on) and the 14-day grace period are the protection. Revisit with the app lock (§7.10).
+
+## D-033 · Phase 2e · Account deletion: 14 days of grace, then erasure
+
+- **Decision (owner, 2026-10-06):**
+  - **Asking:** Settings → Your data → Delete my account explains what happens, offers the download, and asks for one ticked box. `public.request_account_deletion()` sets `profiles.deletion_requested_at` (members can't write that column) and signs out every other device. A discreet email says when the account will close and how to keep it.
+  - **During the 14 days:** the profile is hidden from everyone at once (`profile_cards`). `requireAccount()` sends the person to `/account-closing`, the only page they can open: **Keep my account** (`cancel_account_deletion()`, plus a "stays open" email, so a cancellation by someone else is noticed), **Download my data**, or **Sign out**. Asking twice keeps the first date.
+  - **Erasure:** a daily `pg_cron` job (`account-deletion-daily`, `private.purge_due_accounts()`) runs inside the database, so it happens on time even when the app isn't running. For each due account it:
+    1. calls `private.anonymise_group_contributions()` (empty until Phase 3, see below);
+    2. queues the person's Storage folder;
+    3. removes the person's id from their audit rows (they stay for their year, linked to nobody, as the privacy policy says);
+    4. deletes the `auth.users` row, which cascades to every personal table and to Supabase's sessions, identities, factors and passkeys;
+    5. writes an anonymous `account.deleted` event.
+  - **Files:** deleting Storage rows in SQL would leave the files behind, so the app removes them through the Storage API: `GET /api/cron/account-purge` (Bearer `CRON_SECRET`; Vercel Cron calls it daily from `vercel.json`) runs the same job and empties `private.storage_purge_queue`. Locally: `npm run accounts:purge` while the app runs. Until there is hosting, queued photos can wait in the private bucket; nothing can serve them, because the profile is gone.
+  - Backups roll over within 30 days (privacy policy).
+- **Group contributions, for Phase 3 onwards to implement in `private.anonymise_group_contributions()`:**
+  - posts and comments stay, with `author_id` set to null and shown as "A former member";
+  - reactions, nudges, memberships, partnerships and invites the person created are deleted;
+  - a group the person owns passes to its longest-serving admin, else its longest-serving member, else it is archived.
+- **New settings:** `CRON_SECRET` (server-only, at least 32 characters). Without it the purge route returns 404; the database still erases accounts daily.
+- **Data-model additions (approved 2026-10-06):** `profiles_deletion_requested_idx`; `private.storage_purge_queue`; `util.account_deletion_grace()` (14 days, equal to `ACCOUNT_DELETION_GRACE_DAYS`); the functions above, with service-role-only `run_account_purge()`, `claim_storage_purges()` and `complete_storage_purge()`. No new personal tables in `public`, so no new `session_ok()` policies; the new member functions check `util.session_ok()` themselves.
+- **Emails** reuse the security-alert template ("accountClosing", "accountKept"): sender "Aura", neutral subjects, unit- and e2e-tested for sensitive words.
