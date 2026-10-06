@@ -200,6 +200,18 @@ password_requirements = ""
 # Local and CI values, raised so the end-to-end suite (many sign-ins from one
 # machine) doesn't trip them. Production limits are set in the dashboard;
 # the app adds its own per-person limits on top (src/lib/security/rate-limit.ts).
+# Phase 2d: passkeys (D-029). Supabase signs passkeys in at aal1, so anyone
+# with an authenticator app still enters its code afterwards.
+[auth.passkey]
+enabled = true
+
+# The relying party: passkeys are bound to this host name. Local only works
+# on http://localhost (not 127.0.0.1). Ports: 3000 app, 3100 e2e, 3200 Lighthouse.
+[auth.webauthn]
+rp_display_name = "Aura"
+rp_id = "localhost"
+rp_origins = ["http://localhost:3000", "http://localhost:3100", "http://localhost:3200"]
+
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
 email_sent = 2
@@ -283,6 +295,23 @@ content_path = "./supabase/templates/email_change.html"
 # subject = "Your password has been changed"
 # content_path = "./supabase/templates/password_changed_notification.html"
 
+# Phase 2d: security notifications, sent by Supabase whichever way the change
+# is made (D-030). Discreet: nothing says what the app is for.
+[auth.email.notification.password_changed]
+enabled = true
+subject = "Your Aura password was changed"
+content_path = "./supabase/templates/password_changed_notification.html"
+
+[auth.email.notification.mfa_factor_enrolled]
+enabled = true
+subject = "Two-step sign-in is on for your Aura account"
+content_path = "./supabase/templates/mfa_factor_enrolled_notification.html"
+
+[auth.email.notification.mfa_factor_unenrolled]
+enabled = true
+subject = "Two-step sign-in is off for your Aura account"
+content_path = "./supabase/templates/mfa_factor_unenrolled_notification.html"
+
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.
 enable_signup = false
@@ -328,9 +357,10 @@ auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 max_enrolled_factors = 10
 
 # Control MFA via App Authenticator (TOTP)
+# Phase 2d: authenticator apps (TOTP) for two-step sign-in (D-028).
 [auth.mfa.totp]
-enroll_enabled = false
-verify_enabled = false
+enroll_enabled = true
+verify_enabled = true
 
 # Configure MFA via Phone Messaging
 [auth.mfa.phone]
