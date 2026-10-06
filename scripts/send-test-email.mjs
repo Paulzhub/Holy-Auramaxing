@@ -4,6 +4,8 @@
 //   npm run email:test -- you@example.com
 //
 // Prints only whether it worked; never the password.
+import { existsSync, readFileSync } from "node:fs";
+
 import nextEnv from "@next/env";
 import { createTransport } from "nodemailer";
 
@@ -18,6 +20,14 @@ if (!to || !/^[^@\s]+@[^@\s]+$/.test(to)) {
 }
 if (!SMTP_HOST || !SMTP_USER || !SMTP_PASSWORD) {
   console.error("Set SMTP_HOST, SMTP_USER and SMTP_PASSWORD in .env.local first (see .env.example).");
+  // A common slip: "SMTP_USER: x" instead of "SMTP_USER=x"; such lines are ignored.
+  const colon = existsSync(".env.local")
+    ? readFileSync(".env.local", "utf8")
+        .split(/\r?\n/)
+        .filter((line) => /^SMTP_[A-Z_]+\s*:/.test(line))
+        .map((line) => line.split(":")[0].trim())
+    : [];
+  if (colon.length) console.error(`In .env.local, use "=" not ":" on these lines: ${colon.join(", ")}`);
   process.exit(1);
 }
 
