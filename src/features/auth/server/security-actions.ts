@@ -1,7 +1,6 @@
 "use server";
 
 import { getLocale } from "next-intl/server";
-import { revalidatePath } from "next/cache";
 
 import { redirect } from "@/i18n/navigation";
 import { consume } from "@/lib/security/rate-limit";
@@ -100,7 +99,9 @@ export async function twoStepSetupAction(prev: TwoStepSetupState, formData: Form
     }
     await audit("auth.mfa_enrolled", userId, { method: "totp" });
     const recoveryCodes = await createRecoveryCodes(userId);
-    revalidatePath("/[locale]/settings/security", "page");
+    // No revalidatePath here: re-rendering the page would replace this form
+    // (two-step is now "on") before the codes are shown. "I've saved them"
+    // loads the page fresh.
     // If the codes failed, the page offers "Create recovery codes" instead.
     return recoveryCodes ? { status: "codes", recoveryCodes } : { status: "error", error: "somethingWentWrong" };
   }
@@ -109,11 +110,10 @@ export async function twoStepSetupAction(prev: TwoStepSetupState, formData: Form
 }
 
 /** Replaces the recovery codes with ten new ones (the old ones stop working). */
-export async function recoveryCodesAction(_prev: RecoveryCodesState): Promise<RecoveryCodesState> {
+export async function recoveryCodesAction(): Promise<RecoveryCodesState> {
   const { userId } = await requireAccount();
   if (!(await consume("mfaManageByUser", userId)).ok) return { status: "error", error: "rateLimited" };
   const recoveryCodes = await createRecoveryCodes(userId);
-  revalidatePath("/[locale]/settings/security", "page");
   return recoveryCodes ? { status: "codes", recoveryCodes } : { status: "error", error: "somethingWentWrong" };
 }
 

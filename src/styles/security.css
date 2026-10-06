@@ -1,0 +1,96 @@
+/* ---------- Settings → Security (Phase 2d) ---------- */
+@layer components {
+  .security-page {
+    max-inline-size: 44rem;
+  }
+
+  .security-list {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .security-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--color-line-subtle);
+  }
+
+  .security-item__icon {
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin-block-start: 0.2em;
+    color: var(--color-ink-muted);
+  }
+
+  .security-item__main {
+    flex: 1 1 14rem;
+    min-inline-size: 0;
+  }
+
+  .security-item__name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+
+  .security-item__meta {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .security-item__actions {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .security-setup,
+  .security-codes {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .security-setup h3:focus,
+  .security-codes h3:focus {
+    outline: none;
+  }
+
+  /* QR codes need a light background in every theme to scan. */
+  .security-qr {
+    inline-size: 200px;
+    block-size: 200px;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    background-color: #ffffff;
+  }
+
+  .security-key code,
+  .security-codes__list code {
+    font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Menlo, monospace;
+    font-size: var(--text-base);
+    letter-spacing: 0.04em;
+    overflow-wrap: anywhere;
+  }
+
+  .security-codes__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+    padding: var(--space-4);
+    padding-inline-start: var(--space-6);
+    border-radius: var(--radius-md);
+    background-color: var(--color-sunken);
+  }
+}

@@ -34,11 +34,7 @@ export function formatRecoveryCode(code: string): string {
  * read as those digits (Crockford: o → 0, i and l → 1).
  */
 export function normaliseRecoveryCode(input: string): string | null {
-  const code = input
-    .toLowerCase()
-    .replace(/[\s-]/g, "")
-    .replace(/o/g, "0")
-    .replace(/[il]/g, "1");
+  const code = input.toLowerCase().replace(/[\s-]/g, "").replace(/o/g, "0").replace(/[il]/g, "1");
   return code.length === LENGTH && [...code].every((c) => ALPHABET.includes(c)) ? code : null;
 }
 

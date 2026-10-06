@@ -49,11 +49,14 @@ async function go(href: string): Promise<never> {
 export async function startPasskeySignInAction(captchaToken?: string): Promise<PasskeyStartResult> {
   if (!passkeysEnabled()) return { ok: false, error: "passkeyUnsupported" };
   const limit = await consume("passkeySignInByIp", await clientIp());
-  if (!limit.ok) return { ok: false, error: "tooManyAttempts", retryAfterMinutes: Math.ceil(limit.retryAfterSeconds / 60) };
+  if (!limit.ok)
+    return { ok: false, error: "tooManyAttempts", retryAfterMinutes: Math.ceil(limit.retryAfterSeconds / 60) };
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.passkey.startAuthentication({
-    options: { captchaToken: typeof captchaToken === "string" && captchaToken.length < 4096 ? captchaToken : undefined },
+    options: {
+      captchaToken: typeof captchaToken === "string" && captchaToken.length < 4096 ? captchaToken : undefined,
+    },
   });
   if (error || !data) {
     devLog("passkey", error?.message ?? "no options");

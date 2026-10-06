@@ -59,18 +59,44 @@ function SecurityAlert({ input }: { input: SecurityEmailInput }) {
     <Html lang={locale}>
       <Head />
       <Preview>{t(`${input.kind}.preview`)}</Preview>
-      <Body style={{ margin: 0, padding: "24px", background: colors.page, fontFamily: "Arial, Helvetica, sans-serif", color: colors.ink }}>
-        <Container style={{ maxWidth: "480px", margin: "0 auto", background: colors.card, borderRadius: "12px", padding: "32px" }}>
+      <Body
+        style={{
+          margin: 0,
+          padding: "24px",
+          background: colors.page,
+          fontFamily: "Arial, Helvetica, sans-serif",
+          color: colors.ink,
+        }}
+      >
+        <Container
+          style={{
+            maxWidth: "480px",
+            margin: "0 auto",
+            background: colors.card,
+            borderRadius: "12px",
+            padding: "32px",
+          }}
+        >
           <Text style={{ margin: "0 0 8px", fontSize: "14px", color: colors.muted }}>{t("brand")}</Text>
           <Heading as="h1" style={{ margin: "0 0 16px", fontSize: "22px" }}>
             {t(`${input.kind}.heading`)}
           </Heading>
-          <Text style={{ margin: "0 0 16px", fontSize: "16px", lineHeight: "1.5" }}>{t(`${input.kind}.body`, values)}</Text>
+          <Text style={{ margin: "0 0 16px", fontSize: "16px", lineHeight: "1.5" }}>
+            {t(`${input.kind}.body`, values)}
+          </Text>
           <Text style={{ margin: "0 0 24px", fontSize: "16px", lineHeight: "1.5" }}>{t(`${input.kind}.ifNotYou`)}</Text>
           <Section style={{ margin: "0 0 16px" }}>
             <Button
               href={link(primary)}
-              style={{ display: "inline-block", padding: "12px 20px", background: colors.accent, color: "#ffffff", textDecoration: "none", borderRadius: "8px", fontSize: "16px" }}
+              style={{
+                display: "inline-block",
+                padding: "12px 20px",
+                background: colors.accent,
+                color: "#ffffff",
+                textDecoration: "none",
+                borderRadius: "8px",
+                fontSize: "16px",
+              }}
             >
               {t(`${input.kind}.primary`)}
             </Button>

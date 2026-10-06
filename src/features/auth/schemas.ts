@@ -61,14 +61,7 @@ export const newPasswordFormSchema = z.object({
 });
 
 export type FieldName =
-  | "adult"
-  | "termsPrivacy"
-  | "sensitiveData"
-  | "email"
-  | "password"
-  | "code"
-  | "recoveryCode"
-  | "passkeyName";
+  "adult" | "termsPrivacy" | "sensitiveData" | "email" | "password" | "code" | "recoveryCode" | "passkeyName";
 
 /** First error message key for each field, from a failed parse. */
 export function fieldErrors(error: z.ZodError): Partial<Record<FieldName, AuthErrorKey>> {

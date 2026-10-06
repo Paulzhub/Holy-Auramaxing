@@ -52,7 +52,8 @@ export async function verifyTotpAction(_prev: AuthFormState, formData: FormData)
   if (!gate.mfaPending) return go(next);
 
   const parsed = totpCodeSchema.safeParse(formData.get("code") ?? undefined);
-  if (!parsed.success) return { status: "error", fieldErrors: { code: fieldErrors(parsed.error).code ?? "codeInvalid" } };
+  if (!parsed.success)
+    return { status: "error", fieldErrors: { code: fieldErrors(parsed.error).code ?? "codeInvalid" } };
 
   const limit = await consume("mfaVerifyByUser", userId);
   if (!limit.ok) return tooMany(limit.retryAfterSeconds);
@@ -86,7 +87,10 @@ export async function redeemRecoveryCodeAction(_prev: AuthFormState, formData: F
 
   const parsed = recoveryCodeInputSchema.safeParse(formData.get("recoveryCode") ?? undefined);
   if (!parsed.success) {
-    return { status: "error", fieldErrors: { recoveryCode: fieldErrors(parsed.error).recoveryCode ?? "recoveryCodeInvalid" } };
+    return {
+      status: "error",
+      fieldErrors: { recoveryCode: fieldErrors(parsed.error).recoveryCode ?? "recoveryCodeInvalid" },
+    };
   }
   const limit = await consume("mfaVerifyByUser", userId);
   if (!limit.ok) return tooMany(limit.retryAfterSeconds);

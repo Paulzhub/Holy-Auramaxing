@@ -77,3 +77,13 @@ export async function requireAccount(): Promise<Account & { profile: AccountProf
   if (!account.profile) redirect("/api/auth/sign-out?reason=incomplete");
   return account as Account & { profile: AccountProfile };
 }
+
+/** Where the code page (/sign-in/verify) stands for this browser. */
+export async function getTwoStepStatus(): Promise<"signed-out" | "ended" | "pending" | "done"> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getClaims();
+  if (!data?.claims?.sub) return "signed-out";
+  const gate = await readAuthGate(supabase);
+  if (!gate.sessionActive) return "ended";
+  return gate.mfaPending ? "pending" : "done";
+}

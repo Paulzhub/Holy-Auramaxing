@@ -22,7 +22,9 @@
     "resetPassword": "Choose a new password",
     "confirm": "Confirm",
     "welcome": "Welcome",
-    "editProfile": "Edit profile"
+    "editProfile": "Edit profile",
+    "security": "Security",
+    "verify": "Two-step sign-in"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -106,7 +108,10 @@
       "language": "Language",
       "languageBody": "English is the only language for now. Hindi is planned.",
       "account": "Account",
-      "accountBody": "Signing out removes your session from this device."
+      "accountBody": "Signing out removes your session from this device.",
+      "security": "Security",
+      "securityBody": "Two-step sign-in, passkeys, and the devices you’re signed in on.",
+      "securityLink": "Open security settings"
     }
   },
   "errors": {
@@ -476,6 +481,25 @@
     "footer": {
       "label": "Policies",
       "notMedical": "Not a medical service. If you’re in crisis, please contact a local helpline or emergency services."
+    },
+    "verify": {
+      "title": "Two-step sign-in",
+      "lede": "Enter the 6-digit code from your authenticator app.",
+      "codeLabel": "Code from your app",
+      "codeHint": "It changes every 30 seconds.",
+      "submit": "Continue",
+      "pending": "Checking",
+      "recoveryTitle": "Can’t use your app? Use a recovery code",
+      "recoveryBody": "Each recovery code works once. Using one turns two-step sign-in off and signs out your other devices, so you can set it up again on a new phone.",
+      "recoveryLabel": "Recovery code",
+      "recoveryHint": "It looks like abcde-12345.",
+      "recoverySubmit": "Use recovery code",
+      "recoveryPending": "Checking",
+      "notYou": "Not you, or want to stop here?"
+    },
+    "passkey": {
+      "button": "Sign in with a passkey",
+      "pending": "Waiting for your passkey"
     }
   },
   "legal": {
@@ -741,6 +765,81 @@
       "ifNotYou": "If this was you, there’s nothing else to do. If it wasn’t, remove it under Settings, Security, and reset your password.",
       "primary": "Review your passkeys",
       "secondary": "Reset your password"
+    }
+  },
+  "security": {
+    "title": "Security",
+    "lede": "Keep your account safe: two-step sign-in, passkeys, and where you’re signed in.",
+    "back": "Back to settings",
+    "twoStep": {
+      "title": "Two-step sign-in",
+      "on": "On",
+      "off": "Off",
+      "offBody": "Signing in will need only your password, an email link, Google or a passkey. Your recovery codes will be deleted.",
+      "onBody": "Signing in asks for a code from your authenticator app.",
+      "start": "Set up an authenticator app",
+      "starting": "Getting things ready",
+      "scanTitle": "Scan this code",
+      "scanBody": "Open an authenticator app (such as Google Authenticator, Microsoft Authenticator or a password manager), add an account, and scan this code.",
+      "qrAlt": "QR code for your authenticator app",
+      "keyLabel": "Can’t scan it? Type this key into the app instead:",
+      "codeLabel": "Then enter the 6-digit code the app shows",
+      "confirm": "Turn on two-step sign-in",
+      "confirming": "Checking",
+      "codesTitle": "Save your recovery codes",
+      "codesBody": "If you lose your phone, each of these codes lets you sign in once. Keep them somewhere safe, like a password manager or printed at home. They won’t be shown again.",
+      "codesListLabel": "Your recovery codes",
+      "codesDone": "I’ve saved them",
+      "codesLeft": "{count, plural, =0 {You have no recovery codes left.} one {You have # recovery code left.} other {You have # recovery codes left.}}",
+      "newCodes": "Create new recovery codes",
+      "newCodesPending": "Creating codes",
+      "newCodesHint": "Your old codes will stop working.",
+      "offTitle": "Turn off two-step sign-in",
+      "offSubmit": "Turn off two-step sign-in"
+    },
+    "passkeys": {
+      "title": "Passkeys",
+      "body": "Sign in with your fingerprint, face or screen lock instead of typing a password. A passkey can’t be guessed or phished.",
+      "none": "You haven’t added a passkey yet.",
+      "listLabel": "Your passkeys",
+      "add": "Add a passkey",
+      "adding": "Waiting for your device",
+      "unsupported": "This browser can’t create passkeys. Try a recent version of Chrome, Edge, Safari or Firefox.",
+      "addedOn": "Added {date}",
+      "lastUsed": "Last used {date}",
+      "neverUsed": "Not used yet",
+      "rename": "Rename {name}",
+      "nameLabel": "New name",
+      "save": "Save name",
+      "remove": "Remove {name}",
+      "removeBody": "You won’t be able to sign in with this passkey any more. You may also want to delete it from your device.",
+      "removeSubmit": "Remove passkey"
+    },
+    "sessions": {
+      "title": "Devices and sessions",
+      "body": "Where your account is signed in right now. If you don’t recognise one, sign it out and change your password.",
+      "listLabel": "Signed-in devices",
+      "thisDevice": "This device",
+      "unknownDevice": "Device",
+      "signedIn": "Signed in {date}",
+      "lastActive": "Last active {date}",
+      "signOut": "Sign out",
+      "signOutLabel": "Sign out {device}, last active {date}",
+      "others": "Sign out all other devices",
+      "everywhere": "Sign out everywhere",
+      "everywhereBody": "Signs out every device, including this one."
+    },
+    "notices": {
+      "two-step-off": "Two-step sign-in is off.",
+      "recovery-used": "You signed in with a recovery code, so two-step sign-in is now off and your other devices are signed out. Set it up again below.",
+      "passkey-added": "Your passkey is added. You can use it next time you sign in.",
+      "passkey-removed": "The passkey is removed.",
+      "passkey-renamed": "The passkey is renamed.",
+      "passkey-name-invalid": "Passkey names need 1 to 60 characters.",
+      "session-signed-out": "That device is signed out.",
+      "signed-out-others": "All your other devices are signed out.",
+      "rate-limited": "That’s a lot of changes in a short time. Please wait a few minutes and try again.",
+      "failed": "That didn’t work. Please try again."
     }
   }
 }

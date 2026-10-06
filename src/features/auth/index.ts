@@ -9,7 +9,9 @@
  * layout) never pulls the sign-in forms into that route's JavaScript.
  */
 export { POLICY_VERSION } from "./policy";
-export { getAccount, requireAccount, type Account, type AccountProfile } from "./server/account";
+export { getAccount, getTwoStepStatus, requireAccount, type Account, type AccountProfile } from "./server/account";
+export { safeNextPath } from "./schemas";
+export { getSecurityOverview, type SecurityOverview } from "./server/security-queries";
 export { finishOAuthSignIn, signOutIncompleteAccount, verifyEmailLink } from "./server/oauth";
 export { hasAdultAnswer, readSignupTicket } from "./server/tickets";
 
@@ -17,3 +19,4 @@ export { hasAdultAnswer, readSignupTicket } from "./server/tickets";
 export { AuthHeading } from "./components/auth-heading";
 export { AuthNotice } from "./components/auth-notice";
 export { SignOutButton } from "./components/sign-out-button";
+export { PasskeyList, SecurityNotice, SessionList, TwoStepOff } from "./components/security-sections";

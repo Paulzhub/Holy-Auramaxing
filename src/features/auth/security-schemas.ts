@@ -9,7 +9,12 @@ import { PASSKEY_NAME_MAX_LENGTH } from "./security-state";
 export const totpCodeSchema = z
   .string({ error: "codeRequired" })
   .transform((v) => v.replace(/\s/g, ""))
-  .pipe(z.string().min(1, { error: "codeRequired" }).regex(/^\d{6}$/, { error: "codeInvalid" }));
+  .pipe(
+    z
+      .string()
+      .min(1, { error: "codeRequired" })
+      .regex(/^\d{6}$/, { error: "codeInvalid" }),
+  );
 
 export const recoveryCodeInputSchema = z
   .string({ error: "recoveryCodeRequired" })
@@ -25,7 +30,10 @@ export const passkeyNameSchema = z
 
 export const idSchema = z.uuid();
 
-const base64url = z.string().max(16_384).regex(/^[A-Za-z0-9_-]*$/);
+const base64url = z
+  .string()
+  .max(16_384)
+  .regex(/^[A-Za-z0-9_-]*$/);
 
 /**
  * A credential from navigator.credentials (its toJSON() form). The auth

@@ -96,8 +96,7 @@ class NoSender implements EmailSender {
 
 /** Picks the sender from configuration. Exported for tests. */
 export function selectSender(env: ServerEnv): EmailSender {
-  const provider =
-    env.EMAIL_PROVIDER ?? (env.RESEND_API_KEY ? "resend" : env.MAILPIT_URL ? "mailpit" : "none");
+  const provider = env.EMAIL_PROVIDER ?? (env.RESEND_API_KEY ? "resend" : env.MAILPIT_URL ? "mailpit" : "none");
   if (provider === "resend") {
     if (!env.RESEND_API_KEY) return new NoSender();
     return new ResendSender(env.RESEND_API_KEY, env.EMAIL_FROM ?? DEFAULT_RESEND_FROM);

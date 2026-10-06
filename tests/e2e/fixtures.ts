@@ -1,7 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test as base, expect, type BrowserContext, type Page } from "@playwright/test";
 
-export const appRoutes = ["/home", "/groups", "/check-in", "/alerts", "/me", "/settings"] as const;
+export const appRoutes = [
+  "/home",
+  "/groups",
+  "/check-in",
+  "/alerts",
+  "/me",
+  "/settings",
+  "/settings/security",
+] as const;
 export const allRoutes = ["/", ...appRoutes, "/dev/components", "/this-page-does-not-exist"] as const;
 /** Pages for signed-out visitors (axe, keyboard and password-manager checks in auth.spec.ts). */
 export const authRoutes = [

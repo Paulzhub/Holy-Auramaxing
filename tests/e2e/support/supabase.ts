@@ -102,3 +102,41 @@ export async function hibpReachable(): Promise<boolean> {
     return false;
   }
 }
+
+export interface MailpitMessage {
+  subject: string;
+  html: string;
+  text: string;
+  from: string;
+}
+
+/** All emails to `to` whose subject matches, newest first (no waiting). */
+export async function listEmails(to: string, subject: RegExp): Promise<MailpitSummary[]> {
+  const res = await fetch(`${mailpitUrl}/api/v1/search?query=${encodeURIComponent(`to:"${to}"`)}`);
+  if (!res.ok) return [];
+  const { messages } = (await res.json()) as { messages: MailpitSummary[] };
+  return messages.filter((m) => subject.test(m.Subject));
+}
+
+/** Waits for the newest email to `to` whose subject matches, and returns it. */
+export async function waitForEmail(to: string, subject: RegExp, timeoutMs = 15_000): Promise<MailpitMessage> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const [match] = await listEmails(to, subject);
+    if (match) {
+      const message = (await (await fetch(`${mailpitUrl}/api/v1/message/${match.ID}`)).json()) as {
+        HTML: string;
+        Text: string;
+        From: { Name: string; Address: string };
+      };
+      return {
+        subject: match.Subject,
+        html: message.HTML,
+        text: message.Text,
+        from: `${message.From.Name} <${message.From.Address}>`,
+      };
+    }
+    await new Promise((r) => setTimeout(r, 400));
+  }
+  throw new Error(`No email to ${to} matching ${subject}`);
+}

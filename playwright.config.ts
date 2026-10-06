@@ -52,7 +52,13 @@ export default defineConfig({
     url: `${baseURL}/api/health`,
     reuseExistingServer: !process.env.CI,
     // Photos are approved by the stand-in screener, so tests never call Google (D-026).
-    env: { ENABLE_DEV_PAGES: "true", IMAGE_SCREENING_PROVIDER: process.env.IMAGE_SCREENING_PROVIDER ?? "stub" },
+    // Passkeys are on and emails go to Mailpit (Phase 2d), never to Resend.
+    env: {
+      ENABLE_DEV_PAGES: "true",
+      IMAGE_SCREENING_PROVIDER: process.env.IMAGE_SCREENING_PROVIDER ?? "stub",
+      PASSKEYS_ENABLED: "true",
+      EMAIL_PROVIDER: "mailpit",
+    },
     timeout: 60_000,
   },
 });
