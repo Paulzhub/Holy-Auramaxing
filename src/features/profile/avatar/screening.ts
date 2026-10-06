@@ -1,6 +1,7 @@
 import sharp from "sharp";
 
 import { readServerEnv } from "@/lib/env";
+import { devLog } from "@/lib/server/dev-log";
 
 /**
  * Nudity screening for uploaded images (CLAUDE.md §7.3, §7.11). See D-026.
@@ -68,14 +69,23 @@ export function googleVisionScreener(apiKey: string, fetchImpl: typeof fetch = f
           cache: "no-store",
           signal: AbortSignal.timeout(10_000),
         });
-        if (!res.ok) return "unavailable";
+        if (!res.ok) {
+          // Google's message, e.g. "API key not valid" or "Cloud Vision API has not been used in project …".
+          const detail = await res.text().catch(() => "");
+          devLog("avatar", `Google Cloud Vision answered ${res.status}: ${detail.slice(0, 300)}`);
+          return "unavailable";
+        }
         const body = (await res.json()) as {
           responses?: { safeSearchAnnotation?: SafeSearchAnnotation; error?: { message?: string } }[];
         };
         const first = body.responses?.[0];
-        if (!first || first.error || !first.safeSearchAnnotation) return "unavailable";
+        if (!first || first.error || !first.safeSearchAnnotation) {
+          devLog("avatar", `Google Cloud Vision gave no verdict: ${first?.error?.message ?? "empty response"}`);
+          return "unavailable";
+        }
         return verdictFor(first.safeSearchAnnotation);
-      } catch {
+      } catch (error) {
+        devLog("avatar", error);
         return "unavailable";
       }
     },
@@ -111,6 +121,10 @@ const noScreener: ImageScreener = { name: "none", screen: async () => "unavailab
  */
 export function getImageScreener(): ImageScreener {
   const env = readServerEnv();
+  if (env.GOOGLE_CLOUD_VISION_API_KEY && !env.GOOGLE_CLOUD_VISION_API_KEY.startsWith("AIza")) {
+    // Google API keys start with "AIza". An OAuth client secret ("GOCSPX-…") is a common mix-up.
+    devLog("avatar", "GOOGLE_CLOUD_VISION_API_KEY doesn't look like a Google API key (they start with AIza)");
+  }
   const provider =
     env.IMAGE_SCREENING_PROVIDER ??
     (env.GOOGLE_CLOUD_VISION_API_KEY ? "google" : process.env.NODE_ENV === "development" ? "stub" : "none");

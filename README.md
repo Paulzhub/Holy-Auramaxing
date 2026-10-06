@@ -55,7 +55,7 @@ Under `npm run dev`, photos are approved by a stand-in screener, so you don't ne
 
 1. In the same Google Cloud project, enable the **Cloud Vision API** (billing must be on, even for the free tier).
 2. Create an **API key** under APIs & Services → Credentials and restrict it to the Cloud Vision API.
-3. Put it in `.env.local` as `GOOGLE_CLOUD_VISION_API_KEY=…`. Never commit it.
+3. Put it in `.env.local` as `GOOGLE_CLOUD_VISION_API_KEY=…`. Never commit it. An API key starts with `AIza`; the OAuth client secret (`GOCSPX-…`) from Google sign-in is a different thing and won't work.
 
 A production build with no key keeps every new photo unpublished (D-026). To try a production build on your own computer (`npm run build` then `npm start`) without a key, add `IMAGE_SCREENING_PROVIDER=stub` to `.env.local`. Never set that in a real deployment.
 
