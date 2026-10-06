@@ -3,6 +3,8 @@ import { cache } from "react";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+import { readAuthGate } from "./security-events";
+
 export interface AccountProfile {
   id: string;
   handle: string;
@@ -16,8 +18,14 @@ export interface AccountProfile {
 export interface Account {
   userId: string;
   email: string | null;
-  /** null when signed in but the account was never completed (see D-014). */
+  /** null when signed in but the account was never completed (see D-014), or blocked (below). */
   profile: AccountProfile | null;
+  /**
+   * Why the database refused this session, if it did (util.session_ok):
+   * "mfa" = the authenticator code hasn't been entered yet (D-028);
+   * "ended" = this session was signed out from another device (D-030).
+   */
+  blocked: "mfa" | "ended" | null;
 }
 
 /**
@@ -37,10 +45,19 @@ export const getAccount = cache(async (): Promise<Account | null> => {
     .eq("id", claims.sub)
     .maybeSingle<AccountProfile>();
 
+  // Row-level security hides the profile when the session has ended or
+  // still needs its two-step code. Only then is it worth asking which.
+  let blocked: Account["blocked"] = null;
+  if (!profile) {
+    const gate = await readAuthGate(supabase);
+    blocked = !gate.sessionActive ? "ended" : gate.mfaPending ? "mfa" : null;
+  }
+
   return {
     userId: claims.sub,
     email: typeof claims.email === "string" ? claims.email : null,
     profile: profile ?? null,
+    blocked,
   };
 });
 
@@ -52,6 +69,10 @@ export const getAccount = cache(async (): Promise<Account | null> => {
 export async function requireAccount(): Promise<Account & { profile: AccountProfile }> {
   const account = await getAccount();
   if (!account) redirect("/sign-in");
+  // Two-step sign-in is on and the code hasn't been entered yet.
+  if (account.blocked === "mfa") redirect("/sign-in/verify");
+  // Signed out from another device: clear this browser's cookies too.
+  if (account.blocked === "ended") redirect("/api/auth/sign-out?reason=ended");
   // Signed in, but sign-up was never finished: sign out and start again.
   if (!account.profile) redirect("/api/auth/sign-out?reason=incomplete");
   return account as Account & { profile: AccountProfile };

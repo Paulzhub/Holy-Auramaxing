@@ -28,6 +28,16 @@ export const rateLimitRules = {
   avatarUploadByUser: { limit: 10, windowSeconds: 60 * 60 },
   /** Profile and privacy saves. */
   profileSaveByUser: { limit: 60, windowSeconds: 60 * 60 },
+  /** Two-step codes and recovery codes, together: 5 wrong tries, then wait (D-028). */
+  mfaVerifyByUser: { limit: 5, windowSeconds: 15 * 60 },
+  /** Setting up, confirming or turning off the authenticator app, and new recovery codes. */
+  mfaManageByUser: { limit: 10, windowSeconds: 60 * 60 },
+  /** Passkey sign-in ceremonies from one network address. */
+  passkeySignInByIp: { limit: 20, windowSeconds: 15 * 60 },
+  /** Adding, renaming and removing passkeys. */
+  passkeyManageByUser: { limit: 20, windowSeconds: 60 * 60 },
+  /** Signing out sessions from the sessions page. */
+  sessionManageByUser: { limit: 30, windowSeconds: 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;

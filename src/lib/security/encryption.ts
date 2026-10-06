@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from "node:crypto";
 
 import { readServerEnv } from "@/lib/env";
 
@@ -39,4 +39,13 @@ export function decryptText(stored: string, context: string): string {
   decipher.setAAD(Buffer.from(context, "utf8"));
   decipher.setAuthTag(Buffer.from(tag, "base64url"));
   return Buffer.concat([decipher.update(Buffer.from(ciphertext, "base64url")), decipher.final()]).toString("utf8");
+}
+
+/**
+ * A separate 32-byte key for one purpose (e.g. "mfa-recovery-codes-v1"),
+ * derived from APP_ENCRYPTION_KEY with HKDF-SHA256, so one secret serves
+ * several jobs without the same key being reused for different things.
+ */
+export function derivedKey(purpose: string): Buffer {
+  return Buffer.from(hkdfSync("sha256", key(), Buffer.alloc(0), Buffer.from(purpose, "utf8"), 32));
 }

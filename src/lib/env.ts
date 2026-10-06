@@ -35,6 +35,14 @@ const serverEnvSchema = z.object({
   GOOGLE_CLOUD_VISION_API_KEY: z.string().min(1).optional(),
   /** Overrides the screener: "stub" approves everything (dev and CI only), "none" holds every photo. */
   IMAGE_SCREENING_PROVIDER: z.enum(["google", "stub", "none"]).optional(),
+  /** Which service sends the app's own emails (D-030). Unset: resend with a key, else mailpit with a URL, else none. */
+  EMAIL_PROVIDER: z.enum(["resend", "mailpit", "none"]).optional(),
+  /** Sender, e.g. "Aura <hello@example.com>". Without a verified domain Resend only accepts onboarding@resend.dev. */
+  EMAIL_FROM: z.string().min(3).max(200).optional(),
+  /** Resend API key (server-only). */
+  RESEND_API_KEY: z.string().min(1).optional(),
+  /** Local Mailpit inbox (development and tests). */
+  MAILPIT_URL: z.url().optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -50,6 +58,10 @@ export function readServerEnv(): ServerEnv {
     APP_ENCRYPTION_KEY: process.env.APP_ENCRYPTION_KEY || undefined,
     GOOGLE_CLOUD_VISION_API_KEY: process.env.GOOGLE_CLOUD_VISION_API_KEY || undefined,
     IMAGE_SCREENING_PROVIDER: process.env.IMAGE_SCREENING_PROVIDER || undefined,
+    EMAIL_PROVIDER: process.env.EMAIL_PROVIDER || undefined,
+    EMAIL_FROM: process.env.EMAIL_FROM || undefined,
+    RESEND_API_KEY: process.env.RESEND_API_KEY || undefined,
+    MAILPIT_URL: process.env.MAILPIT_URL || undefined,
   });
 }
 
@@ -62,4 +74,12 @@ export function isDevPagesEnabled(): boolean {
 export function siteOrigin(fallbackOrigin?: string): string {
   const configured = readPublicEnv().NEXT_PUBLIC_SITE_URL;
   return new URL(configured ?? fallbackOrigin ?? "http://localhost:3000").origin;
+}
+
+/**
+ * Passkeys kill switch (D-029): on only when PASSKEYS_ENABLED=true. Read on
+ * the server at run time, so it can be turned off without a rebuild.
+ */
+export function passkeysEnabled(): boolean {
+  return process.env.PASSKEYS_ENABLED === "true";
 }

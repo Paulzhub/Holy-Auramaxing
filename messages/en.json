@@ -303,7 +303,20 @@
       "tooManyAttempts": "Too many attempts. Please wait {minutes, plural, one {# minute} other {# minutes}} and try again.",
       "tooManyEmails": "We’ve sent several emails already. Please wait a little before asking for another.",
       "signupExpired": "Your sign-up took a little too long. Please start again.",
-      "somethingWentWrong": "Something went wrong on our side. Your information is safe. Please try again."
+      "somethingWentWrong": "Something went wrong on our side. Your information is safe. Please try again.",
+      "codeRequired": "Enter the 6-digit code from your authenticator app.",
+      "codeInvalid": "That code didn’t work. Codes change every 30 seconds, so try the newest one.",
+      "recoveryCodeRequired": "Enter one of your recovery codes.",
+      "recoveryCodeInvalid": "That recovery code didn’t work. Check it, or try another one. Each code works once.",
+      "twoStepAlreadyOn": "Two-step sign-in is already on for your account.",
+      "twoStepSetupExpired": "That setup took a little too long. Please start again.",
+      "passkeyCancelled": "The passkey request was cancelled or timed out. You can try again.",
+      "passkeyFailed": "We couldn’t use that passkey. Try again, or sign in another way.",
+      "passkeyUnsupported": "This browser can’t use passkeys. You can sign in another way.",
+      "passkeyNeedsCode": "Enter your two-step code first, then you can manage passkeys.",
+      "passkeyNameRequired": "Give the passkey a name, like “My phone”.",
+      "passkeyNameTooLong": "Use 60 characters or fewer.",
+      "rateLimited": "That’s a lot of changes in a short time. Please wait a few minutes and try again."
     },
     "notices": {
       "magicLinkSent": "If that address has an account, a sign-in link is on its way. It works once and expires in an hour.",
@@ -319,7 +332,9 @@
       "google-cancelled": "Google sign-in was cancelled. You can try again or use your email.",
       "password-updated": "Your password is updated, and you’re signed out everywhere else.",
       "email-confirmed": "Your email is confirmed. Welcome!",
-      "email-changed": "Your email address is updated."
+      "email-changed": "Your email address is updated.",
+      "session-ended": "You were signed out of this device from another one. Please sign in again.",
+      "signed-out-everywhere": "You’re signed out on every device."
     },
     "signUp": {
       "step": "Step {current} of {total}",
@@ -695,6 +710,37 @@
       "avatarSize": "Please choose a photo under 5 MB.",
       "avatarUnreadable": "We couldn’t open that photo. Please try another one.",
       "avatarTooSmall": "That photo is very small. Please choose one at least 64 pixels wide."
+    }
+  },
+  "emails": {
+    "brand": "Aura",
+    "footer": "You get this email because security alerts can’t be turned off. They only go to the address on your account.",
+    "newSignIn": {
+      "subject": "New sign-in to your Aura account",
+      "preview": "Your account was signed in to from a new device.",
+      "heading": "New sign-in",
+      "body": "Your account was just signed in to from a device it hasn’t used before: {device}, {when}.",
+      "ifNotYou": "If this was you, there’s nothing else to do. If it wasn’t, reset your password now. That signs out every other device.",
+      "primary": "Check your devices",
+      "secondary": "Reset your password"
+    },
+    "recoveryCodeUsed": {
+      "subject": "A recovery code was used on your Aura account",
+      "preview": "Two-step sign-in is now off for your account.",
+      "heading": "A recovery code was used",
+      "body": "Someone signed in with one of your recovery codes ({device}, {when}). Two-step sign-in is now off, and every other device was signed out.",
+      "ifNotYou": "If this was you, set up two-step sign-in again with your authenticator app. If it wasn’t, reset your password now.",
+      "primary": "Set up two-step sign-in",
+      "secondary": "Reset your password"
+    },
+    "passkeyAdded": {
+      "subject": "A passkey was added to your Aura account",
+      "preview": "You can now sign in with a new passkey.",
+      "heading": "New passkey",
+      "body": "A passkey was added to your account ({device}, {when}). It can now be used to sign in.",
+      "ifNotYou": "If this was you, there’s nothing else to do. If it wasn’t, remove it under Settings, Security, and reset your password.",
+      "primary": "Review your passkeys",
+      "secondary": "Reset your password"
     }
   }
 }

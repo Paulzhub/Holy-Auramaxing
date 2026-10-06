@@ -12,6 +12,8 @@ export const authNotices = [
   "password-updated",
   "email-confirmed",
   "email-changed",
+  "session-ended",
+  "signed-out-everywhere",
 ] as const;
 export type AuthNoticeKey = (typeof authNotices)[number];
 

@@ -2,7 +2,7 @@
 
 import type { AuthError } from "@supabase/supabase-js";
 import { getLocale } from "next-intl/server";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import { redirect as redirectExternal } from "next/navigation";
 
 import { redirect } from "@/i18n/navigation";
@@ -11,7 +11,6 @@ import { checkPwnedPassword } from "@/lib/security/pwned-passwords";
 import { check, clear, consume } from "@/lib/security/rate-limit";
 import { clientIp } from "@/lib/security/request-info";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { THEME_COOKIE, THEME_MAX_AGE_SECONDS } from "@/lib/theme/theme";
 
 import type { AuthErrorKey, AuthFormState } from "../form-state";
 import {
@@ -26,6 +25,8 @@ import {
 } from "../schemas";
 import { audit } from "@/lib/server/audit";
 import { verifyEmailLink } from "./oauth";
+import { afterFirstStep, readAuthGate, recordSignIn } from "./security-events";
+import { syncThemeCookie } from "./theme-sync";
 import {
   clearSignupCookies,
   hasAdultAnswer,
@@ -79,19 +80,6 @@ function authErrorKey(error: AuthError): AuthErrorKey {
     default:
       return error.status === 429 ? "tooManyEmails" : "somethingWentWrong";
   }
-}
-
-async function syncThemeCookie(userId: string): Promise<void> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.from("profiles").select("theme_pref").eq("id", userId).maybeSingle();
-  if (!data?.theme_pref) return;
-  (await cookies()).set(THEME_COOKIE, data.theme_pref, {
-    path: "/",
-    maxAge: THEME_MAX_AGE_SECONDS,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: false,
-  });
 }
 
 // ---------------------------------------------------------------- sign-up
@@ -231,8 +219,10 @@ export async function signInAction(_prev: AuthFormState, formData: FormData): Pr
 
   await clear("signInFailuresByEmail", email);
   await audit("auth.sign_in", data.user.id, { method: "password" });
-  await syncThemeCookie(data.user.id);
-  return go(safeNextPath(next));
+  await recordSignIn({ userId: data.user.id, email: data.user.email, accessToken: data.session?.access_token });
+  const gate = await readAuthGate(supabase);
+  if (!gate.mfaPending) await syncThemeCookie(data.user.id);
+  return go(afterFirstStep(safeNextPath(next), gate));
 }
 
 /** Magic link. Only for existing accounts: it never creates one. */
