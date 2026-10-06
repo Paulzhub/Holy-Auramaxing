@@ -8,6 +8,7 @@ import { requireAccount } from "@/features/auth";
 import { redirect } from "@/i18n/navigation";
 import { consume } from "@/lib/security/rate-limit";
 import { audit } from "@/lib/server/audit";
+import { devLog } from "@/lib/server/dev-log";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import { AvatarImageError, processAvatar } from "../avatar/image";
@@ -40,6 +41,7 @@ export async function saveProfileAction(_prev: ProfileFormState, formData: FormD
     if (profileError.message.includes("handle_reserved")) {
       return { status: "error", fieldErrors: { handle: "handleReserved" } };
     }
+    devLog("profile", profileError.message);
     return { status: "error", formError: "saveFailed" };
   }
 
@@ -55,7 +57,10 @@ export async function saveProfileAction(_prev: ProfileFormState, formData: FormD
     verse_visibility: v.verseVisibility,
   };
   const { error: privacyError } = await supabase.from("privacy_settings").update(privacy).eq("user_id", userId);
-  if (privacyError) return { status: "error", formError: "saveFailed" };
+  if (privacyError) {
+    devLog("profile", privacyError.message);
+    return { status: "error", formError: "saveFailed" };
+  }
 
   await audit("profile.updated", userId);
   const changed = before
@@ -91,6 +96,7 @@ export async function uploadAvatarAction(_prev: AvatarFormState, formData: FormD
   try {
     renditions = await processAvatar(new Uint8Array(await file.arrayBuffer()));
   } catch (error) {
+    devLog("avatar", error);
     return {
       status: "error",
       error: error instanceof AvatarImageError ? avatarErrors[error.reason] : "avatarUnreadable",
@@ -99,7 +105,8 @@ export async function uploadAvatarAction(_prev: AvatarFormState, formData: FormD
 
   try {
     await storePendingAvatar(userId, renditions);
-  } catch {
+  } catch (error) {
+    devLog("avatar", error);
     return { status: "error", error: "saveFailed" };
   }
 
@@ -114,7 +121,8 @@ export async function removeAvatarAction(): Promise<AvatarFormState> {
   const { userId } = await requireAccount();
   try {
     await removeAvatar(userId);
-  } catch {
+  } catch (error) {
+    devLog("avatar", error);
     return { status: "error", error: "saveFailed" };
   }
   revalidatePath("/[locale]/me", "layout");

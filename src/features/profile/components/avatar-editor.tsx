@@ -172,7 +172,7 @@ export function AvatarEditor({ name, src, status, hasPending }: AvatarEditorProp
       <div className="profile-avatar__row">
         <Avatar name={name} src={src} size="xl" decorative />
         <div className="profile-avatar__controls grid gap-3">
-          <form action={uploadAction} className="grid gap-3" encType="multipart/form-data">
+          <form action={uploadAction} className="grid gap-3">
             <div className="ui-field">
               <label className="ui-label" htmlFor="avatar">
                 {t("avatar.choose")}

@@ -57,7 +57,9 @@ Under `npm run dev`, photos are approved by a stand-in screener, so you don't ne
 2. Create an **API key** under APIs & Services → Credentials and restrict it to the Cloud Vision API.
 3. Put it in `.env.local` as `GOOGLE_CLOUD_VISION_API_KEY=…`. Never commit it.
 
-A production build with no key keeps every new photo unpublished (D-026).
+A production build with no key keeps every new photo unpublished (D-026). To try a production build on your own computer (`npm run build` then `npm start`) without a key, add `IMAGE_SCREENING_PROVIDER=stub` to `.env.local`. Never set that in a real deployment.
+
+When something can't be saved under `npm run dev`, the terminal running it explains why (lines starting `[avatar]`, `[profile]` or `[onboarding]`); people only ever see a gentle message.
 
 Run the app:
 

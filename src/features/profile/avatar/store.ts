@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 
 import { audit } from "@/lib/server/audit";
+import { devLog } from "@/lib/server/dev-log";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 import { AVATAR_SIZES, type AvatarPixels } from "./image";
@@ -64,7 +65,7 @@ export async function storePendingAvatar(userId: string, renditions: Record<Avat
     });
     if (error) {
       await removeFiles([path]);
-      throw new Error("avatar upload failed");
+      throw new Error(`avatar upload to storage failed: ${error.message}`);
     }
   }
 
@@ -75,7 +76,7 @@ export async function storePendingAvatar(userId: string, renditions: Record<Avat
     .eq("id", userId);
   if (error) {
     await removeFiles([path]);
-    throw new Error("avatar save failed");
+    throw new Error(`avatar save failed: ${error.message}`);
   }
   // An earlier photo still waiting for screening is replaced by this one.
   if (before?.avatar_pending_path) await removeFiles([before.avatar_pending_path]);
@@ -97,10 +98,16 @@ export async function screenPendingAvatar(
   const path = row?.avatar_pending_path;
   if (!row || !path) return (row?.avatar_status as "none" | "ready" | "rejected" | undefined) ?? "none";
 
-  const { data: blob } = await admin.storage.from(BUCKET).download(avatarFile(path, 512));
-  if (!blob) return "pending_review";
+  const { data: blob, error: downloadError } = await admin.storage.from(BUCKET).download(avatarFile(path, 512));
+  if (!blob) {
+    devLog("avatar", `could not read the pending photo for screening: ${downloadError?.message ?? "missing"}`);
+    return "pending_review";
+  }
   const verdict = await screener.screen(new Uint8Array(await blob.arrayBuffer()));
-  if (verdict === "unavailable") return "pending_review";
+  if (verdict === "unavailable") {
+    devLog("avatar", `screening unavailable (screener: ${screener.name}); the photo stays pending`);
+    return "pending_review";
+  }
 
   if (verdict === "approved") {
     const { data: updated } = await admin
