@@ -1,6 +1,6 @@
 # Threat model (STRIDE)
 
-Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 2d (two-step sign-in, passkeys, sessions), 2026-10-06.
+Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 2e (data export, account deletion), 2026-10-06.
 
 ## Scope
 
@@ -95,6 +95,22 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 | **D**enial of service      | Email flooding through sign-ins                                         | New-device emails only for devices not seen before; existing sign-in rate limits; emails sent after the response                                                               |
 | **R**epudiation            | "I didn't turn that off"                                                | Audit log: two-step on/off, codes created and used, code failures, passkeys added, renamed and removed, sessions signed out (no IPs, no codes)                                 |
 
+## Phase 2e additions
+
+| Threat                     | Example                                                                 | Mitigation                                                                                                                                                                              |
+| -------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | Someone downloads another person's data                                 | The export reads only through RLS as the signed-in person; `util.session_ok()` applies (two-step code, live session); e2e checks the contents (D-032)                                   |
+| **I**nformation disclosure | A cross-site page makes a signed-in browser download, or log, an export | POST only; Origin must name this host and `Sec-Fetch-Site` be same-origin (403 otherwise, e2e-tested); SameSite=Lax cookies                                                             |
+| **I**nformation disclosure | The export file leaks secrets                                           | No password hashes, factor secrets, recovery-code hashes, tokens or ciphertext; e2e checks for them. `private, no-store`. The page warns that the file holds private things             |
+| **T**ampering              | A formula in a profile field runs when the CSV opens in a spreadsheet   | Cells starting with `= + - @`, tab or CR get a leading apostrophe (unit-tested)                                                                                                         |
+| **D**enial of service      | Repeated exports to load the server                                     | 3 an hour per person; only signed-in people                                                                                                                                             |
+| **S**poofing / tampering   | A stolen session deletes the account                                    | 14 days to keep it; a "your account will close" email; signing in shows "Keep my account". With two-step sign-in on, a password alone can't ask (`session_ok()`)                        |
+| **T**ampering              | Someone else cancels a deletion the person asked for                    | Only the account's own live session can cancel; a "your account stays open" email; audit events for both                                                                                |
+| **T**ampering              | Back-dating `deletion_requested_at` to erase at once                    | Members can't write the column; only `request_account_deletion()` sets it, to `now()`, and asking again keeps the first date (pgTAP)                                                    |
+| **I**nformation disclosure | Erased data survives (files, audit links, sessions)                     | One cascade from `auth.users`; photo folders queued and removed through the Storage API; audit rows unlinked; e2e checks the auth user, profile, files and audit links are gone (D-033) |
+| **E**levation of privilege | Calling the purge or reading the purge queue                            | Service-role-only functions; the queue is in the private schema; `/api/cron/account-purge` needs `CRON_SECRET` (timing-safe compare), 404 without one                                   |
+| **R**epudiation            | "I never asked to delete my account" / "I didn't download that"         | Audit events: export, deletion requested, cancelled, storage purged, and an anonymous `account.deleted`                                                                                 |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -116,3 +132,6 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 - Passkeys are a Supabase beta; set the production relying party (domain) in the dashboard, and keep `PASSKEYS_ENABLED` as the kill switch (D-029).
 - Supabase's native MFA recovery codes are experimental and off locally; ours replace them for now (D-028).
 - Two-step sign-in is optional; Phase 11 must require it for platform admins.
+- Phase 3 onwards must fill in `private.anonymise_group_contributions()` and add their part to the data export (D-032, D-033).
+- Until there is hosting with `CRON_SECRET`, photos of erased accounts wait in the private bucket (nothing can serve them); run `npm run accounts:purge` locally (D-033).
+- Export and deletion don't ask for a fresh sign-in (owner's choice); revisit with the app lock (D-032).

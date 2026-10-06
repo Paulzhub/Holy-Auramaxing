@@ -10,5 +10,6 @@ export { onboardingSteps, parseStep, type OnboardingStep } from "./onboarding";
 export { FinishOnboardingButton, SkipSetupButton } from "./components/finish-onboarding";
 export { getOwnProfile, type OwnProfile } from "./server/queries";
 export { serveAvatar } from "./server/avatar-route";
+export { exportProfileData } from "./server/export";
 export { avatarUrl, type AvatarSize } from "./avatar/url";
 export type { Visibility } from "./profile-schema";

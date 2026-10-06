@@ -2,7 +2,7 @@
 
 A grace-centred web app and installable PWA for daily check-ins, small-group challenges, accountability and Scripture. The full product spec is in [`CLAUDE.md`](CLAUDE.md), and the build is split into phases in [`PROMPTS.md`](PROMPTS.md).
 
-**Status:** Phases 1, 2a and 2b are done. Phase 2c (profiles and photos) is in review; security settings and account deletion follow in 2d–2e.
+**Status:** Phase 1 and Phases 2a–2d are done. Phase 2e (data export and account deletion) is in review; Phase 3 (groups) is next.
 
 ## What you need
 
@@ -82,6 +82,7 @@ Then open <http://localhost:3000>. Useful pages:
 - `/welcome`: onboarding for new accounts (five optional steps)
 - `/me` and `/me/edit`: your profile, photo and privacy settings
 - `/settings/security`: two-step sign-in, recovery codes, passkeys, devices and sessions
+- `/settings/data`: download your data (one zip with JSON and CSV), or delete your account (14 days to change your mind, then `/account-closing` until it's erased)
 - `/sign-in/verify`: the two-step code page (after signing in, when two-step sign-in is on)
 - `/home`: the app shell (Home, Groups, Check in, Alerts, Me, Settings). You need to be signed in.
 - `/privacy`, `/terms`, `/your-data`: draft policies (waiting for legal review)
@@ -98,7 +99,7 @@ npm ci                         # new packages
 npx supabase migration up      # new tables; keeps your local accounts
 ```
 
-Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`; 2d added `EMAIL_PROVIDER`, `PASSKEYS_ENABLED` and the optional `RESEND_API_KEY`/`EMAIL_FROM`), and restart `npm run dev`: environment files are read only at start-up. When `supabase/config.toml` changed (2d did), restart Supabase too: `npx supabase stop`, then `npx supabase start`.
+Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`; 2d added `EMAIL_PROVIDER`, `PASSKEYS_ENABLED` and the optional `RESEND_API_KEY`/`EMAIL_FROM`; 2e added `CRON_SECRET`), and restart `npm run dev`: environment files are read only at start-up. When `supabase/config.toml` changed (2d did), restart Supabase too: `npx supabase stop`, then `npx supabase start`.
 
 > **Windows tips**
 >
@@ -119,6 +120,7 @@ Then compare `.env.local` with `.env.example` for new settings (2b added `APP_EN
 | `npm run test:e2e`                           | Playwright end-to-end tests, including axe in both themes and the sign-up, sign-in and reset flows. **Needs `npx supabase start` and `npm run build` first.** The first time, run `npx playwright install chromium`. |
 | `npm run test:db`                            | pgTAP database tests (needs `npx supabase start`)                                                                                                                                                                    |
 | `npm run lighthouse`                         | Lighthouse CI, failing below 95 in any category, on public, sign-in and signed-in pages. Needs Supabase running and `npm run build` first.                                                                           |
+| `npm run accounts:purge`                     | Erases accounts whose 14 days are over and removes their photos now (the app must be running; needs `CRON_SECRET`). The database also erases them daily on its own.                                                  |
 | `npm run db:types`                           | Regenerate `src/lib/supabase/database.types.ts` from the local database after a migration (CI checks it's current).                                                                                                  |
 | `npm run check`                              | Lint + format + typecheck + unit tests + build: what CI's first job runs                                                                                                                                             |
 | `npx supabase db reset`                      | Rebuild the local database from `supabase/migrations`                                                                                                                                                                |
@@ -153,6 +155,7 @@ docs/                        decisions, threat model, design system
 - **Security headers.** `src/proxy.ts` sends a strict, nonce-based Content-Security-Policy on every page. `next.config.ts` adds HSTS, `nosniff`, Referrer-Policy, Permissions-Policy, COOP/CORP and `X-Frame-Options`. See `docs/threat-model.md`.
 - **Module boundaries.** ESLint stops one module from importing another module's internals. Each module has two public entry points: `@/features/x` (server functions and server components) and `@/features/x/ui` (client components). They are separate so that server helpers never pull client code into a page (docs/decisions.md D-023).
 - **Security (Phase 2d).** Optional two-step sign-in with an authenticator app, ten single-use recovery codes, and passkeys (Supabase Auth). A database policy (`util.session_ok()`) hides every personal row from a session that hasn't entered its code yet or has been signed out from another device. Settings → Security lists your devices (no IP addresses) and signs them out. A new device triggers a discreet "New sign-in" email (D-028–D-030).
+- **Your data (Phase 2e).** Settings → Your data downloads everything as one zip (`data.json`, a CSV per table, your photo). Deleting the account hides your profile at once, signs out your other devices and emails you; for 14 days signing in shows only "Keep my account". Then a daily database job erases the account and everything personal, and the app removes your photo files (D-032, D-033).
 - **Accounts.** Sign-up asks "Are you 18 or older?", then shows a plain-language consent notice with two unticked boxes. Only then can an account be created, and the database enforces that order (D-014). Session cookies are httpOnly; `src/proxy.ts` refreshes the session and sends signed-out visitors to `/sign-in`.
 
 ## Continuous integration
@@ -188,6 +191,7 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
   3. In the host, set `EMAIL_PROVIDER=smtp` and the four `SMTP_*` values. That covers the app's own emails.
   4. In Supabase (Authentication → Emails → SMTP settings), turn on custom SMTP: host `smtp.gmail.com`, port `465`, the same username and app password, sender email = the Gmail address, sender name `Aura`. That covers Auth emails (confirmations, links, password and two-step notices). Then raise the email rate limit under Authentication → Rate limits; without custom SMTP it stays very low.
 - **Email, later:** verify a sending domain in Resend, set `EMAIL_PROVIDER=resend`, `RESEND_API_KEY` and `EMAIL_FROM` (for example `Aura <hello@your-domain>`), and point Supabase's SMTP at Resend (`smtp.resend.com`).
+- **Account purge:** set `CRON_SECRET` (32+ random characters) in the host. `vercel.json` already asks Vercel Cron to call `/api/cron/account-purge` daily; on another host, schedule a daily GET with `Authorization: Bearer <CRON_SECRET>`.
 - **Encryption key:** set `APP_ENCRYPTION_KEY` (32 random bytes, base64) in the host and keep a secure backup; see `.env.example`.
 - **Upstash:** set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 - **Before launch:** consider moving the grievance contact on `/privacy` (currently Paulz, a personal Gmail) to a dedicated address such as `privacy@<domain>`, and have all three policy pages reviewed by a lawyer.

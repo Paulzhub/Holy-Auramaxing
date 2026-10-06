@@ -53,6 +53,8 @@ const serverEnvSchema = z.object({
   SMTP_USER: z.string().min(1).max(320).optional(),
   /** Server-only. For Gmail, an app password (not the account password). */
   SMTP_PASSWORD: z.string().min(1).max(1024).optional(),
+  /** Bearer token for /api/cron/* (Vercel Cron sends it). Unset = those routes return 404 (D-033). */
+  CRON_SECRET: z.string().min(1).max(256).optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -76,6 +78,7 @@ export function readServerEnv(): ServerEnv {
     SMTP_PORT: process.env.SMTP_PORT || undefined,
     SMTP_USER: process.env.SMTP_USER || undefined,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD || undefined,
+    CRON_SECRET: process.env.CRON_SECRET || undefined,
   });
 }
 

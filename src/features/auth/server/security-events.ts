@@ -93,13 +93,24 @@ export async function recordSignIn(input: {
 }
 
 /** Queue a security email for after the response (Phase 7's job queue takes over). */
-export async function queueSecurityAlert(kind: SecurityEmailKind, userId: string, email: string | null | undefined) {
+export async function queueSecurityAlert(
+  kind: SecurityEmailKind,
+  userId: string,
+  email: string | null | undefined,
+  extra: { closesOn?: Date } = {},
+) {
   if (!email) return;
   const device = await currentDeviceLabel();
-  after(() => sendSecurityAlert({ kind, userId, email, device }));
+  after(() => sendSecurityAlert({ kind, userId, email, device, ...extra }));
 }
 
-async function sendSecurityAlert(input: { kind: SecurityEmailKind; userId: string; email: string; device: string }) {
+async function sendSecurityAlert(input: {
+  kind: SecurityEmailKind;
+  userId: string;
+  email: string;
+  device: string;
+  closesOn?: Date;
+}) {
   try {
     const { data } = await createSupabaseAdminClient()
       .from("profiles")
@@ -112,6 +123,7 @@ async function sendSecurityAlert(input: { kind: SecurityEmailKind; userId: strin
       when: new Date(),
       timeZone: data?.timezone ?? "UTC",
       siteOrigin: siteOrigin(),
+      closesOn: input.closesOn,
     });
     await sendEmail({ to: input.email, ...message });
   } catch (error) {

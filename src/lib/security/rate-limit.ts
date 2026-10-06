@@ -38,6 +38,10 @@ export const rateLimitRules = {
   passkeyManageByUser: { limit: 20, windowSeconds: 60 * 60 },
   /** Signing out sessions from the sessions page. */
   sessionManageByUser: { limit: 30, windowSeconds: 60 * 60 },
+  /** "Download my data" (each one reads everything and builds a zip). */
+  dataExportByUser: { limit: 3, windowSeconds: 60 * 60 },
+  /** Asking to delete the account, or keeping it. */
+  accountDeletionByUser: { limit: 5, windowSeconds: 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;

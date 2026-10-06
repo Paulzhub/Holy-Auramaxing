@@ -11,7 +11,7 @@ import en from "../../messages/en.json";
  * Discreet by design (CLAUDE.md §7.8): sender "Aura", neutral subjects, and
  * nothing that says what the app is for. Server-only.
  */
-export type SecurityEmailKind = "newSignIn" | "recoveryCodeUsed" | "passkeyAdded";
+export type SecurityEmailKind = "newSignIn" | "recoveryCodeUsed" | "passkeyAdded" | "accountClosing" | "accountKept";
 
 export interface SecurityEmailInput {
   kind: SecurityEmailKind;
@@ -21,6 +21,8 @@ export interface SecurityEmailInput {
   /** The person's IANA time zone, for the time shown. */
   timeZone: string;
   siteOrigin: string;
+  /** accountClosing: when the account will be erased. */
+  closesOn?: Date;
   locale?: "en";
 }
 
@@ -30,7 +32,19 @@ const actions: Record<SecurityEmailKind, { primary: string; secondary?: string }
   newSignIn: { primary: "/settings/security", secondary: "/forgot-password" },
   recoveryCodeUsed: { primary: "/settings/security", secondary: "/forgot-password" },
   passkeyAdded: { primary: "/settings/security", secondary: "/forgot-password" },
+  // Signing in during the 14 days lands on the page with "Keep my account" (D-033).
+  accountClosing: { primary: "/sign-in", secondary: "/forgot-password" },
+  accountKept: { primary: "/settings/security", secondary: "/forgot-password" },
 };
+
+function formatDay(day: Date, timeZone: string, locale: string): string {
+  const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" };
+  try {
+    return new Intl.DateTimeFormat(locale, { ...options, timeZone }).format(day);
+  } catch {
+    return new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).format(day);
+  }
+}
 
 function formatWhen(when: Date, timeZone: string, locale: string): string {
   const options: Intl.DateTimeFormatOptions = {
@@ -48,10 +62,19 @@ function formatWhen(when: Date, timeZone: string, locale: string): string {
   }
 }
 
+function emailValues(input: SecurityEmailInput) {
+  const locale = input.locale ?? "en";
+  return {
+    device: input.device,
+    when: formatWhen(input.when, input.timeZone, locale),
+    date: formatDay(input.closesOn ?? input.when, input.timeZone, locale),
+  };
+}
+
 function SecurityAlert({ input }: { input: SecurityEmailInput }) {
   const locale = input.locale ?? "en";
   const t = createTranslator({ locale, messages: en, namespace: "emails" });
-  const values = { device: input.device, when: formatWhen(input.when, input.timeZone, locale) };
+  const values = emailValues(input);
   const link = (path: string) => new URL(path, input.siteOrigin).toString();
   const { primary, secondary } = actions[input.kind];
 
@@ -84,7 +107,9 @@ function SecurityAlert({ input }: { input: SecurityEmailInput }) {
           <Text style={{ margin: "0 0 16px", fontSize: "16px", lineHeight: "1.5" }}>
             {t(`${input.kind}.body`, values)}
           </Text>
-          <Text style={{ margin: "0 0 24px", fontSize: "16px", lineHeight: "1.5" }}>{t(`${input.kind}.ifNotYou`)}</Text>
+          <Text style={{ margin: "0 0 24px", fontSize: "16px", lineHeight: "1.5" }}>
+            {t(`${input.kind}.ifNotYou`, values)}
+          </Text>
           <Section style={{ margin: "0 0 16px" }}>
             <Button
               href={link(primary)}
@@ -121,5 +146,5 @@ export async function renderSecurityEmail(
   const t = createTranslator({ locale: input.locale ?? "en", messages: en, namespace: "emails" });
   const element = <SecurityAlert input={input} />;
   const [html, text] = await Promise.all([render(element), render(element, { plainText: true })]);
-  return { subject: t(`${input.kind}.subject`), html, text };
+  return { subject: t(`${input.kind}.subject`, emailValues(input)), html, text };
 }

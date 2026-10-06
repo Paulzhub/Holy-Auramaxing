@@ -264,12 +264,30 @@ export type Database = {
           session_active: boolean;
         }[];
       };
+      cancel_account_deletion: { Args: Record<PropertyKey, never>; Returns: boolean };
+      claim_storage_purges: {
+        Args: { p_limit?: number };
+        Returns: {
+          bucket: string;
+          id: string;
+          prefix: string;
+        }[];
+      };
       clear_recovery_codes: { Args: { p_user_id: string }; Returns: undefined };
       complete_oauth_signup: { Args: { p_token: string; p_user_id: string }; Returns: boolean };
       complete_onboarding: { Args: Record<PropertyKey, never>; Returns: undefined };
+      complete_storage_purge: { Args: { p_id: string }; Returns: undefined };
       create_signup_ticket: {
         Args: { p_policy_version: string; p_timezone?: string; p_token_hash: string; p_ttl_minutes?: number };
         Returns: undefined;
+      };
+      my_audit_events: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          action: string;
+          created_at: string;
+          device: string;
+        }[];
       };
       my_sessions: {
         Args: Record<PropertyKey, never>;
@@ -287,7 +305,9 @@ export type Database = {
       };
       recovery_codes_remaining: { Args: Record<PropertyKey, never>; Returns: number };
       replace_recovery_codes: { Args: { p_hashes: string[] }; Returns: number };
+      request_account_deletion: { Args: Record<PropertyKey, never>; Returns: string };
       revoke_my_session: { Args: { p_session_id: string }; Returns: boolean };
+      run_account_purge: { Args: Record<PropertyKey, never>; Returns: number };
       use_recovery_code: { Args: { p_hash: string; p_user_id: string }; Returns: boolean };
     };
     Enums: {
