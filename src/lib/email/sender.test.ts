@@ -1,7 +1,18 @@
 // @vitest-environment node
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+const sendMail = vi.fn().mockResolvedValue({ messageId: "x" });
+const createTransport = vi.fn(() => ({ sendMail }));
+vi.mock("nodemailer", () => ({ createTransport: (...args: unknown[]) => createTransport(...(args as [])) }));
+
 import { parseFrom, selectSender } from "./sender";
+
+const gmail = {
+  EMAIL_PROVIDER: "smtp" as const,
+  SMTP_HOST: "smtp.gmail.com",
+  SMTP_USER: "aura.notices@gmail.com",
+  SMTP_PASSWORD: "abcd efgh ijkl mnop",
+};
 
 const message = { to: "person@example.test", subject: "Hello", html: "<p>Hi</p>", text: "Hi" };
 
@@ -20,6 +31,14 @@ describe("selectSender", () => {
     expect(
       selectSender({ EMAIL_PROVIDER: "mailpit", RESEND_API_KEY: "re_x", MAILPIT_URL: "http://127.0.0.1:54324" }).name,
     ).toBe("mailpit");
+  });
+
+  it("uses SMTP with a host and no Resend key", () => {
+    expect(selectSender({ SMTP_HOST: "smtp.gmail.com", SMTP_USER: "a@b.test", SMTP_PASSWORD: "x" }).name).toBe("smtp");
+  });
+
+  it("SMTP without a user or password sends nothing rather than failing later", () => {
+    expect(selectSender({ EMAIL_PROVIDER: "smtp", SMTP_HOST: "smtp.gmail.com" }).name).toBe("none");
   });
 
   it("sends nothing when unconfigured or when the chosen provider has no settings", () => {
@@ -58,6 +77,50 @@ describe("providers", () => {
   it("throws on an error status so sendEmail can report it", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("no", { status: 422 })));
     await expect(selectSender({ RESEND_API_KEY: "re_x" }).send(message)).rejects.toThrow("422");
+  });
+});
+
+describe("smtp provider", () => {
+  it("uses TLS on 465 by default and sends as the signed-in account", async () => {
+    createTransport.mockClear();
+    sendMail.mockClear();
+    await selectSender(gmail).send(message);
+    expect(createTransport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: { user: "aura.notices@gmail.com", pass: "abcd efgh ijkl mnop" },
+      }),
+    );
+    expect(sendMail).toHaveBeenCalledWith({
+      from: "Aura <aura.notices@gmail.com>",
+      to: "person@example.test",
+      subject: "Hello",
+      html: "<p>Hi</p>",
+      text: "Hi",
+    });
+  });
+
+  it("requires STARTTLS on 587", async () => {
+    createTransport.mockClear();
+    await selectSender({ ...gmail, SMTP_PORT: 587 }).send(message);
+    expect(createTransport).toHaveBeenCalledWith(
+      expect.objectContaining({ port: 587, secure: false, requireTLS: true }),
+    );
+  });
+
+  it("reuses one connection setup for several emails", async () => {
+    createTransport.mockClear();
+    const sender = selectSender(gmail);
+    await sender.send(message);
+    await sender.send(message);
+    expect(createTransport).toHaveBeenCalledTimes(1);
+  });
+
+  it("passes SMTP errors on so sendEmail can report them", async () => {
+    sendMail.mockRejectedValueOnce(new Error("535 Username and Password not accepted"));
+    await expect(selectSender(gmail).send(message)).rejects.toThrow("535");
   });
 });
 

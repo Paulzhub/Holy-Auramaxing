@@ -112,7 +112,7 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 - Rejected photos are deleted immediately. Phase 11's written CSAM procedure must decide whether flagged images are preserved for reporting (NCMEC, cybercrime.gov.in) instead.
 - Avatar screening runs in `after()` until Phase 7's job queue exists; a photo left pending is retried when its owner opens their profile (D-026).
 - Security emails are sent in `after()` until Phase 7's job queue; a crash at that moment loses one alert (D-030).
-- Resend has no verified sending domain yet, so it only delivers to the owner's address; verify a domain, set `EMAIL_FROM`, and point Supabase's SMTP at Resend before launch (D-030).
+- Until there is a domain, email goes through a dedicated Gmail account over SMTP (D-031). Its app password is a mailbox credential: keep it only in the host's environment and Supabase, and use that account for nothing else. Move to Resend with a verified domain when the app grows.
 - Passkeys are a Supabase beta; set the production relying party (domain) in the dashboard, and keep `PASSKEYS_ENABLED` as the kill switch (D-029).
 - Supabase's native MFA recovery codes are experimental and off locally; ours replace them for now (D-028).
 - Two-step sign-in is optional; Phase 11 must require it for platform admins.

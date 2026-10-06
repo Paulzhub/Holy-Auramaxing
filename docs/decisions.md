@@ -272,3 +272,25 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **JavaScript budget:**
   - Settings → Security's client components live in a second entry point, `@/features/auth/ui-security`. ESLint now allows `@/features/<module>/ui-<page>` beside `ui`, so the sign-in pages don't download them and Security doesn't download the sign-in forms (extends D-023).
   - Gzip -9: `/settings/security` 158.7 KB, `/sign-in` and `/sign-up` 159.2 KB (the passkey button adds about 2 KB). Lighthouse's own measure: 170.3 and 170.8 KB. All Lighthouse categories score 96–100.
+
+## D-031 · Phase 2d · Email without a domain: Gmail over SMTP
+
+- **Context:** the owner is launching for 2–3 groups and doesn't want to buy a domain yet. Resend only delivers to the account owner's own address without a verified domain. Supabase's built-in mailer is for testing only.
+- **Decision (owner, 2026-10-06):** until there is a domain, all email goes through **one dedicated Gmail account** over SMTP, with an app password:
+  - The app's own emails use a new `smtp` provider in `src/lib/email/sender.ts` (`EMAIL_PROVIDER=smtp`, `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD`).
+  - Supabase's Auth emails use the same account through the dashboard's custom SMTP settings.
+- **Why Gmail:**
+  - Google signs the mail itself, so it reaches inboxes without DNS work.
+  - Personal Gmail allows roughly 500 messages a day, which is far more than a few groups need.
+  - Free services that verify a single @gmail.com sender (for example Brevo) send it from their own servers, which fails Gmail's own authentication checks and tends to land in spam.
+- **How:**
+  - `nodemailer` (new dependency, owner-approved), used only on the server.
+  - Port 465 uses TLS from the start. Any other port requires STARTTLS (`requireTLS`), so mail is never sent in the clear.
+  - The sender defaults to `Aura <SMTP_USER>`, because Gmail only sends as the signed-in account.
+  - `npm run email:test -- you@example.com` checks the settings without starting the app.
+  - Local development and tests still use Mailpit; the launcher keeps `EMAIL_PROVIDER=mailpit`.
+- **Trade-offs:**
+  - The Gmail address is visible as the sender, so its name must be neutral (discretion, §7.8).
+  - Google may lock an account that suddenly sends a lot of automated mail.
+  - The app password is a full credential for that mailbox: it lives only in the host's environment settings and in Supabase. Use the Gmail account for nothing else, so a leak exposes nothing else.
+- **Later:** buy a domain, verify it in Resend, and set `EMAIL_PROVIDER=resend` (and Supabase SMTP to Resend). Nothing else changes.
