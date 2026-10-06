@@ -7,3 +7,5 @@ export { EmailSignUpForm } from "./components/email-sign-up-form";
 export { GoogleButton } from "./components/google-button";
 export { ResetPasswordForm } from "./components/reset-password-form";
 export { SignInForm } from "./components/sign-in-form";
+export { PasskeySignIn } from "./components/passkey-sign-in";
+export { RecoveryCodeForm, VerifyCodeForm } from "./components/verify-forms";

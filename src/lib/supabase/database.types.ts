@@ -257,12 +257,38 @@ export type Database = {
       };
     };
     Functions: {
+      auth_gate: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          mfa_pending: boolean;
+          session_active: boolean;
+        }[];
+      };
+      clear_recovery_codes: { Args: { p_user_id: string }; Returns: undefined };
       complete_oauth_signup: { Args: { p_token: string; p_user_id: string }; Returns: boolean };
       complete_onboarding: { Args: Record<PropertyKey, never>; Returns: undefined };
       create_signup_ticket: {
         Args: { p_policy_version: string; p_timezone?: string; p_token_hash: string; p_ttl_minutes?: number };
         Returns: undefined;
       };
+      my_sessions: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          device: string;
+          id: string;
+          is_current: boolean;
+          last_active_at: string;
+          signed_in_at: string;
+        }[];
+      };
+      record_session_device: {
+        Args: { p_device_hash: string; p_label: string; p_session_id: string; p_user_id: string };
+        Returns: string;
+      };
+      recovery_codes_remaining: { Args: Record<PropertyKey, never>; Returns: number };
+      replace_recovery_codes: { Args: { p_hashes: string[] }; Returns: number };
+      revoke_my_session: { Args: { p_session_id: string }; Returns: boolean };
+      use_recovery_code: { Args: { p_hash: string; p_user_id: string }; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;

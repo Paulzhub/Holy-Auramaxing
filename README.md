@@ -40,6 +40,13 @@ Run `npx supabase status` any time to see them again. After changing `supabase/c
 
 Supabase sends sign-up, magic-link and password-reset emails to a local inbox, **Mailpit**, at <http://127.0.0.1:54324>. Nothing leaves your computer.
 
+The app's own security emails ("New sign-in", "A recovery code was used", "A passkey was added") go there too when `.env.local` has `EMAIL_PROVIDER=mailpit` and `MAILPIT_URL`. With a `RESEND_API_KEY` and no `EMAIL_PROVIDER`, they go through Resend instead. Without a verified sending domain, Resend only delivers to your own Resend account's address (D-030).
+
+### Two-step sign-in and passkeys
+
+- **Two-step sign-in:** Settings → Security → "Set up an authenticator app". Scan the QR code with any authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…). From then on, signing in asks for its code.
+- **Passkeys** need `PASSKEYS_ENABLED=true` in `.env.local`, and the app must be opened at **http://localhost:3000**, not `http://127.0.0.1:3000`. Passkeys are tied to the host name, and `supabase/config.toml` names `localhost`. Chrome, Edge and Safari can make passkeys with the computer's PIN, fingerprint or face; Windows Hello works too.
+
 ### Google sign-in (optional locally)
 
 1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create an **OAuth client ID** (type: Web application).
@@ -74,6 +81,8 @@ Then open <http://localhost:3000>. Useful pages:
 - `/sign-in`: password, Google or an emailed link; `/forgot-password` for resets
 - `/welcome`: onboarding for new accounts (five optional steps)
 - `/me` and `/me/edit`: your profile, photo and privacy settings
+- `/settings/security`: two-step sign-in, recovery codes, passkeys, devices and sessions
+- `/sign-in/verify`: the two-step code page (after signing in, when two-step sign-in is on)
 - `/home`: the app shell (Home, Groups, Check in, Alerts, Me, Settings). You need to be signed in.
 - `/privacy`, `/terms`, `/your-data`: draft policies (waiting for legal review)
 - `/dev/components`: every component in every state. It's on automatically in `npm run dev`; in a production build it needs `ENABLE_DEV_PAGES=true`.
@@ -89,7 +98,7 @@ npm ci                         # new packages
 npx supabase migration up      # new tables; keeps your local accounts
 ```
 
-Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`), and restart `npm run dev`: environment files are read only at start-up.
+Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`; 2d added `EMAIL_PROVIDER`, `PASSKEYS_ENABLED` and the optional `RESEND_API_KEY`/`EMAIL_FROM`), and restart `npm run dev`: environment files are read only at start-up. When `supabase/config.toml` changed (2d did), restart Supabase too: `npx supabase stop`, then `npx supabase start`.
 
 > **Windows tips**
 >
@@ -143,6 +152,7 @@ docs/                        decisions, threat model, design system
 - **Strings.** All user-facing text lives in `messages/en.json`. ESLint fails on hard-coded text in JSX, and a unit test checks that every message parses. Browser tab titles use the neutral short name "Aura".
 - **Security headers.** `src/proxy.ts` sends a strict, nonce-based Content-Security-Policy on every page. `next.config.ts` adds HSTS, `nosniff`, Referrer-Policy, Permissions-Policy, COOP/CORP and `X-Frame-Options`. See `docs/threat-model.md`.
 - **Module boundaries.** ESLint stops one module from importing another module's internals. Each module has two public entry points: `@/features/x` (server functions and server components) and `@/features/x/ui` (client components). They are separate so that server helpers never pull client code into a page (docs/decisions.md D-023).
+- **Security (Phase 2d).** Optional two-step sign-in with an authenticator app, ten single-use recovery codes, and passkeys (Supabase Auth). A database policy (`util.session_ok()`) hides every personal row from a session that hasn't entered its code yet or has been signed out from another device. Settings → Security lists your devices (no IP addresses) and signs them out. A new device triggers a discreet "New sign-in" email (D-028–D-030).
 - **Accounts.** Sign-up asks "Are you 18 or older?", then shows a plain-language consent notice with two unticked boxes. Only then can an account be created, and the database enforces that order (D-014). Session cookies are httpOnly; `src/proxy.ts` refreshes the session and sends signed-out visitors to `/sign-in`.
 
 ## Continuous integration
@@ -164,13 +174,17 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
 - **Auth settings** to mirror `supabase/config.toml` in the Supabase dashboard:
   - Site URL and redirect URLs.
   - Email confirmations on, secure password change on, minimum password length 8, JWT expiry 600 seconds.
-  - The four email templates and subjects from `supabase/templates/`.
+  - The four email templates and subjects from `supabase/templates/`, plus the three security notices (password changed, two-step on, two-step off).
+  - MFA: authenticator app (TOTP) enroll and verify on.
+  - Passkeys (beta): on, with the production domain as the relying party ID and origin. Then set `PASSKEYS_ENABLED=true` in the host.
   - Google provider with the production OAuth client.
 - **Turnstile:**
   - Create a widget in Cloudflare.
   - Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in the host.
   - Enable Turnstile with the secret key in Supabase (Authentication → Attack protection).
-- **Email:** connect a real SMTP sender (Resend) with the sender name "Aura".
+- **Email:**
+  - Verify a sending domain in Resend, then set `RESEND_API_KEY` and `EMAIL_FROM` (for example `Aura <hello@your-domain>`) in the host.
+  - Point Supabase's SMTP (Authentication → SMTP) at Resend with the sender name "Aura", so Auth emails come from the same place.
 - **Encryption key:** set `APP_ENCRYPTION_KEY` (32 random bytes, base64) in the host and keep a secure backup; see `.env.example`.
 - **Upstash:** set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 - **Before launch:** consider moving the grievance contact on `/privacy` (currently Paulz, a personal Gmail) to a dedicated address such as `privacy@<domain>`, and have all three policy pages reviewed by a lawyer.

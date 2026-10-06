@@ -6,6 +6,7 @@
       "url": [
         "http://localhost:3200/home",
         "http://localhost:3200/settings",
+        "http://localhost:3200/settings/security",
         "http://localhost:3200/me",
         "http://localhost:3200/me/edit"
       ],

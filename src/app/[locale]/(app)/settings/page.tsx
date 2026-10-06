@@ -6,6 +6,8 @@ import { ThemeSwitcher } from "@/components/shell/theme-switcher";
 import { Card, CardTitle } from "@/components/ui/card";
 import { getThemePreference } from "@/lib/server/theme";
 import { SignOutButton } from "@/features/auth";
+import { Link } from "@/i18n/navigation";
+import { buttonVariants } from "@/components/ui/button-variants";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
@@ -31,6 +33,17 @@ export default async function Page() {
           <div className="grid gap-3">
             <CardTitle as="h2">{t("language")}</CardTitle>
             <p className="text-muted">{t("languageBody")}</p>
+          </div>
+        </Card>
+        <Card>
+          <div className="grid gap-3">
+            <CardTitle as="h2">{t("security")}</CardTitle>
+            <p className="text-muted">{t("securityBody")}</p>
+            <div>
+              <Link href="/settings/security" className={buttonVariants({ variant: "secondary" })}>
+                {t("securityLink")}
+              </Link>
+            </div>
           </div>
         </Card>
         <Card>

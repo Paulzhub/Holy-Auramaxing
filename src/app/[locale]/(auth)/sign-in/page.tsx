@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { AuthHeading, AuthNotice } from "@/features/auth";
-import { EmailLinkForm, GoogleButton, SignInForm } from "@/features/auth/ui";
+import { EmailLinkForm, GoogleButton, PasskeySignIn, SignInForm } from "@/features/auth/ui";
+import { passkeysEnabled } from "@/lib/env";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
@@ -25,6 +26,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Searc
         <span>{t("or")}</span>
       </p>
       <GoogleButton intent="signin" next={next} />
+      {passkeysEnabled() ? <PasskeySignIn next={next} /> : null}
       <details className="auth-details">
         <summary>{t("magicLinkTitle")}</summary>
         <p className="text-muted">{t("magicLinkBody")}</p>

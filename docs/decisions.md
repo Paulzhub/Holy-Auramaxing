@@ -212,3 +212,63 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
   - `privacy_settings.show_in_leaderboards` and `default_share_level` are dropped (migration `20261006000100`), and the two controls are gone from `/me/edit`.
   - CLAUDE.md §6, §7.4 and §7.6 are updated to match.
 - **Unchanged:** profile visibility and per-field visibility stay personal. Privacy by default (§2.3) still holds for anything outside a group's covenant, and a level is still shown only at the streak or full share level, so a 10-level drop never gives away a slip at check-in-only groups.
+
+## D-028 · Phase 2d · Two-step sign-in (authenticator app) and recovery codes
+
+- **Decision (owner, 2026-10-06):** two-step sign-in with an authenticator app (TOTP), through Supabase Auth MFA. It is optional for members (§7.1) and will be required for platform admins in Phase 11.
+- **Setting it up:** Settings → Security shows a QR code and the key to type in, and the person confirms with a code. Ten recovery codes follow, shown once. Supabase emails "Two-step sign-in is on/off" itself (D-030).
+- **Signing in:** every first step (password, email link, Google, passkey) goes to `/sign-in/verify` for the code. That includes password-reset links: a reset email alone doesn't get past two-step sign-in. Codes and recovery codes share one limit: 5 wrong tries per 15 minutes per person.
+- **Enforced three times:**
+  1. **App:** `requireAccount()` sends anyone at aal1 who has an authenticator to `/sign-in/verify`.
+  2. **Database:** `util.session_ok()` is a RESTRICTIVE policy on every personal table, and is inside `util.can_see()` (profile cards, and Phase 3's group checks). A session that has a verified TOTP factor but isn't at aal2 reads and writes nothing. A stolen password alone therefore can't reach anything through the API either.
+  3. The proxy is unchanged. To learn whether someone has a factor it would need a database call on every request; `requireAccount()` already runs on every app page.
+- **Recovery codes are our own** (`private.mfa_recovery_codes`):
+  - Supabase's native recovery codes are experimental. They are turned off in the local auth server (v2.197.0), and the CLI has no setting for them, so they can't be tested here. Revisit when they're stable.
+  - Codes are 10 characters of Crockford base32 (50 bits). They are stored as HMAC-SHA256, keyed with HKDF(`APP_ENCRYPTION_KEY`, "mfa-recovery-codes-v1") and bound to the user id, so a database copy alone can't be brute-forced.
+  - Only aal2 sessions can create codes (the database checks). Only the server (secret key, rate-limited) can redeem them.
+- **Using a recovery code** signs the person in, removes their authenticator factor (they've probably lost the phone), deletes the remaining codes, signs out every other session, and sends a "recovery code used" email. They are then asked to set the app up again.
+- **Consequences:**
+  - With two-step sign-in on, the profile is unreadable at aal1. The Google callback therefore checks "does this account exist?" with the secret key. A missing profile there would otherwise look like an unfinished sign-up and delete the account (D-014).
+  - Changing passkeys also needs aal2 once an authenticator is set up: the auth server says so.
+
+## D-029 · Phase 2d · Passkeys through Supabase Auth (beta)
+
+- **Decision (owner, 2026-10-06):** Supabase's native passkeys (`auth.passkey.*`, `[auth.passkey]` + `[auth.webauthn]` in `config.toml`), with no `@simplewebauthn`.
+- **The ceremony is split:**
+  - Server Actions call `startAuthentication`/`startRegistration` and `verifyAuthentication`/`verifyRegistration`, so session tokens stay in httpOnly cookies (D-015).
+  - The browser only runs `navigator.credentials`. `src/features/auth/webauthn.ts` uses the browser's own JSON helpers (`parseRequestOptionsFromJSON`, `toJSON()`), with a small fallback for older browsers.
+  - The server bounds the credential's shape and size with Zod; Supabase verifies it.
+- **Assurance level (checked against the local server):** a passkey sign-in is **aal1** (`amr: passkey`), even when the person has an authenticator app. So the code is still asked for afterwards (D-028). Passkeys are therefore a convenient, phishing-resistant first step, not a second factor.
+- **Kill switch:** `PASSKEYS_ENABLED=true` turns them on. It is read on the server at run time, not as a `NEXT_PUBLIC_` value baked into the build, so it can be switched off without rebuilding. With it off, the button and the Passkeys section disappear, and the actions refuse.
+- **Relying party:** `rp_id = "localhost"` locally, with origins on ports 3000 (app), 3100 (e2e) and 3200 (Lighthouse). Passkeys don't work on `127.0.0.1`. Production needs the real domain in the Supabase dashboard (Authentication → Passkeys).
+- **Turnstile:** the passkey button has its own Turnstile widget, because Supabase checks the captcha on `startAuthentication` when captcha is on.
+- **Emails:** adding a passkey sends a "passkey added" alert. A stolen session could otherwise add a passkey quietly, to keep a way in.
+
+## D-030 · Phase 2d · Devices, sessions and security emails
+
+- **Devices:**
+  - Supabase Auth only ever sees our server: every sign-in goes through it, so `auth.sessions.user_agent` is always `node`. The app therefore keeps its own record.
+  - A random 256-bit device cookie (`aura_device`: httpOnly, SameSite=Lax, about 400 days) identifies a browser. Only its SHA-256 is stored, in `private.known_devices`, with a coarse label ("Chrome on Windows"). `private.session_devices` links each session to its device.
+  - No IP addresses are stored or shown (D-016), and there's no fingerprinting.
+  - The owner chose the cookie over a hashed browser-and-OS name, which would miss a new laptop with the same browser.
+- **"New sign-in" email:**
+  - Sent when an account signs in on a device it hasn't used before. Not for the account's first device: that's the sign-up itself.
+  - It is checked after the first step (password, email link, Google or passkey), before two-step sign-in, so a password used by someone else is noticed even when the code stops them.
+- **Sessions page** (Settings → Security):
+  - `public.my_sessions()` and `public.revoke_my_session()` are security-definer functions over `auth.sessions`, limited to the caller's own rows. Each row shows the device, the last activity and "This device".
+  - Actions: sign out one device, all others, or everywhere.
+  - **Immediate sign-out:** `util.session_ok()` also checks that the token's session still exists. A device that is signed out stops working on its next request, instead of when its 10-minute access token expires (D-015). `requireAccount()` then clears its cookies and shows "You were signed out of this device".
+- **Emails:**
+  - **Supabase sends** "password changed", "two-step on" and "two-step off" (`[auth.email.notification.*]`, templates in `supabase/templates/`). They fire however the change was made, even straight through the Auth API.
+  - **The app sends** "new sign-in", "recovery code used" and "passkey added", with React Email (`src/emails/`) through an `EmailSender` (`src/lib/email/sender.ts`):
+    - **Resend** in production, through one `fetch` to its HTTP API (no SDK, as in D-013).
+    - **Mailpit** locally and in tests.
+    - **None** when unconfigured. `EMAIL_PROVIDER` overrides the choice; the local launcher sets `mailpit`, so local testing never emails anyone.
+  - All are discreet: sender "Aura", neutral subjects, nothing about what the app is for (unit- and e2e-tested). They are sent in `after()` until Phase 7's job queue.
+- **Before launch:**
+  - Verify a sending domain in Resend and set `EMAIL_FROM`. Until then Resend only delivers to the account owner's own address.
+  - Point Supabase's SMTP (dashboard → Authentication → SMTP) at Resend, so the Auth emails come from the same sender.
+- **New packages:** `@react-email/components` and `@react-email/render` (server-only; approved 2026-10-06).
+- **JavaScript budget:**
+  - Settings → Security's client components live in a second entry point, `@/features/auth/ui-security`. ESLint now allows `@/features/<module>/ui-<page>` beside `ui`, so the sign-in pages don't download them and Security doesn't download the sign-in forms (extends D-023).
+  - Gzip -9: `/settings/security` 158.7 KB, `/sign-in` and `/sign-up` 159.2 KB (the passkey button adds about 2 KB). Lighthouse's own measure: 170.3 and 170.8 KB. All Lighthouse categories score 96–100.

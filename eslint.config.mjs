@@ -36,9 +36,13 @@ export default defineConfig([
         {
           patterns: [
             {
-              group: featureModules.flatMap((m) => [`@/features/${m}/*`, `!@/features/${m}/ui`]),
+              group: featureModules.flatMap((m) => [
+                `@/features/${m}/*`,
+                `!@/features/${m}/ui`,
+                `!@/features/${m}/ui-*`,
+              ]),
               message:
-                "Import a feature module through its public entry points: '@/features/<module>' (server API) or '@/features/<module>/ui' (components).",
+                "Import a feature module through its public entry points: '@/features/<module>' (server API), '@/features/<module>/ui' or a page-specific '@/features/<module>/ui-<page>' (components).",
             },
           ],
         },

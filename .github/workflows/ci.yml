@@ -69,6 +69,9 @@ jobs:
             echo "MAILPIT_URL=$MAILPIT_URL"
             # A throwaway key for this CI run only (encrypts "my why" in tests).
             echo "APP_ENCRYPTION_KEY=$(openssl rand -base64 32)"
+            # Phase 2d: passkeys on; the app's own emails go to Mailpit.
+            echo "PASSKEYS_ENABLED=true"
+            echo "EMAIL_PROVIDER=mailpit"
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Playwright
@@ -109,6 +112,9 @@ jobs:
             echo "MAILPIT_URL=$MAILPIT_URL"
             # A throwaway key for this CI run only (encrypts "my why" in tests).
             echo "APP_ENCRYPTION_KEY=$(openssl rand -base64 32)"
+            # Phase 2d: passkeys on; the app's own emails go to Mailpit.
+            echo "PASSKEYS_ENABLED=true"
+            echo "EMAIL_PROVIDER=mailpit"
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Lighthouse CI
