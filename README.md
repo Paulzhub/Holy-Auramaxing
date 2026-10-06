@@ -40,7 +40,7 @@ Run `npx supabase status` any time to see them again. After changing `supabase/c
 
 Supabase sends sign-up, magic-link and password-reset emails to a local inbox, **Mailpit**, at <http://127.0.0.1:54324>. Nothing leaves your computer.
 
-The app's own security emails ("New sign-in", "A recovery code was used", "A passkey was added") go there too when `.env.local` has `EMAIL_PROVIDER=mailpit` and `MAILPIT_URL`. With a `RESEND_API_KEY` and no `EMAIL_PROVIDER`, they go through Resend instead. Without a verified sending domain, Resend only delivers to your own Resend account's address (D-030).
+The app's own security emails ("New sign-in", "A recovery code was used", "A passkey was added") go there too when `.env.local` has `EMAIL_PROVIDER=mailpit` and `MAILPIT_URL`. With a `RESEND_API_KEY` and no `EMAIL_PROVIDER`, they go through Resend instead. Without a verified sending domain, Resend only delivers to your own Resend account's address (D-030). For a small launch without a domain, a Gmail account over SMTP works instead (D-031; see Production notes).
 
 ### Two-step sign-in and passkeys
 
@@ -182,9 +182,12 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
   - Create a widget in Cloudflare.
   - Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in the host.
   - Enable Turnstile with the secret key in Supabase (Authentication → Attack protection).
-- **Email:**
-  - Verify a sending domain in Resend, then set `RESEND_API_KEY` and `EMAIL_FROM` (for example `Aura <hello@your-domain>`) in the host.
-  - Point Supabase's SMTP (Authentication → SMTP) at Resend with the sender name "Aura", so Auth emails come from the same place.
+- **Email, small launch without a domain (D-031): a dedicated Gmail account.**
+  1. Create a Gmail account with a neutral name (the address appears as the sender). Turn on 2-Step Verification, then create an **app password** (Google account → Security → App passwords).
+  2. Check it from your computer: put `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` and `SMTP_PASSWORD` in `.env.local`, then run `npm run email:test -- you@example.com`.
+  3. In the host, set `EMAIL_PROVIDER=smtp` and the four `SMTP_*` values. That covers the app's own emails.
+  4. In Supabase (Authentication → Emails → SMTP settings), turn on custom SMTP: host `smtp.gmail.com`, port `465`, the same username and app password, sender email = the Gmail address, sender name `Aura`. That covers Auth emails (confirmations, links, password and two-step notices). Then raise the email rate limit under Authentication → Rate limits; without custom SMTP it stays very low.
+- **Email, later:** verify a sending domain in Resend, set `EMAIL_PROVIDER=resend`, `RESEND_API_KEY` and `EMAIL_FROM` (for example `Aura <hello@your-domain>`), and point Supabase's SMTP at Resend (`smtp.resend.com`).
 - **Encryption key:** set `APP_ENCRYPTION_KEY` (32 random bytes, base64) in the host and keep a secure backup; see `.env.example`.
 - **Upstash:** set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 - **Before launch:** consider moving the grievance contact on `/privacy` (currently Paulz, a personal Gmail) to a dedicated address such as `privacy@<domain>`, and have all three policy pages reviewed by a lawyer.
