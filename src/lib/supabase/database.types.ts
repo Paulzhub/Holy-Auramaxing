@@ -60,6 +60,271 @@ export type Database = {
         };
         Relationships: [];
       };
+      group_covenant_agreements: {
+        Row: {
+          agreed_at: string;
+          group_id: string;
+          proposal_id: string;
+          user_id: string;
+        };
+        Insert: {
+          agreed_at?: string;
+          group_id: string;
+          proposal_id: string;
+          user_id: string;
+        };
+        Update: {
+          agreed_at?: string;
+          group_id?: string;
+          proposal_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_covenant_agreements_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "group_covenant_agreements_proposal_id_fkey";
+            columns: ["proposal_id"];
+            isOneToOne: false;
+            referencedRelation: "group_covenant_proposals";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      group_covenant_proposals: {
+        Row: {
+          closed_at: string | null;
+          covenant_text: string;
+          created_at: string;
+          expires_at: string;
+          group_id: string;
+          id: string;
+          leaderboard_hiding_allowed: boolean;
+          min_share_level: string;
+          outcome: string | null;
+          proposed_by: string | null;
+        };
+        Insert: {
+          closed_at?: string | null;
+          covenant_text: string;
+          created_at?: string;
+          expires_at?: string;
+          group_id: string;
+          id?: string;
+          leaderboard_hiding_allowed: boolean;
+          min_share_level: string;
+          outcome?: string | null;
+          proposed_by?: string | null;
+        };
+        Update: {
+          closed_at?: string | null;
+          covenant_text?: string;
+          created_at?: string;
+          expires_at?: string;
+          group_id?: string;
+          id?: string;
+          leaderboard_hiding_allowed?: boolean;
+          min_share_level?: string;
+          outcome?: string | null;
+          proposed_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_covenant_proposals_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      group_invites: {
+        Row: {
+          code_hash: string;
+          created_at: string;
+          created_by: string | null;
+          expires_at: string;
+          group_id: string;
+          id: string;
+          max_uses: number | null;
+          revoked_at: string | null;
+          token_hash: string;
+          use_count: number;
+        };
+        Insert: {
+          code_hash: string;
+          created_at?: string;
+          created_by?: string | null;
+          expires_at: string;
+          group_id: string;
+          id?: string;
+          max_uses?: number | null;
+          revoked_at?: string | null;
+          token_hash: string;
+          use_count?: number;
+        };
+        Update: {
+          code_hash?: string;
+          created_at?: string;
+          created_by?: string | null;
+          expires_at?: string;
+          group_id?: string;
+          id?: string;
+          max_uses?: number | null;
+          revoked_at?: string | null;
+          token_hash?: string;
+          use_count?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_invites_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      group_members: {
+        Row: {
+          covenant_accepted_at: string | null;
+          group_id: string;
+          invite_id: string | null;
+          joined_at: string | null;
+          leaderboard_hidden: boolean;
+          requested_at: string;
+          role: string;
+          share_level: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          covenant_accepted_at?: string | null;
+          group_id: string;
+          invite_id?: string | null;
+          joined_at?: string | null;
+          leaderboard_hidden?: boolean;
+          requested_at?: string;
+          role?: string;
+          share_level: string;
+          status: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          covenant_accepted_at?: string | null;
+          group_id?: string;
+          invite_id?: string | null;
+          joined_at?: string | null;
+          leaderboard_hidden?: boolean;
+          requested_at?: string;
+          role?: string;
+          share_level?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "group_members_invite_id_fkey";
+            columns: ["invite_id"];
+            isOneToOne: false;
+            referencedRelation: "group_invites";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      groups: {
+        Row: {
+          archived_at: string | null;
+          challenge_days: number | null;
+          challenge_type: string;
+          covenant_text: string;
+          covenant_updated_at: string;
+          cover_path: string | null;
+          cover_pending_path: string | null;
+          cover_status: string;
+          created_at: string;
+          description: string | null;
+          end_date: string | null;
+          group_timezone: string;
+          id: string;
+          join_policy: string;
+          leaderboard_hiding_allowed: boolean;
+          max_members: number;
+          member_count: number;
+          min_share_level: string;
+          name: string;
+          owner_id: string;
+          slug: string;
+          start_date: string;
+          updated_at: string;
+        };
+        Insert: {
+          archived_at?: string | null;
+          challenge_days?: number | null;
+          challenge_type: string;
+          covenant_text: string;
+          covenant_updated_at?: string;
+          cover_path?: string | null;
+          cover_pending_path?: string | null;
+          cover_status?: string;
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          group_timezone: string;
+          id?: string;
+          join_policy?: string;
+          leaderboard_hiding_allowed?: boolean;
+          max_members?: number;
+          member_count?: number;
+          min_share_level?: string;
+          name: string;
+          owner_id: string;
+          slug: string;
+          start_date: string;
+          updated_at?: string;
+        };
+        Update: {
+          archived_at?: string | null;
+          challenge_days?: number | null;
+          challenge_type?: string;
+          covenant_text?: string;
+          covenant_updated_at?: string;
+          cover_path?: string | null;
+          cover_pending_path?: string | null;
+          cover_status?: string;
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          group_timezone?: string;
+          id?: string;
+          join_policy?: string;
+          leaderboard_hiding_allowed?: boolean;
+          max_members?: number;
+          member_count?: number;
+          min_share_level?: string;
+          name?: string;
+          owner_id?: string;
+          slug?: string;
+          start_date?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       notification_settings: {
         Row: {
           discreet_mode: boolean;
@@ -257,6 +522,10 @@ export type Database = {
       };
     };
     Functions: {
+      agree_to_covenant_change: { Args: { p_proposal: string }; Returns: boolean };
+      allow_group_member_back: { Args: { p_group: string; p_user: string }; Returns: undefined };
+      approve_join_request: { Args: { p_group: string; p_user: string }; Returns: undefined };
+      archive_group: { Args: { p_group: string }; Returns: undefined };
       auth_gate: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -265,6 +534,15 @@ export type Database = {
         }[];
       };
       cancel_account_deletion: { Args: Record<PropertyKey, never>; Returns: boolean };
+      change_group_covenant: {
+        Args: {
+          p_covenant_text: string;
+          p_group: string;
+          p_leaderboard_hiding_allowed: boolean;
+          p_min_share_level: string;
+        };
+        Returns: string;
+      };
       claim_storage_purges: {
         Args: { p_limit?: number };
         Returns: {
@@ -277,10 +555,76 @@ export type Database = {
       complete_oauth_signup: { Args: { p_token: string; p_user_id: string }; Returns: boolean };
       complete_onboarding: { Args: Record<PropertyKey, never>; Returns: undefined };
       complete_storage_purge: { Args: { p_id: string }; Returns: undefined };
+      create_group: {
+        Args: {
+          p_challenge_days: number;
+          p_challenge_type: string;
+          p_covenant_text: string;
+          p_description: string;
+          p_join_policy: string;
+          p_leaderboard_hiding_allowed: boolean;
+          p_max_members: number;
+          p_min_share_level: string;
+          p_my_share_level: string;
+          p_name: string;
+          p_start_date: string;
+          p_timezone: string;
+        };
+        Returns: string;
+      };
+      create_group_invite: {
+        Args: {
+          p_code_hash: string;
+          p_expires_in_days: number;
+          p_group: string;
+          p_max_uses: number;
+          p_token_hash: string;
+        };
+        Returns: string;
+      };
       create_signup_ticket: {
         Args: { p_policy_version: string; p_timezone?: string; p_token_hash: string; p_ttl_minutes?: number };
         Returns: undefined;
       };
+      decline_covenant_change: { Args: { p_proposal: string }; Returns: undefined };
+      decline_join_request: { Args: { p_group: string; p_user: string }; Returns: undefined };
+      delete_group: { Args: { p_confirm_name: string; p_group: string }; Returns: undefined };
+      group_invite_details: {
+        Args: { p_code_hash?: string; p_token_hash: string };
+        Returns: {
+          challenge_days: number;
+          challenge_type: string;
+          covenant_text: string;
+          covenant_updated_at: string;
+          description: string;
+          end_date: string;
+          group_id: string;
+          group_name: string;
+          group_timezone: string;
+          join_policy: string;
+          leaderboard_hiding_allowed: boolean;
+          member_count: number;
+          min_share_level: string;
+          my_status: string;
+          start_date: string;
+          status: string;
+        }[];
+      };
+      join_group: {
+        Args: {
+          p_accept_covenant: boolean;
+          p_code_hash: string;
+          p_covenant_seen: string;
+          p_leaderboard_hidden: boolean;
+          p_share_level: string;
+          p_token_hash: string;
+        };
+        Returns: {
+          group_id: string;
+          status: string;
+        }[];
+      };
+      leave_group: { Args: { p_group: string }; Returns: undefined };
       my_audit_events: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -299,16 +643,49 @@ export type Database = {
           signed_in_at: string;
         }[];
       };
+      preview_group_invite: {
+        Args: { p_code_hash?: string; p_token_hash: string };
+        Returns: {
+          group_name: string;
+          member_count: number;
+          status: string;
+        }[];
+      };
       record_session_device: {
         Args: { p_device_hash: string; p_label: string; p_session_id: string; p_user_id: string };
         Returns: string;
       };
       recovery_codes_remaining: { Args: Record<PropertyKey, never>; Returns: number };
+      remove_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };
+      remove_group_picture: { Args: { p_group: string }; Returns: string[] };
       replace_recovery_codes: { Args: { p_hashes: string[] }; Returns: number };
       request_account_deletion: { Args: Record<PropertyKey, never>; Returns: string };
+      revoke_group_invite: { Args: { p_invite: string }; Returns: undefined };
       revoke_my_session: { Args: { p_session_id: string }; Returns: boolean };
       run_account_purge: { Args: Record<PropertyKey, never>; Returns: number };
+      set_group_member_role: { Args: { p_group: string; p_role: string; p_user: string }; Returns: undefined };
+      set_group_picture_pending: { Args: { p_group: string; p_path: string }; Returns: string };
+      transfer_group_ownership: { Args: { p_group: string; p_new_owner: string }; Returns: undefined };
+      unarchive_group: { Args: { p_group: string }; Returns: undefined };
+      update_group_challenge: {
+        Args: {
+          p_challenge_days: number;
+          p_challenge_type: string;
+          p_group: string;
+          p_join_policy: string;
+          p_max_members: number;
+          p_start_date: string;
+          p_timezone: string;
+        };
+        Returns: undefined;
+      };
+      update_group_details: { Args: { p_description: string; p_group: string; p_name: string }; Returns: undefined };
+      update_my_group_membership: {
+        Args: { p_group: string; p_leaderboard_hidden: boolean; p_share_level: string };
+        Returns: undefined;
+      };
       use_recovery_code: { Args: { p_hash: string; p_user_id: string }; Returns: boolean };
+      withdraw_covenant_change: { Args: { p_proposal: string }; Returns: undefined };
     };
     Enums: {
       [_ in never]: never;
