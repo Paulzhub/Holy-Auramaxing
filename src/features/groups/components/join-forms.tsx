@@ -75,6 +75,7 @@ export function InviteCodeForm() {
         spellCheck={false}
         maxLength={20}
         required
+        defaultValue={state.values?.code}
         error={err("code")}
       />
       <div>

@@ -35,6 +35,8 @@ export interface GroupFormState {
   fieldErrors?: Partial<Record<GroupField, GroupErrorKey>>;
   /** What happened, for a status message (e.g. "proposed" for a covenant change). */
   outcome?: string;
+  /** Typed values to put back after an error, so nobody types them twice. */
+  values?: Partial<Record<GroupField, string>>;
 }
 
 export const idleGroupFormState: GroupFormState = { status: "idle" };

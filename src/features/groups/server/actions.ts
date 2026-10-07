@@ -465,17 +465,20 @@ export async function joinGroupAction(_prev: GroupFormState, formData: FormData)
 export async function enterInviteCodeAction(_prev: GroupFormState, formData: FormData): Promise<GroupFormState> {
   const { userId } = await requireAccount();
   const ip = await clientIp();
+  // Put the typed code back on every refusal, so a typo can be fixed in place.
+  const typed = String(formData.get("code") ?? "").slice(0, 20);
+  const values = { code: typed };
   const [byUser, byIp] = await Promise.all([
     check("inviteCodeFailuresByUser", userId),
     check("inviteCodeFailuresByIp", ip),
   ]);
   if (!byUser.ok || !byIp.ok) {
     await audit("group.invite_code_rate_limited", userId);
-    return { status: "error", fieldErrors: { code: "codeRateLimited" } };
+    return { status: "error", fieldErrors: { code: "codeRateLimited" }, values };
   }
 
-  const code = normaliseInviteCode(String(formData.get("code") ?? "").slice(0, 40));
-  if (!code) return { status: "error", fieldErrors: { code: "codeInvalid" } };
+  const code = normaliseInviteCode(typed);
+  if (!code) return { status: "error", fieldErrors: { code: "codeInvalid" }, values };
 
   const hash = hashInviteCode(code);
   const supabase = await createSupabaseServerClient();
@@ -487,9 +490,9 @@ export async function enterInviteCodeAction(_prev: GroupFormState, formData: For
     ]);
     if (counted.some((r) => !r.ok)) {
       await audit("group.invite_code_rate_limited", userId);
-      return { status: "error", fieldErrors: { code: "codeRateLimited" } };
+      return { status: "error", fieldErrors: { code: "codeRateLimited" }, values };
     }
-    return { status: "error", fieldErrors: { code: "inviteInvalid" } };
+    return { status: "error", fieldErrors: { code: "inviteInvalid" }, values };
   }
   await holdInvite("code", hash);
   return go("/join");

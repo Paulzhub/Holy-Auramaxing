@@ -2,7 +2,7 @@
 
 A grace-centred web app and installable PWA for daily check-ins, small-group challenges, accountability and Scripture. The full product spec is in [`CLAUDE.md`](CLAUDE.md), and the build is split into phases in [`PROMPTS.md`](PROMPTS.md).
 
-**Status:** Phase 1 and Phases 2a–2d are done. Phase 2e (data export and account deletion) is in review; Phase 3 (groups) is next.
+**Status:** Phase 1 and Phase 2 (2a–2e) are done. Phase 3 (groups, invites and multi-tenancy) is in review; Phase 4 (check-ins and streaks) is next.
 
 ## What you need
 

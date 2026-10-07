@@ -54,7 +54,41 @@ const client = createServerClient(url, publishable, {
 const { error } = await client.auth.signInWithPassword({ email, password });
 if (error) throw error;
 
+// Group pages need a group: the Lighthouse member owns one (Phase 3).
+const { data: owned } = await client
+  .from("group_members")
+  .select("group_id")
+  .eq("user_id", member.id)
+  .eq("role", "owner")
+  .limit(1);
+let groupId = owned?.[0]?.group_id;
+if (!groupId) {
+  const { data, error: groupError } = await client.rpc("create_group", {
+    p_name: "Lighthouse group",
+    p_description: "",
+    p_challenge_type: "40",
+    p_challenge_days: null,
+    p_start_date: new Date().toISOString().slice(0, 10),
+    p_timezone: "Asia/Kolkata",
+    p_max_members: 50,
+    p_join_policy: "invite_only",
+    p_covenant_text: "We walk together in grace and honesty.",
+    p_min_share_level: "checkin_only",
+    p_leaderboard_hiding_allowed: true,
+    p_my_share_level: "full",
+  });
+  if (groupError) throw groupError;
+  groupId = data;
+}
+
 const config = JSON.parse(readFileSync("lighthouserc.app.json", "utf8"));
+const base = "http://localhost:3200";
+config.ci.collect.url.push(
+  `${base}/groups/${groupId}`,
+  `${base}/groups/${groupId}/members`,
+  `${base}/groups/${groupId}/invites`,
+  `${base}/groups/${groupId}/settings`,
+);
 config.ci.collect.settings.extraHeaders = JSON.stringify({
   Cookie: [...jar].map(([name, value]) => `${name}=${value}`).join("; "),
 });

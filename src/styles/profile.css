@@ -57,6 +57,7 @@
 
   .profile-section {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4);
     margin: 0;
     padding: var(--space-5);
@@ -90,6 +91,7 @@
 
   .profile-avatar {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4);
     max-inline-size: 44rem;
     padding: var(--space-5);
@@ -110,7 +112,16 @@
     min-inline-size: 0;
   }
 
+  /* The file input's own width ("Choose file  No file chosen") must not stretch
+     the section at 320px (WCAG 1.4.10). */
+  .profile-avatar__controls,
+  .profile-avatar__controls :is(form, .ui-field) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .profile-avatar__file {
+    inline-size: 100%;
+    min-inline-size: 0;
     max-inline-size: 100%;
     min-block-size: 2.75rem;
     font: inherit;

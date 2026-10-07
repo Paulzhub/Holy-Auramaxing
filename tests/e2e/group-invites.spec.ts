@@ -135,7 +135,12 @@ test.describe("Invites", () => {
     };
     for (let i = 0; i < 5; i++) {
       await tryCode();
-      await expect(page.getByText("We couldn't find that invite.").first()).toBeVisible();
+      // The field's own message (the page-level one is about the held link).
+      await expect(
+        page.getByText("We couldn't find that invite. Please check it, or ask for a new one."),
+      ).toBeVisible();
+      // The typed code stays, so a typo can be fixed in place.
+      await expect(page.getByLabel("Invite code")).toHaveValue("ZZZZZ-ZZZZZ");
     }
     await tryCode();
     await expect(page.getByText("Please wait 15 minutes")).toBeVisible();
