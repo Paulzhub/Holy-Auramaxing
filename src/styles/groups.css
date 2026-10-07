@@ -207,6 +207,20 @@
     display: none;
   }
 
+  /* Before the wizard's script runs, show what it will show: step 1 only.
+     Without scripting, every step stays visible and the progress line goes. */
+  @media (scripting: enabled) {
+    .group-wizard:not([data-enhanced]) .group-step--later {
+      display: none;
+    }
+  }
+
+  @media (scripting: none) {
+    .group-wizard__progress {
+      display: none;
+    }
+  }
+
   .group-step__title {
     margin: 0;
     font-family: var(--font-display-stack);

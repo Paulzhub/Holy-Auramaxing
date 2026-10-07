@@ -56,7 +56,9 @@ const noopSubscribe = () => () => {};
 
 /**
  * "Start a group" (CLAUDE.md §7.4): one form in five short steps. Without
- * JavaScript every step shows at once and the form still works. The server
+ * JavaScript every step shows at once and the form still works. With it,
+ * CSS shows only the first step until the wizard takes over, so the page
+ * doesn't jump when it does. The server
  * checks everything; if something needs fixing, the wizard opens that step.
  */
 export function CreateGroupWizard({
@@ -123,13 +125,19 @@ export function CreateGroupWizard({
   const challengeLabel = (v: string) => t(`challengeTypes.${v as (typeof CHALLENGE_TYPES)[number]}`);
 
   return (
-    <form ref={formRef} action={action} className="profile-form" noValidate>
+    <form
+      ref={formRef}
+      action={action}
+      className="profile-form group-wizard"
+      data-enhanced={enhanced ? "" : undefined}
+      noValidate
+    >
       <ErrorSummary state={state} order={order} id="create" />
-      {enhanced ? (
-        <p className="auth-step" aria-live="polite">
-          {t("create.progress", { current: index + 1, total: steps.length })}
-        </p>
-      ) : null}
+      {/* Rendered on the server too (hidden by CSS without scripting), so the
+          first paint already looks like step 1 and nothing moves (CLS). */}
+      <p className="auth-step group-wizard__progress" aria-live="polite">
+        {t("create.progress", { current: index + 1, total: steps.length })}
+      </p>
 
       <fieldset className="profile-section group-step" hidden={!shown("basics")}>
         {heading("basics")}
@@ -156,7 +164,7 @@ export function CreateGroupWizard({
         <p className="text-muted">{t("create.pictureLater")}</p>
       </fieldset>
 
-      <fieldset className="profile-section group-step" hidden={!shown("challenge")}>
+      <fieldset className="profile-section group-step group-step--later" hidden={!shown("challenge")}>
         {heading("challenge")}
         <Select
           id="create-challengeType"
@@ -202,7 +210,7 @@ export function CreateGroupWizard({
         />
       </fieldset>
 
-      <fieldset className="profile-section group-step" hidden={!shown("members")}>
+      <fieldset className="profile-section group-step group-step--later" hidden={!shown("members")}>
         {heading("members")}
         <TextField
           id="create-maxMembers"
@@ -239,7 +247,7 @@ export function CreateGroupWizard({
         </fieldset>
       </fieldset>
 
-      <fieldset className="profile-section group-step" hidden={!shown("covenant")}>
+      <fieldset className="profile-section group-step group-step--later" hidden={!shown("covenant")}>
         {heading("covenant")}
         <TextArea
           id="create-covenant"
@@ -281,7 +289,11 @@ export function CreateGroupWizard({
         />
       </fieldset>
 
-      <section className="profile-section group-step" hidden={!shown("review")} aria-label={t("create.steps.review")}>
+      <section
+        className="profile-section group-step group-step--later"
+        hidden={!shown("review")}
+        aria-label={t("create.steps.review")}
+      >
         {heading("review")}
         {enhanced ? (
           <dl className="group-facts">

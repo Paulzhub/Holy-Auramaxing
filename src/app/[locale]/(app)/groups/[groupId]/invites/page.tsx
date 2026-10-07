@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 import { getGroupInvites, GroupHeader, GroupNotice, requireGroup } from "@/features/groups";
-import { InviteManager } from "@/features/groups/ui-manage";
+import { InviteManager } from "@/features/groups/ui-invites";
 import { clientMessages } from "@/i18n/client-messages";
 
 export async function generateMetadata(): Promise<Metadata> {
