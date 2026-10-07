@@ -64,8 +64,9 @@ Core tables (add columns as needed; keep these names):
 - `profiles` — id (auth user id), handle (unique), display_name, avatar_path, bio, testimony, favourite_verse, timezone, locale, theme_pref, adult_confirmed_at, created_at, deleted_at
 - `privacy_settings` — user_id, profile_visibility (groups / partners / nobody), plus per-field visibility for bio, testimony and favourite verse
 - `groups` — id, name, slug, description, cover_path, owner_id, challenge_type (30 / 40 / 60 / 90 / custom / ongoing), start_date, end_date, group_timezone, covenant_text, min_share_level (checkin_only / streak / full), leaderboard_hiding_allowed, join_policy (invite_only / request_to_join), max_members, archived_at
-- `group_members` — group_id, user_id, role (owner / admin / member), status (active / pending / removed / left), share_level (checkin_only / streak / full), joined_at; unique (group_id, user_id)
-- `group_invites` — id, group_id, token_hash, created_by, expires_at, max_uses, use_count, revoked_at
+- `group_members` — group_id, user_id, role (owner / admin / member), status (active / pending / removed; leaving deletes the row, D-038), share_level (checkin_only / streak / full), joined_at; unique (group_id, user_id)
+- `group_invites` — id, group_id, token_hash, code_hash, created_by, expires_at, max_uses, use_count, revoked_at
+- `group_covenant_proposals`, `group_covenant_agreements` — a tighter covenant waiting for every member's agreement (D-039)
 - `checkins` — id, user_id, local_date, outcome (clean / slipped), mood (1–5), urge_level (0–5), triggers (from a fixed list), note_encrypted, created_at; unique (user_id, local_date)
 - `user_stats` — user_id, current_streak, longest_streak, total_clean_days, checkin_streak, last_checkin_date, xp, level, level_progress_days, highest_level
 - `group_member_stats` — group_id, user_id, clean_days_in_challenge, checkins_in_challenge, xp_in_group
@@ -117,10 +118,10 @@ Three or four skippable screens: welcome (a grace message and a verse), an optio
 
 ### 7.4 Groups (isolated, multi-tenant challenges)
 
-- Any verified user can create a group: name, description, cover image, challenge type (30, 40, 60 or 90 days, custom length, or ongoing), start date, group time zone, member cap (default 50), join policy, and a short covenant members accept on joining. The covenant includes the group's accountability level: the minimum share level every member gives the group, and whether members may hide from the leaderboard. Both are shown before someone joins, and a member may share more than the minimum but never less.
+- Any verified user can create a group: name, description, cover image, challenge type (30, 40, 60 or 90 days, custom length, or ongoing), start date, group time zone, member cap (default 50), join policy, and a short covenant members accept on joining. The covenant includes the group's accountability level: the minimum share level every member gives the group, and whether members may hide from the leaderboard. Both are shown before someone joins, and a member may share more than the minimum but never less. Once others have joined, the owner may relax the covenant at any time, but tightening it (a higher minimum, no hiding, or new words) needs every member's agreement.
 - Invite by link, short code or QR code. Links expire (default 7 days), can have a use limit, and can be revoked and regenerated. Tokens are at least 128-bit random and stored hashed. The invite page is `noindex` and shows only the group name and member count.
 - A user can join many groups; a group switcher in the header lists them with unread counts.
-- Owners promote, demote and remove members, transfer ownership, archive or delete the group. Members can leave at any time.
+- Owners and admins edit the group's name, description and picture; admins approve requests, remove members and manage invites. Owners promote, demote and remove members, transfer ownership, archive or delete the group. Members can leave at any time.
 - Group home: "Day 23 of 90", members' check-in status for today (per share level), leaderboard, encouragement wall, prayer requests, group totals ("together: 1,240 clean days"), upcoming milestones.
 - Lifecycle: scheduled, active, completed (celebration screen, shareable certificate image, "start a new round"), archived.
 - Isolation test: a member of group A gets zero rows from group B on every endpoint.

@@ -19,11 +19,13 @@ export interface AvatarProps {
   size?: "sm" | "md" | "lg" | "xl";
   /** True when the name is already shown next to the avatar. */
   decorative?: boolean;
+  /** Circles for people, rounded squares for groups. */
+  shape?: "circle" | "square";
   className?: string;
 }
 
 /** Shows the photo, or initials when there is no photo or it fails to load. */
-export function Avatar({ name, src, size = "md", decorative = false, className }: AvatarProps) {
+export function Avatar({ name, src, size = "md", decorative = false, shape = "circle", className }: AvatarProps) {
   const [failed, setFailed] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   const showImage = Boolean(src) && !failed;
@@ -33,7 +35,7 @@ export function Avatar({ name, src, size = "md", decorative = false, className }
     const img = imgRef.current;
     if (img && img.complete && img.naturalWidth === 0) setFailed(true);
   }, [src]);
-  const classes = cn("ui-avatar", `ui-avatar--${size}`, className);
+  const classes = cn("ui-avatar", `ui-avatar--${size}`, shape === "square" && "ui-avatar--square", className);
 
   if (showImage) {
     return (

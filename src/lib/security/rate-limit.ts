@@ -42,6 +42,22 @@ export const rateLimitRules = {
   dataExportByUser: { limit: 3, windowSeconds: 60 * 60 },
   /** Asking to delete the account, or keeping it. */
   accountDeletionByUser: { limit: 5, windowSeconds: 60 * 60 },
+  /** Starting groups. */
+  groupCreateByUser: { limit: 5, windowSeconds: 24 * 60 * 60 },
+  /** Settings, roles, approvals, covenant changes: everything else an admin or member does in a group. */
+  groupManageByUser: { limit: 120, windowSeconds: 60 * 60 },
+  /** New group pictures (each one is re-encoded and screened). */
+  groupPictureByUser: { limit: 10, windowSeconds: 60 * 60 },
+  /** Making invites. */
+  groupInviteByUser: { limit: 20, windowSeconds: 60 * 60 },
+  /** Joining (or asking to join) with an invite. */
+  groupJoinByUser: { limit: 10, windowSeconds: 60 * 60 },
+  groupJoinByIp: { limit: 30, windowSeconds: 60 * 60 },
+  /** Wrong invite codes: 5 per person (20 per network) in 15 minutes, then wait (D-037). */
+  inviteCodeFailuresByUser: { limit: 5, windowSeconds: 15 * 60 },
+  inviteCodeFailuresByIp: { limit: 20, windowSeconds: 15 * 60 },
+  /** Opening invite links and the join page. */
+  invitePreviewByIp: { limit: 60, windowSeconds: 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;

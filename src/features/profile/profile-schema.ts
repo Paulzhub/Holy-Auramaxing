@@ -97,10 +97,7 @@ export function parseProfileForm(
   return { ok: false, fieldErrors };
 }
 
-export type AvatarErrorKey =
-  "avatarType" | "avatarSize" | "avatarUnreadable" | "avatarTooSmall" | "rateLimited" | "saveFailed";
-
-export interface AvatarFormState {
-  status: "idle" | "uploaded" | "removed" | "error";
-  error?: AvatarErrorKey;
-}
+export type {
+  ImageErrorKey as AvatarErrorKey,
+  ImageFormState as AvatarFormState,
+} from "@/components/image-picker/state";

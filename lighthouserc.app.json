@@ -10,7 +10,10 @@
         "http://localhost:3200/me",
         "http://localhost:3200/me/edit",
         "http://localhost:3200/settings/data",
-        "http://localhost:3200/settings/data/delete"
+        "http://localhost:3200/settings/data/delete",
+        "http://localhost:3200/groups",
+        "http://localhost:3200/groups/new",
+        "http://localhost:3200/join"
       ],
       "numberOfRuns": 3,
       "settings": {

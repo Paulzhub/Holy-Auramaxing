@@ -626,6 +626,10 @@
   .ui-avatar--xl {
     --avatar-size: 6rem;
   }
+  /* Groups: a soft rounded square, so a group never looks like a person. */
+  .ui-avatar--square {
+    border-radius: 28%;
+  }
 
   /* ---------- progress ring ---------- */
   .ui-ring {

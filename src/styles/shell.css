@@ -325,6 +325,8 @@
 
   .stack {
     display: grid;
+    /* minmax(0, …): a wide child (a long word, a form) can't stretch the page sideways. */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-5);
   }
 

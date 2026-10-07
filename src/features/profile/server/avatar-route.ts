@@ -2,14 +2,14 @@ import { z } from "zod";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-import { AVATAR_SIZES, type AvatarPixels } from "../avatar/image";
+import { SQUARE_IMAGE_SIZES, type SquareImagePixels } from "@/lib/images/square-image";
 import { readAvatarFile } from "../avatar/store";
 
 const querySchema = z.object({
   id: z.uuid(),
   px: z.coerce
     .number()
-    .refine((n): n is AvatarPixels => (AVATAR_SIZES as readonly number[]).includes(n))
+    .refine((n): n is SquareImagePixels => (SQUARE_IMAGE_SIZES as readonly number[]).includes(n))
     .default(256),
   v: z.string().max(64).optional(),
 });

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getTranslations } from "next-intl/server";
 
 import { exportAuthData, getAccount } from "@/features/auth";
+import { exportGroupsData } from "@/features/groups";
 import { exportProfileData } from "@/features/profile";
 import { buildExportArchive, exportFileName } from "@/lib/data-export";
 import { siteOrigin } from "@/lib/env";
@@ -14,8 +15,8 @@ export const dynamic = "force-dynamic";
 /**
  * "Download my data" (CLAUDE.md §7.1, §11; D-032): one zip with data.json,
  * a CSV per table and the profile photo. A form POST, so it works without
- * JavaScript. Each module supplies its own part; Phase 3 onwards add theirs
- * here (groups, check-ins, journal…).
+ * JavaScript. Each module supplies its own part; later phases add theirs
+ * here (check-ins, journal…).
  */
 export async function POST(request: NextRequest) {
   const origin = siteOrigin(new URL(request.url).origin);
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
   try {
     const generatedAt = new Date();
     const t = await getTranslations({ locale: "en", namespace: "accountData.export" });
-    const parts = await Promise.all([exportAuthData(), exportProfileData(userId)]);
+    const parts = await Promise.all([exportAuthData(), exportProfileData(userId), exportGroupsData(userId)]);
     const archive = buildExportArchive({ generatedAt, parts, readmeIntro: t("readme") });
     await audit("account.exported", userId);
 

@@ -20,7 +20,16 @@ function Brand() {
   );
 }
 
-export function AppShell({ children, theme }: { children: ReactNode; theme: ThemePreference }) {
+export function AppShell({
+  children,
+  theme,
+  switcher,
+}: {
+  children: ReactNode;
+  theme: ThemePreference;
+  /** The group switcher, supplied by the app layout (the shell knows nothing about groups). */
+  switcher?: ReactNode;
+}) {
   const t = useTranslations();
 
   return (
@@ -33,11 +42,15 @@ export function AppShell({ children, theme }: { children: ReactNode; theme: Them
         <header className="shell-topbar">
           <div className="shell-topbar__row">
             <Brand />
-            <ThemeSwitcher initial={theme} />
+            <div className="shell-topbar__end">
+              {switcher}
+              <ThemeSwitcher initial={theme} />
+            </div>
           </div>
         </header>
         <aside className="shell-sidebar">
           <Brand />
+          {switcher}
           <SidebarNav />
           <div className="shell-sidebar__footer">
             <ThemeSwitcher initial={theme} />

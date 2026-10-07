@@ -4,8 +4,8 @@ import { audit } from "@/lib/server/audit";
 import { devLog } from "@/lib/server/dev-log";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-import { AVATAR_SIZES, type AvatarPixels } from "./image";
-import { getImageScreener, type ImageScreener } from "./screening";
+import { SQUARE_IMAGE_SIZES, type SquareImagePixels } from "@/lib/images/square-image";
+import { getImageScreener, type ImageScreener } from "@/lib/images/screening";
 
 /**
  * Avatar storage and screening (D-026). Server only; uses the secret key,
@@ -22,12 +22,12 @@ export function newAvatarPath(userId: string): string {
   return `${userId}/${randomBytes(16).toString("base64url")}`;
 }
 
-export function avatarFile(path: string, px: AvatarPixels): string {
+export function avatarFile(path: string, px: SquareImagePixels): string {
   return `${path}-${px}.webp`;
 }
 
 function filesFor(path: string): string[] {
-  return AVATAR_SIZES.map((px) => avatarFile(path, px));
+  return SQUARE_IMAGE_SIZES.map((px) => avatarFile(path, px));
 }
 
 async function removeFiles(paths: (string | null | undefined)[]): Promise<void> {
@@ -54,10 +54,13 @@ async function readRow(userId: string): Promise<AvatarRow | null> {
  * Stores already-processed renditions as the user's pending avatar.
  * The current live avatar stays visible until screening approves the new one.
  */
-export async function storePendingAvatar(userId: string, renditions: Record<AvatarPixels, Buffer>): Promise<string> {
+export async function storePendingAvatar(
+  userId: string,
+  renditions: Record<SquareImagePixels, Buffer>,
+): Promise<string> {
   const admin = createSupabaseAdminClient();
   const path = newAvatarPath(userId);
-  for (const px of AVATAR_SIZES) {
+  for (const px of SQUARE_IMAGE_SIZES) {
     const { error } = await admin.storage.from(BUCKET).upload(avatarFile(path, px), renditions[px], {
       contentType: "image/webp",
       upsert: false,
@@ -146,7 +149,7 @@ export async function removeAvatar(userId: string): Promise<void> {
 }
 
 /** Reads one stored rendition, for the avatar route. */
-export async function readAvatarFile(path: string, px: AvatarPixels): Promise<ArrayBuffer | null> {
+export async function readAvatarFile(path: string, px: SquareImagePixels): Promise<ArrayBuffer | null> {
   const { data } = await createSupabaseAdminClient().storage.from(BUCKET).download(avatarFile(path, px));
   return data ? data.arrayBuffer() : null;
 }
