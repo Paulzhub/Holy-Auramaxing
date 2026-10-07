@@ -9,9 +9,10 @@ import { redirect } from "@/i18n/navigation";
 import { consume } from "@/lib/security/rate-limit";
 import { audit } from "@/lib/server/audit";
 import { devLog } from "@/lib/server/dev-log";
+import { imageErrorKeys } from "@/components/image-picker/state";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-import { AvatarImageError, processAvatar } from "../avatar/image";
+import { SquareImageError, processSquareImage } from "@/lib/images/square-image";
 import { removeAvatar, screenPendingAvatar, storePendingAvatar } from "../avatar/store";
 import { type AvatarErrorKey, type AvatarFormState, parseProfileForm, type ProfileFormState } from "../profile-schema";
 
@@ -74,12 +75,7 @@ export async function saveProfileAction(_prev: ProfileFormState, formData: FormD
   return { status: "idle" };
 }
 
-const avatarErrors: Record<AvatarImageError["reason"], AvatarErrorKey> = {
-  type: "avatarType",
-  size: "avatarSize",
-  unreadable: "avatarUnreadable",
-  tooSmall: "avatarTooSmall",
-};
+const avatarErrors: Record<SquareImageError["reason"], AvatarErrorKey> = imageErrorKeys;
 
 /**
  * Receives a photo (normally already cropped and shrunk in the browser),
@@ -94,12 +90,12 @@ export async function uploadAvatarAction(_prev: AvatarFormState, formData: FormD
 
   let renditions;
   try {
-    renditions = await processAvatar(new Uint8Array(await file.arrayBuffer()));
+    renditions = await processSquareImage(new Uint8Array(await file.arrayBuffer()));
   } catch (error) {
     devLog("avatar", error);
     return {
       status: "error",
-      error: error instanceof AvatarImageError ? avatarErrors[error.reason] : "avatarUnreadable",
+      error: error instanceof SquareImageError ? avatarErrors[error.reason] : "avatarUnreadable",
     };
   }
 

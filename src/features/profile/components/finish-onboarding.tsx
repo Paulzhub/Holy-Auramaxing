@@ -5,13 +5,25 @@ import { cn } from "@/lib/cn";
 
 import { finishOnboardingAction } from "../server/onboarding-actions";
 
-/** Plain forms (no client JavaScript) that finish onboarding. */
-export async function FinishOnboardingButton() {
+/**
+ * Plain forms (no client JavaScript) that finish onboarding. `to` continues
+ * into starting or joining a group; the label then comes from the caller.
+ */
+export async function FinishOnboardingButton({
+  to = "/home",
+  label,
+  variant = "primary",
+}: {
+  to?: "/home" | "/groups/new" | "/join";
+  label?: string;
+  variant?: "primary" | "secondary";
+} = {}) {
   const t = await getTranslations("onboarding");
   return (
     <form action={finishOnboardingAction}>
-      <button type="submit" className={cn(buttonVariants({ size: "lg" }), "auth-submit")}>
-        {t("group.finish")}
+      <input type="hidden" name="then" value={to} />
+      <button type="submit" className={cn(buttonVariants({ size: "lg", variant }), "auth-submit")}>
+        {label ?? t("group.finish")}
       </button>
     </form>
   );

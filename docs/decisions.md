@@ -332,3 +332,73 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **New settings:** `CRON_SECRET` (server-only, at least 32 characters). Without it the purge route returns 404; the database still erases accounts daily.
 - **Data-model additions (approved 2026-10-06):** `profiles_deletion_requested_idx`; `private.storage_purge_queue`; `util.account_deletion_grace()` (14 days, equal to `ACCOUNT_DELETION_GRACE_DAYS`); the functions above, with service-role-only `run_account_purge()`, `claim_storage_purges()` and `complete_storage_purge()`. No new personal tables in `public`, so no new `session_ok()` policies; the new member functions check `util.session_ok()` themselves.
 - **Emails** reuse the security-alert template ("accountClosing", "accountKept"): sender "Aura", neutral subjects, unit- and e2e-tested for sensitive words.
+
+## D-034 · Phase 3 · Every group write goes through one database function
+
+- **Context:** CLAUDE.md §5 lets writes go through server actions or Postgres functions, and the Phase 3 "done when" says an admin must not be able to act on another group "even by calling the API directly".
+- **Decision (owner, 2026-10-07):**
+  - `groups`, `group_members`, `group_invites`, `group_covenant_proposals` and `group_covenant_agreements` have **no insert, update or delete grants** for any API role. Reads go through RLS.
+  - Every change is a `security definer` function (`create_group`, `update_group_details`, `set_group_member_role`, `join_group`, …). Each one checks `util.session_ok()`, locks the group row, reads the caller's own role **in that group**, makes the change and writes the audit row, all in one transaction. For a group the caller isn't an active member of, the answer is `group_not_found` (42501), the same as for a group that doesn't exist.
+  - **Audit rows are written by the functions themselves** (`util.audit`), so a direct API call can't skip them. They hold ids and role or share-level values only. When an action concerns another member, that member is the `target_id` and the group id goes in the metadata, so erasing their account unlinks the row (D-033). These rows have no device label; app-side events (picture screening, too many wrong codes) still use `src/lib/server/audit.ts`.
+  - Errors come back as short keys (`group_full`, `invite_expired`…), turned into copy by `src/features/groups/errors.ts`.
+- **Helpers:** `util.group_status()`, `util.group_role()`, `util.is_active_member()`, `util.is_group_admin()`, `util.account_open()`, all including `session_ok()`. `util.shares_group()` now really answers (D-022): two active members of one group, plus a group's admins seeing the cards of people asking to join or removed.
+- **RLS:** a group row is readable by its active members and by people with a pending request; members see the group's active members (accounts closing for deletion are hidden, D-033); admins also see requests and removals; only admins see invites, and the hash columns are granted to nobody. Every table has the RESTRICTIVE `session_ok()` policy (D-028).
+- **Tests:** pgTAP `020`–`024`. `022_groups_isolation` finds every table in `public` with a `group_id` column by itself, so tables from later phases are checked automatically, and fails if a new function taking a group, proposal or invite id isn't in its list. `023_platform_session_gate` fails if any RLS table lacks the `session_ok()` policy. `tests/e2e/group-isolation.spec.ts` tries every page, the picture route and every function against another group.
+
+## D-035 · Phase 3 · Group URLs use the id, and tab titles never show a group's name
+
+- **Decision:** `/groups/<uuid>`, not the slug. A group's name could say what the app is for ("No Fap brothers"), and URLs end up in browser history, autocomplete and screenshots. Tab titles say "Group", "Members", "Invites" (§2.3). `slug` is still generated (unique, from the name plus 10 random hex characters) and kept for later.
+
+## D-036 · Phase 3 · Group pictures: the avatar pipeline, for owners and admins
+
+- **Decision (owner, 2026-10-07):** owners **and admins** can change a group's name, description and picture; the challenge settings, the covenant, hand-over, archive and delete stay with the owner (§3).
+- The picture is a square, like a profile photo, and uses the same pipeline (D-026): on-device crop, server re-encode to three WebP sizes with no metadata, Google Cloud Vision screening before anyone sees it, private `group-pictures` bucket written only by the server, served by `/api/group-picture/<id>` after an RLS check (members and people asking to join). `groups.cover_path` holds it (the spec's column name), with `cover_pending_path` and `cover_status`.
+- The server checks the role before storing files, and `set_group_picture_pending()` checks it again as the person; the files are removed if it refuses.
+- The shared code moved: `src/lib/images/` (processing, screening, crop maths) and `src/components/image-picker/` (the picker and cropper, which take their copy from `profile.avatar` or `groups.picture`). Group pictures are drawn as rounded squares so a group never looks like a person.
+- A deleted group's picture folder is queued in `private.storage_purge_queue` (now allowing the `group-pictures` bucket) and removed through the Storage API by the daily purge (D-033).
+
+## D-037 · Phase 3 · Invites: link, short code and a themed QR code
+
+- **Link and QR:** a 160-bit random token, `/join/<token>`, stored as SHA-256. The route keeps the invite in an httpOnly cookie (`aura_invite`, an hour, the hash only) and redirects to a clean `/join`, so the token doesn't stay in the address bar or history, and the invite survives sign-up and onboarding (the last onboarding step offers "Join <group>").
+- **Short code:** 10 Crockford base32 characters (50 bits), shown as `ABCDE-FGHJK`, stored as HMAC-SHA256 with a key derived from `APP_ENCRYPTION_KEY` (like recovery codes, D-028). 50 bits is weaker than the link, so codes are typed only by signed-in, email-verified people and limited to 5 wrong codes per person and 20 per network in 15 minutes (`group.invite_code_rate_limited` is audited).
+- Admins see the link and code **once**, right after making the invite; only the hashes are stored. "Replace with a new one" stops an invite and makes a fresh one with the same settings.
+- Invites last 1, 3, 7 (default), 14 or 30 days, with an optional use limit (1–500); at most 20 working invites per group. `use_count` is taken under a row lock, so the last use can't be spent twice.
+- **The invite page** (`/join`, `noindex`, `referrer: no-referrer`) shows a signed-out visitor only the group's name and member count. Signed in, it shows the description, the challenge, the covenant and its accountability level, and the share-level choice (D-027) before an unticked "I accept". `join_group()` refuses if the covenant changed since the page was read.
+- **Refusals** are friendly and specific: expired, stopped, used up, full, archived, unknown, already a member, already asked, removed.
+- **`join_policy`:** groups are never discoverable, so both policies need an invite. `invite_only` joins at once; `request_to_join` turns the invite into a request an owner or admin approves. Pending requests are capped at the member cap.
+- **QR codes in the app's look (owner, 2026-10-07):** drawn on the server as an SVG by `src/features/groups/qr.ts` with the `qrcode` package (new dependency, server-only, 0 KB in the browser): error correction H, indigo dot "pills" on a warm dawn-white card with a gold frame, rounded indigo corner eyes, and the sunrise mark in the centre. Every colour a scanner reads is dark indigo on near-white. Checked by decoding the rendered PNG at 180, 300 and 600 px with jsQR (by hand, not in CI, to avoid a test-only dependency); about 6 KB per code. Admins can copy the link and code, share the link (Web Share), and download the QR code as an SVG.
+
+## D-038 · Phase 3 · Leaving deletes the membership; removals stay
+
+- **Decision (owner, 2026-10-07):** leaving a group (or withdrawing a request) deletes the `group_members` row: membership is sensitive data (§11) and nothing needs it afterwards. So `status` never holds `left`; the check allows `active`, `pending` and `removed`.
+- A **removed** member keeps a `removed` row, so they can't come back with an old link. An owner or admin can "Allow back" (the row is deleted; they then need a fresh invite).
+- The owner can't leave: they hand the group to another member first (they become an admin), or archive or delete it.
+- Owners promote and demote; owners remove anyone else; admins remove members (not other admins); nobody removes the owner.
+
+## D-039 · Phase 3 · Tightening the covenant needs every member's agreement
+
+- **Context:** D-027 put the accountability level in the covenant that people agree to before joining. Changing it later would change what they agreed to.
+- **Decision (owner, 2026-10-07):**
+  - **Relaxing** applies at once: a lower minimum share level, or allowing leaderboard hiding.
+  - **Tightening** — a higher minimum, no more hiding, or new covenant words — applies at once only while nobody else has joined. Otherwise it becomes a **proposal** (`group_covenant_proposals`) that every other active member must agree to (`group_covenant_agreements`). Any member may decline, which closes it; the owner may withdraw it; it lapses after 14 days. One open proposal per group.
+  - When the last agreement arrives (or the last member who hadn't agreed leaves or is removed, or their account is erased), the new covenant applies: members below the new minimum are raised to it, hiding is switched off if it's no longer allowed, and requests to join made under the old covenant are declined (they didn't agree to it).
+  - The group home shows the open proposal side by side with the current covenant, with "I agree" / "I don't agree".
+- **Data-model additions:** the two tables above, and `groups.covenant_updated_at`.
+
+## D-040 · Phase 3 · What erasing an account does to groups
+
+- Fills in `private.anonymise_group_contributions()` (D-033):
+  - each group the person owns passes to its longest-serving **admin**, else its longest-serving member (accounts that aren't closing first). A group with **nobody else in it is deleted**, not archived, since nobody could ever see it again (owner's choice, a small change to D-033); its picture folder is queued for removal;
+  - their memberships, requests, covenant agreements and the invites they made are deleted, and open covenant changes are re-checked (they may have been the last one who hadn't agreed);
+  - hand-overs are audited with no actor.
+- Posts, comments and reactions (Phase 5) and nudges and partnerships (Phase 6) don't exist yet. The function marks where those phases add their part: posts and comments stay with `author_id` null ("A former member"); reactions, nudges and partnerships are deleted.
+- Accounts closing for deletion disappear from member lists at once (RLS) and from profile cards (D-033). They still hold their seat until erased.
+
+## D-041 · Phase 3 · Groups data-model additions, limits and the data export
+
+- **`groups`:** `challenge_days` (the length; `end_date` = `start_date` + days − 1, null for ongoing; a check keeps them consistent), `member_count` (active members, kept by a trigger, §14), `cover_pending_path`, `cover_status`, `covenant_updated_at`, `created_at`, `updated_at`. `owner_id` is `on delete restrict`, so an erased owner's groups must be handed on first. Custom challenges are 7–365 days; the start date is from a month ago to a year ahead, in the group's time zone; caps are 2–500 members (default 50).
+- **`group_members`:** `leaderboard_hidden`, `invite_id`, `covenant_accepted_at`, `requested_at`, `updated_at`; exactly one owner per group (unique index); a trigger keeps `share_level` at or above the group's minimum and refuses hiding where it isn't allowed.
+- **`group_invites`:** `code_hash`, `created_at`.
+- **Limits against abuse:** a person may own 10 unarchived groups and belong to (or have asked to join) 30. Rate limits: starting groups 5 a day; invites 20 an hour; joins 10 an hour per person and 30 per network; other group actions 120 an hour; group pictures 10 an hour; invite links and the join page 60 a minute per network.
+- **"Download my data"** gains `group_memberships`, `groups_owned` (with the covenant), `group_invites_made` (dates and counts; the links and codes were never kept), `covenant_agreements`, and the pictures of groups the person owns. Nothing about other members.
+- **Not yet:** unread counts in the switcher (Phase 7), the group's check-ins, leaderboard, wall and totals (Phases 4–5), the celebration and "start a new round" when a challenge completes (Phase 5).

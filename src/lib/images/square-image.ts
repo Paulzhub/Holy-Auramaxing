@@ -1,17 +1,17 @@
 import sharp, { type Sharp } from "sharp";
 
 /**
- * Avatar image processing (CLAUDE.md §7.3, §10). Server only.
+ * Square image processing (avatars and group pictures) (CLAUDE.md §7.3, §10). Server only.
  *
  * Every photo is decoded and re-encoded from its pixels: nothing from the
  * original file (EXIF, GPS, XMP, ICC comments, embedded thumbnails, trailing
  * bytes) survives. sharp drops all metadata unless asked to keep it.
  */
 
-export const AVATAR_MAX_BYTES = 5 * 1024 * 1024;
+export const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 /** Pixel sizes stored for each avatar (square WebP). */
-export const AVATAR_SIZES = [96, 256, 512] as const;
-export type AvatarPixels = (typeof AVATAR_SIZES)[number];
+export const SQUARE_IMAGE_SIZES = [96, 256, 512] as const;
+export type SquareImagePixels = (typeof SQUARE_IMAGE_SIZES)[number];
 
 export type ImageKind = "jpeg" | "png" | "webp";
 
@@ -25,9 +25,9 @@ export function detectImageKind(bytes: Uint8Array): ImageKind | null {
   return null;
 }
 
-export class AvatarImageError extends Error {
+export class SquareImageError extends Error {
   constructor(readonly reason: "type" | "size" | "unreadable" | "tooSmall") {
-    super(`avatar image rejected: ${reason}`);
+    super(`image rejected: ${reason}`);
   }
 }
 
@@ -39,27 +39,27 @@ const MAX_INPUT_PIXELS = 40_000_000;
  * Checks the file and returns square WebP renditions, keyed by pixel size.
  * The crop is centred; the browser normally sends an already-square crop.
  */
-export async function processAvatar(input: Uint8Array): Promise<Record<AvatarPixels, Buffer>> {
-  if (input.byteLength === 0 || input.byteLength > AVATAR_MAX_BYTES) throw new AvatarImageError("size");
+export async function processSquareImage(input: Uint8Array): Promise<Record<SquareImagePixels, Buffer>> {
+  if (input.byteLength === 0 || input.byteLength > IMAGE_MAX_BYTES) throw new SquareImageError("size");
   const kind = detectImageKind(input);
-  if (!kind) throw new AvatarImageError("type");
+  if (!kind) throw new SquareImageError("type");
 
   let base: Sharp;
   try {
     // failOn "error": refuse truncated or corrupt files instead of guessing.
     base = sharp(input, { failOn: "error", limitInputPixels: MAX_INPUT_PIXELS, animated: false });
     const meta = await base.metadata();
-    if (meta.format !== kind) throw new AvatarImageError("type");
+    if (meta.format !== kind) throw new SquareImageError("type");
     const shortest = Math.min(meta.autoOrient?.width ?? meta.width ?? 0, meta.autoOrient?.height ?? meta.height ?? 0);
-    if (shortest < MIN_SIDE) throw new AvatarImageError("tooSmall");
+    if (shortest < MIN_SIDE) throw new SquareImageError("tooSmall");
   } catch (error) {
-    if (error instanceof AvatarImageError) throw error;
-    throw new AvatarImageError("unreadable");
+    if (error instanceof SquareImageError) throw error;
+    throw new SquareImageError("unreadable");
   }
 
   try {
     const entries = await Promise.all(
-      AVATAR_SIZES.map(async (px) => {
+      SQUARE_IMAGE_SIZES.map(async (px) => {
         const out = await base
           .clone()
           // Apply the EXIF orientation to the pixels, then the metadata is gone.
@@ -72,8 +72,8 @@ export async function processAvatar(input: Uint8Array): Promise<Record<AvatarPix
         return [px, out] as const;
       }),
     );
-    return Object.fromEntries(entries) as Record<AvatarPixels, Buffer>;
+    return Object.fromEntries(entries) as Record<SquareImagePixels, Buffer>;
   } catch {
-    throw new AvatarImageError("unreadable");
+    throw new SquareImageError("unreadable");
   }
 }

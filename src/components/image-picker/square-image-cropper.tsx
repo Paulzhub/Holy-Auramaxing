@@ -6,7 +6,9 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 
-import { CROP_OUTPUT, cropRect, MAX_ZOOM, MIN_ZOOM } from "../avatar/crop";
+import { CROP_OUTPUT, cropRect, MAX_ZOOM, MIN_ZOOM } from "@/lib/images/crop";
+
+import type { ImageMessages } from "./state";
 
 /** Draws the crop onto a canvas, for the preview and the upload alike. */
 function draw(canvas: HTMLCanvasElement, image: ImageBitmap, zoom: number, panX: number, panY: number) {
@@ -72,16 +74,19 @@ function Slider({
  * costs nothing on page load. Sliders, not dragging, so it works with a
  * keyboard, a switch or a screen reader (WCAG 2.5.7).
  */
-export function AvatarCropper({
+export function SquareImageCropper({
+  messages,
   image,
   onCancel,
   onConfirm,
 }: {
+  /** Where this picker's copy lives, e.g. "profile.avatar" or "groups.picture". */
+  messages: ImageMessages;
   image: ImageBitmap | null;
   onCancel: () => void;
   onConfirm: (blob: Blob | null) => void;
 }) {
-  const t = useTranslations("profile.avatar");
+  const t = useTranslations(messages as "profile.avatar");
   const [zoom, setZoom] = useState(1);
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);

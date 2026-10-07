@@ -3,17 +3,14 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { AuthHeading, requireAccount } from "@/features/auth";
+import { previewHeldInvite } from "@/features/groups";
 import { FinishOnboardingButton, onboardingSteps, parseStep } from "@/features/profile";
+import { timezoneOptions } from "@/lib/timezones";
 import { DiscreetForm, ReminderForm, SkipStepLink, WelcomeForm, WhyForm } from "@/features/profile/ui";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
   return { title: t("welcome") };
-}
-
-/** Every zone the runtime knows, plus UTC and the person's current zone, so the list always shows their real setting. */
-function timezoneOptions(current: string): string[] {
-  return [...new Set([...Intl.supportedValuesOf("timeZone"), "UTC", current])].sort();
 }
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -25,6 +22,8 @@ export default async function WelcomePage({ searchParams }: { searchParams: Sear
   const next = onboardingSteps[index + 1];
   const t = await getTranslations("onboarding");
   const progress = t("progress", { current: index + 1, total: onboardingSteps.length });
+  // Someone who opened an invite before signing up finds it waiting here.
+  const invite = step === "group" ? await previewHeldInvite() : null;
 
   return (
     <div className="auth-card">
@@ -72,16 +71,19 @@ export default async function WelcomePage({ searchParams }: { searchParams: Sear
         <>
           <Users aria-hidden="true" className="auth-card__icon" />
           <AuthHeading title={t("group.title")} lede={t("group.lede")} />
-          <ul className="onboarding-options">
-            <li className="ui-card">
-              <span className="ui-card__title">{t("group.create")}</span>
-              <span className="text-muted">{t("group.comingSoon")}</span>
-            </li>
-            <li className="ui-card">
-              <span className="ui-card__title">{t("group.join")}</span>
-              <span className="text-muted">{t("group.comingSoon")}</span>
-            </li>
-          </ul>
+          {invite?.status === "valid" && invite.groupName ? (
+            <>
+              <p className="auth-banner" role="status">
+                {t("group.inviteWaiting", { name: invite.groupName })}
+              </p>
+              <FinishOnboardingButton to="/join" label={t("group.joinInvite", { name: invite.groupName })} />
+            </>
+          ) : null}
+          <div className="onboarding-options">
+            <FinishOnboardingButton to="/groups/new" label={t("group.create")} variant="secondary" />
+            <FinishOnboardingButton to="/join" label={t("group.join")} variant="secondary" />
+          </div>
+          <p className="text-muted">{t("group.later")}</p>
           <FinishOnboardingButton />
         </>
       ) : null}

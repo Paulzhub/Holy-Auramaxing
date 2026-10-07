@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { GPS_CAMERA_MAKE, hasGpsExif, photoWithGps, plainPng } from "@/test/images";
 
-import { AVATAR_MAX_BYTES, AvatarImageError, detectImageKind, processAvatar } from "./image";
+import { IMAGE_MAX_BYTES, SquareImageError, detectImageKind, processSquareImage } from "./square-image";
 
 describe("detectImageKind", () => {
   it("recognises JPEG, PNG and WebP by their first bytes", async () => {
@@ -33,9 +33,9 @@ describe("detectImageKind", () => {
   });
 });
 
-describe("processAvatar", () => {
+describe("processSquareImage", () => {
   it("returns three square WebP sizes", async () => {
-    const out = await processAvatar(await photoWithGps(1200, 900));
+    const out = await processSquareImage(await photoWithGps(1200, 900));
     for (const px of [96, 256, 512] as const) {
       const meta = await sharp(out[px]).metadata();
       expect(meta).toMatchObject({ format: "webp", width: px, height: px });
@@ -47,7 +47,7 @@ describe("processAvatar", () => {
     expect(hasGpsExif(original)).toBe(true);
     expect(original.includes(Buffer.from(GPS_CAMERA_MAKE))).toBe(true);
 
-    const out = await processAvatar(original);
+    const out = await processSquareImage(original);
     for (const bytes of Object.values(out)) {
       expect(hasGpsExif(bytes)).toBe(false);
       expect(bytes.includes(Buffer.from(GPS_CAMERA_MAKE))).toBe(false);
@@ -59,22 +59,22 @@ describe("processAvatar", () => {
   });
 
   it("flattens transparency instead of keeping an alpha channel", async () => {
-    const out = await processAvatar(await plainPng(200, 300));
+    const out = await processSquareImage(await plainPng(200, 300));
     expect((await sharp(out[256]).metadata()).hasAlpha).toBe(false);
   });
 
   it("refuses files that are not JPEG, PNG or WebP", async () => {
-    await expect(processAvatar(new TextEncoder().encode("<svg/>"))).rejects.toMatchObject({ reason: "type" });
+    await expect(processSquareImage(new TextEncoder().encode("<svg/>"))).rejects.toMatchObject({ reason: "type" });
   });
 
   it("refuses a file whose bytes say JPEG but which isn't one", async () => {
     const fake = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, ...new TextEncoder().encode("<script>alert(1)</script>")]);
-    await expect(processAvatar(fake)).rejects.toBeInstanceOf(AvatarImageError);
+    await expect(processSquareImage(fake)).rejects.toBeInstanceOf(SquareImageError);
   });
 
   it("refuses empty, oversized and tiny images", async () => {
-    await expect(processAvatar(new Uint8Array())).rejects.toMatchObject({ reason: "size" });
-    await expect(processAvatar(new Uint8Array(AVATAR_MAX_BYTES + 1))).rejects.toMatchObject({ reason: "size" });
-    await expect(processAvatar(await plainPng(40, 400))).rejects.toMatchObject({ reason: "tooSmall" });
+    await expect(processSquareImage(new Uint8Array())).rejects.toMatchObject({ reason: "size" });
+    await expect(processSquareImage(new Uint8Array(IMAGE_MAX_BYTES + 1))).rejects.toMatchObject({ reason: "size" });
+    await expect(processSquareImage(await plainPng(40, 400))).rejects.toMatchObject({ reason: "tooSmall" });
   });
 });

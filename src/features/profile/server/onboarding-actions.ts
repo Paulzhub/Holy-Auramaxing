@@ -98,10 +98,14 @@ export async function saveDiscreetAction(_prev: OnboardingFormState, formData: F
   return advance("discreet");
 }
 
-/** "Go to Today" on the last step, or "Skip setup" on any step. */
-export async function finishOnboardingAction(): Promise<void> {
+/** Where finishing onboarding may lead: Today, or straight into starting or joining a group. */
+const finishDestinations = ["/home", "/groups/new", "/join"] as const;
+
+/** "Go to Today" or a group choice on the last step, or "Skip setup" on any step. */
+export async function finishOnboardingAction(formData?: FormData): Promise<void> {
   await requireAccount();
   const supabase = await createSupabaseServerClient();
   await supabase.rpc("complete_onboarding");
-  await go("/home");
+  const then = formData?.get("then");
+  await go((finishDestinations as readonly unknown[]).includes(then) ? (then as string) : "/home");
 }

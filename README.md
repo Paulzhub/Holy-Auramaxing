@@ -99,7 +99,7 @@ npm ci                         # new packages
 npx supabase migration up      # new tables; keeps your local accounts
 ```
 
-Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`; 2d added `EMAIL_PROVIDER`, `PASSKEYS_ENABLED` and the optional `RESEND_API_KEY`/`EMAIL_FROM`; 2e added `CRON_SECRET`), and restart `npm run dev`: environment files are read only at start-up. When `supabase/config.toml` changed (2d did), restart Supabase too: `npx supabase stop`, then `npx supabase start`.
+Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`; 2d added `EMAIL_PROVIDER`, `PASSKEYS_ENABLED` and the optional `RESEND_API_KEY`/`EMAIL_FROM`; 2e added `CRON_SECRET`; Phase 3 adds none), and restart `npm run dev`: environment files are read only at start-up. When `supabase/config.toml` changed (2d did), restart Supabase too: `npx supabase stop`, then `npx supabase start`.
 
 > **Windows tips**
 >
@@ -135,16 +135,17 @@ src/
   app/[locale]/(app)/dev/    the component gallery
   components/ui/             design-system components
   components/shell/          app shell: navigation, theme switcher, brand
+  components/image-picker/   the square photo picker shared by avatars and group pictures
   features/<module>/         one folder per module (auth, groups, checkins, …);
                              other code imports a module only via its index.ts
   i18n/                      next-intl routing and request config
-  lib/                       security (CSP, headers), theme, Supabase clients, env
+  lib/                       security (CSP, headers), theme, Supabase clients, env, images
   styles/                    tokens.css (design tokens), components.css, shell.css
   proxy.ts                   per-request CSP nonce + locale routing
 messages/en.json             every user-facing string
 supabase/migrations/         versioned SQL, named <timestamp>_<module>_<what>.sql
 supabase/tests/database/     pgTAP tests
-tests/e2e/                   Playwright specs (axe, keyboard, theme, headers, shell)
+tests/e2e/                   Playwright specs (axe, keyboard, theme, headers, shell, groups)
 docs/                        decisions, threat model, design system
 ```
 
@@ -153,9 +154,10 @@ docs/                        decisions, threat model, design system
 - **Theme.** Light, dark or system, set from the switcher in the header, sidebar or Settings. Your choice is saved in a `theme` cookie, so the server sends the right colours in the very first HTML; there's nothing to flash. A tiny inline script, allowed by the CSP nonce, covers the case where the cookie is missing but the local cache has your choice. With JavaScript turned off, the switcher still works through a Server Action.
 - **Strings.** All user-facing text lives in `messages/en.json`. ESLint fails on hard-coded text in JSX, and a unit test checks that every message parses. Browser tab titles use the neutral short name "Aura".
 - **Security headers.** `src/proxy.ts` sends a strict, nonce-based Content-Security-Policy on every page. `next.config.ts` adds HSTS, `nosniff`, Referrer-Policy, Permissions-Policy, COOP/CORP and `X-Frame-Options`. See `docs/threat-model.md`.
-- **Module boundaries.** ESLint stops one module from importing another module's internals. Each module has two public entry points: `@/features/x` (server functions and server components) and `@/features/x/ui` (client components). They are separate so that server helpers never pull client code into a page (docs/decisions.md D-023).
+- **Module boundaries.** ESLint stops one module from importing another module's internals. Each module has two public entry points: `@/features/x` (server functions and server components) and `@/features/x/ui` (client components). They are separate so that server helpers never pull client code into a page (docs/decisions.md D-023). A module can add page-specific client entry points, `@/features/x/ui-<page>` (for example `@/features/groups/ui-manage`).
 - **Security (Phase 2d).** Optional two-step sign-in with an authenticator app, ten single-use recovery codes, and passkeys (Supabase Auth). A database policy (`util.session_ok()`) hides every personal row from a session that hasn't entered its code yet or has been signed out from another device. Settings → Security lists your devices (no IP addresses) and signs them out. A new device triggers a discreet "New sign-in" email (D-028–D-030).
 - **Your data (Phase 2e).** Settings → Your data downloads everything as one zip (`data.json`, a CSV per table, your photo). Deleting the account hides your profile at once, signs out your other devices and emails you; for 14 days signing in shows only "Keep my account". Then a daily database job erases the account and everything personal, and the app removes your photo files (D-032, D-033).
+- **Groups (Phase 3).** Anyone with a verified email starts a group in five short steps (name, challenge, who can join, covenant, check). Invite people by link, short code or a QR code in the app's own colours; each invite works for 1–30 days, can have a use limit, and can be stopped or replaced. The link and code are shown once: only scrambled copies are stored. `/join` shows signed-out visitors just the group's name and member count; signed in, it shows the covenant and asks what you'll share (never less than the group's minimum). The header's switcher lists your groups. Every change to a group goes through a database function that checks your role in that group, and is audited; a member of one group can't see or touch another, page or API (pgTAP `020`–`024`, `tests/e2e/group-isolation.spec.ts`; D-034–D-041).
 - **Accounts.** Sign-up asks "Are you 18 or older?", then shows a plain-language consent notice with two unticked boxes. Only then can an account be created, and the database enforces that order (D-014). Session cookies are httpOnly; `src/proxy.ts` refreshes the session and sends signed-out visitors to `/sign-in`.
 
 ## Continuous integration
@@ -163,7 +165,7 @@ docs/                        decisions, threat model, design system
 Every pull request runs `.github/workflows/ci.yml`:
 
 1. **quality**: lint, format check, typecheck, unit tests, build, `npm audit` of production dependencies
-2. **e2e**: Playwright + axe on every route, in light and dark themes, on desktop and a phone viewport
+2. **e2e**: Playwright + axe on every route (unit tests also check that every migration name carries a module prefix, D-003), in light and dark themes, on desktop and a phone viewport
 3. **lighthouse**: performance, accessibility, best practices and SEO must each be 95 or higher
 4. **database**: Supabase Postgres starts, migrations apply, SQL lint, pgTAP
 5. **secrets**: gitleaks

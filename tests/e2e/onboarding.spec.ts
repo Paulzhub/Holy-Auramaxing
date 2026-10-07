@@ -40,7 +40,8 @@ test("a new member goes through all five steps and lands on Today", async ({ pag
 
   // 5. Groups (Phase 3), then finish.
   await expect(page).toHaveURL(/step=group$/);
-  await expect(page.getByText("Coming soon", { exact: false }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Start a group" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Join with a code" })).toBeVisible();
   await page.getByRole("button", { name: "Go to Today" }).click();
   await expect(page).toHaveURL(/\/home$/);
 

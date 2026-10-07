@@ -4,6 +4,7 @@ import { test as base, expect, type BrowserContext, type Page } from "@playwrigh
 export const appRoutes = [
   "/home",
   "/groups",
+  "/groups/new",
   "/check-in",
   "/alerts",
   "/me",
@@ -24,6 +25,7 @@ export const authRoutes = [
   "/privacy",
   "/terms",
   "/your-data",
+  "/join",
 ] as const;
 /** A fresh, signed-out browser state. */
 export const signedOut = { cookies: [], origins: [] };

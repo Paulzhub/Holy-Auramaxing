@@ -31,7 +31,12 @@ export type AuditAction =
   | "avatar.uploaded"
   | "avatar.approved"
   | "avatar.rejected"
-  | "avatar.removed";
+  | "avatar.removed"
+  // Group events written by the app. Membership and role changes are
+  // audited inside the database functions themselves (D-034).
+  | "group.picture_approved"
+  | "group.picture_rejected"
+  | "group.invite_code_rate_limited";
 
 /**
  * Platform audit log (CLAUDE.md §10), shared by every module.
