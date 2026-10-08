@@ -6,6 +6,7 @@ export const appRoutes = [
   "/groups",
   "/groups/new",
   "/check-in",
+  "/progress",
   "/alerts",
   "/me",
   "/settings",

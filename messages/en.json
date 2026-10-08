@@ -33,7 +33,8 @@
     "groupMembers": "Members",
     "groupInvites": "Invites",
     "groupSettings": "Group settings",
-    "join": "Join a group"
+    "join": "Join a group",
+    "progress": "Progress"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -79,9 +80,7 @@
       "title": "Today",
       "lede": "Every morning is a fresh start.",
       "verseText": "It is because of Yahweh’s loving kindnesses that we are not consumed, because his mercies don’t fail. They are new every morning. Great is your faithfulness.",
-      "verseReference": "Lamentations 3:22–23 (WEB)",
-      "emptyTitle": "Your day will start here",
-      "emptyBody": "Your check-in, your streak and your groups will appear on this page."
+      "verseReference": "Lamentations 3:22–23 (WEB)"
     },
     "groups": {
       "title": "Groups",
@@ -91,9 +90,7 @@
     },
     "checkIn": {
       "title": "Check in",
-      "lede": "One honest answer a day.",
-      "emptyTitle": "Daily check-ins are on the way",
-      "emptyBody": "You’ll answer one question each day. Honest answers always earn the same reward."
+      "lede": "One honest answer a day."
     },
     "alerts": {
       "title": "Alerts",
@@ -106,8 +103,8 @@
       "lede": "Your profile and progress, visible only to people you choose.",
       "settingsLink": "Settings",
       "settingsBody": "Theme, language and privacy",
-      "progressTitle": "Levels and badges",
-      "progressBody": "Your level, badges and streaks will appear here after your first check-ins."
+      "progressBody": "Your streaks, calendar and charts. Levels and badges arrive soon.",
+      "progressLink": "See your journey"
     },
     "settings": {
       "title": "Settings",
@@ -943,7 +940,8 @@
       "withdraw": "Withdraw request",
       "archivedTitle": "Archived groups",
       "members": "{count, plural, one {# member} other {# members}}",
-      "open": "Open {name}"
+      "open": "Open {name}",
+      "needsAnswer": "A covenant change needs your answer"
     },
     "roles": {
       "owner": "Owner",
@@ -1228,7 +1226,8 @@
       "label": "Your groups",
       "none": "No groups yet",
       "all": "All groups",
-      "create": "Start a group"
+      "create": "Start a group",
+      "needsAnswer": "Needs your answer"
     },
     "notices": {
       "created": "Your group is ready. Invite the friends you trust.",
@@ -1303,6 +1302,196 @@
       "avatarSize": "Please choose a picture under 5 MB.",
       "avatarUnreadable": "We couldn't open that picture. Please try another one.",
       "avatarTooSmall": "That picture is very small. Please choose one at least 64 pixels wide."
+    }
+  },
+  "checkins": {
+    "form": {
+      "questionToday": "How was today?",
+      "questionYesterday": "How was yesterday?",
+      "dayToday": "Today, {date}",
+      "dayYesterday": "Yesterday, {date}",
+      "yesterdayOpen": "Yesterday is still open until 12:00.",
+      "answerYesterday": "Answer for yesterday",
+      "answerToday": "Answer for today",
+      "cleanToday": "I stayed free today",
+      "cleanYesterday": "I stayed free yesterday",
+      "slipped": "I slipped",
+      "saving": "Saving…",
+      "choicesLabel": "Your answer",
+      "honest": "Either answer earns the same reward. Honesty is what counts.",
+      "detailsSummary": "Add how it went (optional)",
+      "detailsHint": "Fill in any of these, then choose your answer below.",
+      "moodLegend": "Mood",
+      "mood": {
+        "1": "Very low",
+        "2": "Low",
+        "3": "Okay",
+        "4": "Good",
+        "5": "Great"
+      },
+      "urgeLegend": "Strongest urge",
+      "urge": {
+        "0": "None",
+        "1": "Faint",
+        "2": "Mild",
+        "3": "Noticeable",
+        "4": "Strong",
+        "5": "Very strong"
+      },
+      "skip": "Rather not say",
+      "triggersLegend": "Anything that played a part?",
+      "noteLabel": "Private note",
+      "noteHint": "Encrypted. Only you can ever read it. Up to {max} characters.",
+      "answeredTitle": "You’ve checked in for {day}",
+      "answeredClean": "Your answer: you stayed free.",
+      "answeredSlipped": "Your answer: you slipped, and grace covers it.",
+      "changeUntilToday": "You can change it until the end of today, and tomorrow until 12:00.",
+      "changeUntilNoon": "You can change it until 12:00 today.",
+      "changeSummary": "Change your answer",
+      "today": "today",
+      "yesterday": "yesterday",
+      "progressLink": "See your journey"
+    },
+    "triggers": {
+      "bored": "Bored",
+      "lonely": "Lonely",
+      "stressed": "Stressed",
+      "tired": "Tired",
+      "late_night": "Late night",
+      "alone_with_phone": "Alone with my phone",
+      "social_media": "Social media",
+      "other": "Something else"
+    },
+    "errors": {
+      "signedOut": "Please sign in again to check in.",
+      "accountClosing": "Your account is closing, so check-ins are paused.",
+      "windowClosed": "That day can’t be changed any more. You can answer for today, and for yesterday until 12:00.",
+      "invalid": "Something in that answer didn’t look right. Please try again.",
+      "notFound": "There’s no check-in for that day yet.",
+      "saveFailed": "That didn’t save. Please try again.",
+      "rateLimited": "That’s a lot of changes in a short time. Please wait a little and try again."
+    },
+    "done": {
+      "title": "Thank you for checking in",
+      "status": "Saved: you stayed free {day}.",
+      "lede": "One more day walked in freedom, one day at a time.",
+      "verseText": "Now thanks be to God, who always leads us in triumph in Christ.",
+      "verseReference": "2 Corinthians 2:14 (WEB)",
+      "homeLink": "Back to today"
+    },
+    "mercies": {
+      "title": "His mercies are new this morning",
+      "status": "Saved. Thank you for being honest.",
+      "lede": "A slip resets a streak, never you. You are forgiven, and you are not alone.",
+      "verseText": "If we confess our sins, he is faithful and righteous to forgive us the sins, and to cleanse us from all unrighteousness.",
+      "verseReference": "1 John 1:9 (WEB)",
+      "reflectionTitle": "What led to it?",
+      "reflectionLede": "Optional, and private to you. Noticing the pattern helps the next streak grow longer.",
+      "reflectionNoteLabel": "Your reflection",
+      "reflectionSave": "Save my reflection",
+      "reflectionSaved": "Saved. Only you can read it.",
+      "prayerTitle": "You don’t have to carry this alone",
+      "prayerBody": "Tell someone you trust and ask them to pray with you. Soon you’ll be able to ask your group or your partner to pray from right here.",
+      "prayerGroups": "Open your groups",
+      "nextTitle": "One next step",
+      "next": {
+        "breathe": {
+          "title": "Breathe for a minute",
+          "body": "Tap the SOS button and follow the breathing. Let your body settle before you decide anything else."
+        },
+        "walk": {
+          "title": "Step outside",
+          "body": "Put your phone in your pocket and walk for ten minutes. A change of place helps."
+        },
+        "verse": {
+          "title": "Read one psalm",
+          "body": "Psalm 51 was written for days like this. Read it slowly, out loud if you can."
+        },
+        "message": {
+          "title": "Message a friend",
+          "body": "Send one honest line to someone you trust. You don’t need to explain everything."
+        }
+      },
+      "homeLink": "Back to today"
+    },
+    "kept": {
+      "slipTitle": "Your streak may have reset today, but look at everything you kept",
+      "pausedTitle": "Your streak paused, but look at everything you’ve built",
+      "cleanDays": "{count, plural, one {# clean day} other {# clean days}}",
+      "streaks": "{count, plural, one {# streak built} other {# streaks built}}",
+      "longest": "{count, plural, one {longest streak: # day} other {longest streak: # days}}",
+      "body": "Every one of those days was real, and none of them is undone. Today can be day one of the next streak."
+    },
+    "stats": {
+      "label": "Your streaks",
+      "currentStreak": "Current streak",
+      "longestStreak": "Longest streak",
+      "totalClean": "Clean days",
+      "checkinStreak": "Check-in streak",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "ringLabel": "Current streak",
+      "ringValue": "{count, plural, one {# day} other {# days}}, toward your longest of {longest}",
+      "ringUnit": "{count, plural, one {day} other {days}}"
+    },
+    "today": {
+      "title": "Your check-in",
+      "notYet": "You haven’t checked in today yet.",
+      "cta": "Check in",
+      "doneClean": "You checked in today: you stayed free.",
+      "doneSlipped": "You checked in today. Grace covers it.",
+      "yesterdayOpen": "Yesterday is still open until 12:00.",
+      "yesterdayLink": "Answer for yesterday",
+      "change": "Change today’s answer",
+      "progressLink": "See your journey"
+    },
+    "progress": {
+      "title": "Your journey",
+      "lede": "Private to you. Nobody else can see this page.",
+      "calendarTitle": "Calendar",
+      "monthNav": "Months",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "chartsTitle": "Mood and urges",
+      "rangeLabel": "Period",
+      "range": "Last {days} days",
+      "moodSeries": "Mood (1 to 5)",
+      "urgeSeries": "Strongest urge (0 to 5)",
+      "chartEmpty": "Add a mood or urge strength when you check in, and your chart will appear here.",
+      "chartAlt": "Line chart of your mood and strongest urge over the last {days} days. The same numbers are in the table below.",
+      "tableSummary": "Show the numbers",
+      "tableCaption": "Mood and strongest urge by day",
+      "dayColumn": "Day",
+      "noValue": "–",
+      "triggersTitle": "What played a part",
+      "triggersEmpty": "When you note what played a part in a day, it will be counted here.",
+      "times": "{count, plural, one {# time} other {# times}}",
+      "insightsTitle": "What stands out"
+    },
+    "insights": {
+      "notEnough": "{needed, plural, one {One more check-in} other {# more check-ins}} and patterns will start to show here.",
+      "freeDays": "You stayed free on {clean} of the {total} days you checked in.",
+      "topTriggersOne": "“{first}” comes up most often.",
+      "topTriggersTwo": "“{first}” and “{second}” come up most often.",
+      "urgesWeekdays": "Urges run stronger on weekdays than at weekends.",
+      "urgesWeekends": "Urges run stronger at weekends than on weekdays.",
+      "urgesOnDay": "Strong urges come most often on a {weekday}. Plan something good for that day.",
+      "moodRising": "Your mood has been lifting lately.",
+      "moodDipping": "Your mood has dipped lately. It might be a good week to lean on your group.",
+      "lowMoodUrges": "Urges tend to be stronger on low-mood days. Be extra kind to yourself on those.",
+      "hardDayTrigger": "On the harder days, “{trigger}” came up most."
+    },
+    "group": {
+      "title": "Today",
+      "summary": "{done} of {total} checked in today",
+      "shareNote": "Each person shows only what they chose to share with this group.",
+      "checkedIn": "Checked in",
+      "notYet": "Not yet",
+      "streak": "{count, plural, one {# day streak} other {# day streak}}",
+      "clean": "Stayed free",
+      "slipped": "Slipped, held in grace",
+      "someone": "A member",
+      "you": "You",
+      "empty": "Nobody here yet."
     }
   }
 }

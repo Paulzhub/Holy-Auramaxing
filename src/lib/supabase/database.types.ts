@@ -33,6 +33,66 @@ export type Database = {
         };
         Relationships: [];
       };
+      checkins: {
+        Row: {
+          created_at: string;
+          edit_count: number;
+          id: string;
+          local_date: string;
+          mood: number | null;
+          note_encrypted: string | null;
+          outcome: string;
+          timezone: string;
+          triggers: string[];
+          updated_at: string;
+          urge_level: number | null;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          edit_count?: number;
+          id?: string;
+          local_date: string;
+          mood?: number | null;
+          note_encrypted?: string | null;
+          outcome: string;
+          timezone: string;
+          triggers?: string[];
+          updated_at?: string;
+          urge_level?: number | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          edit_count?: number;
+          id?: string;
+          local_date?: string;
+          mood?: number | null;
+          note_encrypted?: string | null;
+          outcome?: string;
+          timezone?: string;
+          triggers?: string[];
+          updated_at?: string;
+          urge_level?: number | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "checkins_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "checkins_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       consents: {
         Row: {
           granted_at: string;
@@ -187,6 +247,45 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "groups";
             referencedColumns: ["id"];
+          },
+        ];
+      };
+      group_member_stats: {
+        Row: {
+          checkins_in_challenge: number;
+          clean_days_in_challenge: number;
+          group_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          checkins_in_challenge?: number;
+          clean_days_in_challenge?: number;
+          group_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          checkins_in_challenge?: number;
+          clean_days_in_challenge?: number;
+          group_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_member_stats_group_id_user_id_fkey";
+            columns: ["group_id", "user_id"];
+            isOneToOne: true;
+            referencedRelation: "group_checkins_today";
+            referencedColumns: ["group_id", "user_id"];
+          },
+          {
+            foreignKeyName: "group_member_stats_group_id_user_id_fkey";
+            columns: ["group_id", "user_id"];
+            isOneToOne: true;
+            referencedRelation: "group_members";
+            referencedColumns: ["group_id", "user_id"];
           },
         ];
       };
@@ -505,8 +604,83 @@ export type Database = {
         };
         Relationships: [];
       };
+      user_stats: {
+        Row: {
+          checkin_streak: number;
+          clean_streaks: number;
+          current_streak: number;
+          last_checkin_date: string | null;
+          last_clean_date: string | null;
+          longest_streak: number;
+          total_checkins: number;
+          total_clean_days: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          checkin_streak?: number;
+          clean_streaks?: number;
+          current_streak?: number;
+          last_checkin_date?: string | null;
+          last_clean_date?: string | null;
+          longest_streak?: number;
+          total_checkins?: number;
+          total_clean_days?: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          checkin_streak?: number;
+          clean_streaks?: number;
+          current_streak?: number;
+          last_checkin_date?: string | null;
+          last_clean_date?: string | null;
+          longest_streak?: number;
+          total_checkins?: number;
+          total_clean_days?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_stats_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_stats_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
+      group_checkins_today: {
+        Row: {
+          checked_in_today: boolean | null;
+          current_streak: number | null;
+          group_id: string | null;
+          mood: number | null;
+          outcome: string | null;
+          triggers: string[] | null;
+          urge_level: number | null;
+          user_id: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profile_cards: {
         Row: {
           avatar_path: string | null;
@@ -633,6 +807,7 @@ export type Database = {
           device: string;
         }[];
       };
+      my_checkin_overview: { Args: Record<PropertyKey, never>; Returns: Json };
       my_sessions: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -663,8 +838,23 @@ export type Database = {
       revoke_group_invite: { Args: { p_invite: string }; Returns: undefined };
       revoke_my_session: { Args: { p_session_id: string }; Returns: boolean };
       run_account_purge: { Args: Record<PropertyKey, never>; Returns: number };
+      save_checkin_reflection: {
+        Args: { p_local_date: string; p_note_encrypted?: string; p_triggers?: string[] };
+        Returns: undefined;
+      };
       set_group_member_role: { Args: { p_group: string; p_role: string; p_user: string }; Returns: undefined };
       set_group_picture_pending: { Args: { p_group: string; p_path: string }; Returns: string };
+      submit_checkin: {
+        Args: {
+          p_local_date: string;
+          p_mood?: number;
+          p_note_encrypted?: string;
+          p_outcome: string;
+          p_triggers?: string[];
+          p_urge_level?: number;
+        };
+        Returns: string;
+      };
       transfer_group_ownership: { Args: { p_group: string; p_new_owner: string }; Returns: undefined };
       unarchive_group: { Args: { p_group: string }; Returns: undefined };
       update_group_challenge: {

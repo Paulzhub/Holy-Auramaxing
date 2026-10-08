@@ -10,6 +10,8 @@ export interface SwitcherGroup {
   id: string;
   name: string;
   pictureUrl?: string;
+  /** A covenant change is waiting for this person's answer. */
+  needsAnswer?: boolean;
 }
 
 export interface SwitcherLabels {
@@ -17,6 +19,8 @@ export interface SwitcherLabels {
   none: string;
   all: string;
   create: string;
+  /** Screen-reader text for the marker, e.g. "Needs your answer". */
+  needsAnswer: string;
 }
 
 /**
@@ -24,13 +28,15 @@ export interface SwitcherLabels {
  * disclosure, so it works without JavaScript; with it, it closes on Escape,
  * on a click outside and after choosing a group. Labels come from the
  * server, so no extra messages ship on every page. Unread counts arrive
- * with notifications (Phase 7).
+ * with notifications (Phase 7); until then a marker shows groups with a
+ * covenant change waiting for this person's answer.
  */
 export function GroupSwitcher({ groups, labels }: { groups: SwitcherGroup[]; labels: SwitcherLabels }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const pathname = usePathname();
   const currentId = /^\/groups\/([0-9a-f-]{36})/.exec(pathname)?.[1];
   const current = groups.find((g) => g.id === currentId);
+  const anyWaiting = groups.some((g) => g.needsAnswer);
 
   useEffect(() => {
     if (ref.current) ref.current.open = false;
@@ -72,6 +78,11 @@ export function GroupSwitcher({ groups, labels }: { groups: SwitcherGroup[]; lab
             {labels.label}
           </span>
         )}
+        {anyWaiting ? (
+          <span className="needs-answer-dot">
+            <span className="visually-hidden">{labels.needsAnswer}</span>
+          </span>
+        ) : null}
         <ChevronDown aria-hidden="true" className="group-switcher__chevron" />
       </summary>
       <div className="group-switcher__panel">
@@ -86,6 +97,7 @@ export function GroupSwitcher({ groups, labels }: { groups: SwitcherGroup[]; lab
                 >
                   <Avatar name={g.name} src={g.pictureUrl} size="sm" shape="square" decorative />
                   <span>{g.name}</span>
+                  {g.needsAnswer ? <span className="needs-answer">{labels.needsAnswer}</span> : null}
                 </Link>
               </li>
             ))}

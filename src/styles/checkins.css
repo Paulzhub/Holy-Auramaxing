@@ -1,0 +1,671 @@
+/* ---------- check-ins (/check-in, the slip page, /progress, Home, a group's Today) ----------
+   Grace, not shame (§2.1): a slip is never red. It uses the soft --color-slip
+   lavender and the sunrise icon; status is always carried by text and shape,
+   never colour alone. */
+@layer components {
+  .text-link {
+    color: var(--color-primary);
+    font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .checkin-icon--clean {
+    color: var(--color-success);
+  }
+
+  .checkin-icon--slip {
+    color: var(--color-slip);
+  }
+
+  /* ---------- the form ---------- */
+  .checkin-form {
+    display: grid;
+    gap: var(--space-4);
+    min-inline-size: 0;
+  }
+
+  .checkin-question {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+  }
+
+  .checkin-question__day {
+    font-family: var(--font-sans-stack);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--color-ink-muted);
+  }
+
+  .checkin-honest {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+
+  .checkin-choices {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 30rem) {
+    .checkin-choices {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .checkin-choice {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: var(--space-2);
+    min-block-size: 7rem;
+    padding: var(--space-4);
+    border: 2px solid var(--color-line-subtle);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font: inherit;
+    font-size: var(--text-lg);
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .checkin-choice__icon {
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+  }
+
+  .checkin-choice__icon svg {
+    inline-size: 2rem;
+    block-size: 2rem;
+  }
+
+  .checkin-choice--clean {
+    border-color: var(--color-accent-strong);
+    background-color: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+  }
+
+  .checkin-choice--clean .checkin-choice__icon {
+    color: var(--color-accent-ink);
+  }
+
+  .checkin-choice--slipped {
+    border-color: var(--color-slip);
+    background-color: color-mix(in srgb, var(--color-slip) 10%, var(--color-surface));
+  }
+
+  .checkin-choice--slipped .checkin-choice__icon {
+    color: var(--color-slip);
+  }
+
+  .checkin-choice--current {
+    box-shadow: inset 0 0 0 2px currentColor;
+  }
+
+  .checkin-choice:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Press feedback (§8): a small squeeze. */
+  .checkin-choice:active {
+    transform: scale(0.98);
+  }
+
+  .checkin-choice[aria-disabled="true"] {
+    cursor: progress;
+    opacity: 0.75;
+  }
+
+  .checkin-details {
+    border: 1px solid var(--color-line-subtle);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg);
+  }
+
+  .checkin-details > summary,
+  .checkin-change > summary,
+  .chart-table > summary {
+    min-block-size: 2.75rem;
+    padding: var(--space-3) var(--space-4);
+    font-weight: 650;
+    cursor: pointer;
+  }
+
+  .checkin-details__body {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0 var(--space-4) var(--space-4);
+    min-inline-size: 0;
+  }
+
+  .checkin-details__body > p {
+    margin: 0;
+  }
+
+  .checkin-scale {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-inline-size: 0;
+  }
+
+  .checkin-scale legend {
+    margin-block-end: var(--space-2);
+    padding: 0;
+    font-weight: 650;
+  }
+
+  .checkin-scale__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* A radio or checkbox drawn as a pill; the real input stays in the label
+     (keyboard, screen readers and forced colours all keep working). */
+  .checkin-pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border: 2px solid var(--color-line-subtle);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface);
+    cursor: pointer;
+  }
+
+  .checkin-pill input {
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+    margin: 0;
+    accent-color: var(--color-primary);
+  }
+
+  .checkin-pill:has(input:checked) {
+    border-color: var(--color-primary);
+    background-color: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+    font-weight: 650;
+  }
+
+  .checkin-pill:has(input:focus-visible) {
+    outline: var(--focus-ring-width) solid var(--color-focus);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .checkin-pill--quiet {
+    color: var(--color-ink-muted);
+  }
+
+  .checkin-note {
+    min-block-size: 6rem;
+    resize: vertical;
+  }
+
+  .checkin-answered {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .checkin-answered > p {
+    margin: 0;
+  }
+
+  .checkin-change {
+    border-block-start: 1px solid var(--color-line-subtle);
+  }
+
+  .checkin-change > summary {
+    padding-inline: 0;
+  }
+
+  .checkin-change > .checkin-form {
+    padding-block: var(--space-3);
+  }
+
+  .checkin-other-day {
+    margin: 0;
+  }
+
+  /* ---------- after answering ---------- */
+  .checkin-result__header,
+  .mercies__hero {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    text-align: center;
+  }
+
+  .checkin-result__header > *,
+  .mercies__hero > * {
+    margin: 0;
+  }
+
+  .checkin-result__icon,
+  .mercies__icon {
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+  }
+
+  .mercies__icon {
+    color: var(--color-accent-ink);
+  }
+
+  .checkin-result__status {
+    font-weight: 650;
+  }
+
+  /* The slip page is a calm, full-width dawn (§7.5: compassionate, full-screen). */
+  .mercies__hero {
+    padding: var(--space-6) var(--space-4);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-horizon-3) 18%, var(--color-surface)) 0%,
+      var(--color-surface) 70%
+    );
+    border: 1px solid var(--color-line-subtle);
+  }
+
+  .mercies__verse {
+    max-inline-size: 36rem;
+    text-align: start;
+  }
+
+  /* ---------- streaks ---------- */
+  .streak-stats {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+    justify-items: center;
+  }
+
+  @media (min-width: 36rem) {
+    .streak-stats {
+      grid-template-columns: auto minmax(0, 1fr);
+      justify-items: stretch;
+    }
+  }
+
+  .streak-stats__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    inline-size: 100%;
+  }
+
+  .streak-stats__list > div {
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bg);
+  }
+
+  .streak-stats__list dt {
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .streak-stats__list dd {
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--text-lg);
+    font-weight: 650;
+  }
+
+  /* "Look at everything you kept." */
+  .kept {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    background-color: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+  }
+
+  .kept > * {
+    margin: 0;
+  }
+
+  .kept__icon {
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    color: var(--color-accent-ink);
+  }
+
+  .kept__title {
+    font-family: var(--font-display-stack);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+  }
+
+  .kept__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .kept__list li {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-accent-strong);
+  }
+
+  .today-card {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .today-card > p {
+    margin: 0;
+  }
+
+  .today-card__status {
+    font-size: var(--text-lg);
+  }
+
+  .next-step__body {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .next-step__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border-radius: 50%;
+    background-color: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+    color: var(--color-accent-ink);
+  }
+
+  .next-step__title {
+    margin: 0 0 var(--space-1);
+    font-size: var(--text-base);
+  }
+
+  .next-step__body p {
+    margin: 0;
+  }
+
+  /* ---------- progress ---------- */
+  .month-nav,
+  .range-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-block-end: var(--space-3);
+  }
+
+  .range-nav {
+    justify-content: flex-start;
+  }
+
+  .month-nav__link,
+  .range-nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-block-size: 2.75rem;
+    padding: var(--space-2) var(--space-3);
+    border: 2px solid var(--color-line-subtle);
+    border-radius: var(--radius-pill);
+    color: var(--color-ink);
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .month-nav__link svg {
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+  }
+
+  .range-nav__link[aria-current="page"] {
+    border-color: var(--color-primary);
+    background-color: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+  }
+
+  .series-charts {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 48rem) {
+    .series-charts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .series-chart {
+    margin: 0;
+    min-inline-size: 0;
+  }
+
+  .series-chart__title {
+    margin-block-end: var(--space-2);
+    font-weight: 650;
+  }
+
+  .series-chart svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    overflow: visible;
+  }
+
+  .series-chart__grid {
+    stroke: var(--color-line-subtle);
+    stroke-width: 1;
+  }
+
+  .series-chart__tick {
+    fill: var(--color-ink-muted);
+    font-size: 9px;
+  }
+
+  .series-chart__line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .series-chart__dot {
+    stroke: var(--color-surface);
+    stroke-width: 2;
+  }
+
+  .series-chart--mood .series-chart__line {
+    stroke: var(--color-primary);
+  }
+
+  .series-chart--mood .series-chart__dot {
+    fill: var(--color-primary);
+  }
+
+  .series-chart--urge .series-chart__line {
+    stroke: var(--color-accent-strong);
+  }
+
+  .series-chart--urge .series-chart__dot {
+    fill: var(--color-accent-strong);
+  }
+
+  .chart-table {
+    margin-block-start: var(--space-3);
+  }
+
+  .chart-table > summary {
+    padding-inline: 0;
+  }
+
+  .data-table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--space-2);
+    border-block-end: 1px solid var(--color-line-subtle);
+    text-align: start;
+  }
+
+  .data-table thead th {
+    color: var(--color-ink-muted);
+    font-weight: 650;
+  }
+
+  .trigger-bars {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .trigger-bars__row {
+    display: grid;
+    grid-template-columns: minmax(0, 9rem) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .trigger-bars__label {
+    overflow-wrap: anywhere;
+  }
+
+  .trigger-bars__track {
+    display: block;
+    inline-size: 100%;
+    block-size: 0.75rem;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-bg);
+  }
+
+  .trigger-bars__bar {
+    fill: var(--color-primary);
+  }
+
+  .trigger-bars__count {
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+  }
+
+  .insight-list {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding-inline-start: var(--space-5);
+  }
+
+  /* ---------- a group's Today ---------- */
+  .group-today__summary {
+    margin: 0 0 var(--space-3);
+    font-weight: 650;
+  }
+
+  .group-today__list {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .group-today__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    min-inline-size: 0;
+  }
+
+  .group-today__name {
+    flex: 1 1 8rem;
+    min-inline-size: 0;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+
+  .group-today__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .group-today__note {
+    margin: var(--space-3) 0 0;
+    font-size: var(--text-sm);
+  }
+
+  .today-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .today-chip--done {
+    border-color: var(--color-success);
+    color: var(--color-ink);
+  }
+
+  .today-chip--done .inline-icon {
+    color: var(--color-success);
+  }
+
+  .today-chip--clean {
+    border-color: var(--color-accent-strong);
+    color: var(--color-ink);
+  }
+
+  .today-chip--slipped {
+    border-color: var(--color-slip);
+    color: var(--color-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .checkin-choice,
+    .checkin-choice:hover,
+    .checkin-choice:active {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .series-chart__line,
+    .trigger-bars__bar {
+      stroke: CanvasText;
+    }
+    .series-chart__dot,
+    .trigger-bars__bar {
+      fill: CanvasText;
+    }
+  }
+}
