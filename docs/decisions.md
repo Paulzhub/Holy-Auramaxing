@@ -487,3 +487,4 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Insights:** pure, unit-tested functions on the person's own data (`src/features/checkins/insights.ts`), for example free days out of days checked in, triggers that come up most, weekday or weekend urges, one weekday that stands out, mood lifting or dipping, low moods with strong urges, and what came up on harder days.
 - **"Download my data"** gains `checkins` (notes decrypted for the person), `day_counts` and `group_challenge_counts`.
 - **Rate limit:** `checkinSaveByUser`, 30 an hour (answers, changes and reflections).
+- **SQL lint fixed:** CI's "Lint SQL" step had been failing since Phase 3. Seven group functions declared an unused `g` variable. Migration `20261009000400_groups_lint_unused_variables.sql` recreates them without it; their behaviour is unchanged.
