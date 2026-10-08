@@ -13,9 +13,9 @@ import { ThemeSwitcher } from "./theme-switcher";
 function Brand() {
   const t = useTranslations();
   return (
-    <Link href="/home" className="brand" aria-label={t("shell.homeLink", { app: t("app.name") })}>
+    <Link href="/home" className="brand" aria-label={t("shell.homeLink", { app: t("app.tabName") })}>
       <BrandMark />
-      <span aria-hidden="true">{t("app.name")}</span>
+      <span aria-hidden="true">{t("app.tabName")}</span>
     </Link>
   );
 }

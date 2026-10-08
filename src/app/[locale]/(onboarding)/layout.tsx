@@ -33,7 +33,7 @@ export default async function OnboardingLayout({ children }: { children: ReactNo
       <header className="auth-header">
         <span className="brand">
           <BrandMark />
-          <span>{t("app.name")}</span>
+          <span>{t("app.tabName")}</span>
         </span>
         <div className="onboarding-header__actions">
           <ThemeSwitcher initial={theme} />

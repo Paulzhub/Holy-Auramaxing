@@ -14,7 +14,7 @@ export default function NotFound() {
       <main id="main" className="status-page">
         <span className="brand">
           <BrandMark />
-          {t("app.name")}
+          {t("app.tabName")}
         </span>
         <h1 className="page-title">{t("errors.notFoundTitle")}</h1>
         <p className="page-lede">{t("errors.notFoundBody")}</p>

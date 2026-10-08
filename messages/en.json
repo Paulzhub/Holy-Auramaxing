@@ -514,7 +514,7 @@
   "legal": {
     "draftNotice": "Draft: this page is waiting for legal review and may change before launch.",
     "updated": "Last updated {date}",
-    "updatedDate": "5 October 2026",
+    "updatedDate": "8 October 2026",
     "privacy": {
       "short": "Privacy",
       "title": "Privacy Policy",
@@ -526,7 +526,7 @@
         },
         "whatWeCollectAndWhy": {
           "heading": "What we collect, and why",
-          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nSecurity records: sign-ins, password changes, exports and deletions, kept for one year to protect your account. We do not store your IP address."
+          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account. If you sign in with Google, we keep only your email address from Google, not your name or photo.\n\nYour profile: the photo, bio, testimony and favourite verse you add, shown only to the people you choose.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nSecurity records: sign-ins, password changes, exports and deletions, with a rough device name such as “Chrome on Android”, kept for one year to protect your account. We do not keep your IP address: our sign-in provider sees it while you sign in, and we clear it within the hour."
         },
         "whatWeNeverDo": {
           "heading": "What we never do",
@@ -534,7 +534,7 @@
         },
         "whoProcessesDataForUs": {
           "heading": "Who processes data for us",
-          "body": "Supabase (database and sign-in, hosted in Mumbai, India), Cloudflare (bot protection), our email provider, and our web host. Each processes data only on our instructions under a data processing agreement."
+          "body": "Supabase (database and sign-in, hosted in Mumbai, India), Cloudflare (bot protection), Google Cloud Vision (checks uploaded profile and group pictures for explicit images; it receives only the picture), Google (only if you choose to sign in with Google), our email provider, and our web host. Each processes data only on our instructions under a data processing agreement."
         },
         "howLongWeKeepIt": {
           "heading": "How long we keep it",
@@ -877,7 +877,7 @@
     "back": "Back to settings",
     "export": {
       "title": "Download my data",
-      "body": "One file with everything we hold about you: your profile and photo, your settings, your private “my why”, your groups and what you share in them, what you agreed to at sign-up, and your security records. It opens on any phone or computer, and includes a copy for spreadsheets.",
+      "body": "One file with everything we hold about you: your profile and photo, your settings, your private “my why”, your check-ins with their private notes, your groups and what you share in them, what you agreed to at sign-up, and your security records. It opens on any phone or computer, and includes a copy for spreadsheets.",
       "warning": "The file includes private things. Keep it somewhere safe, and delete it when you no longer need it.",
       "button": "Download my data",
       "readme": "This is a copy of everything Aura holds about you.\r\n\r\ndata.json has everything in one file. The csv folder has the same information as one spreadsheet per topic. Times are in UTC.\r\n\r\nThis file includes private things. Keep it somewhere safe, and delete it when you no longer need it.\r\n\r\nWhat's inside:"
@@ -1014,7 +1014,7 @@
     },
     "fields": {
       "name": "Group name",
-      "nameHint": "{min} to {max} characters. Only members and people you invite see it.",
+      "nameHint": "{min} to {max} characters. Only members and people you invite see it. It shows at the top of their screens, so a plain name keeps things discreet.",
       "description": "Description (optional)",
       "descriptionHint": "A line or a verse that sets the tone. Up to {max} characters.",
       "challengeType": "Challenge length",

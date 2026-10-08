@@ -26,9 +26,9 @@ export async function AuthFrame({ children }: { children: ReactNode }) {
       </a>
       <div className="horizon" aria-hidden="true" />
       <header className="auth-header">
-        <Link href="/" className="brand" aria-label={t("shell.homeLink", { app: t("app.name") })}>
+        <Link href="/" className="brand" aria-label={t("shell.homeLink", { app: t("app.tabName") })}>
           <BrandMark />
-          <span aria-hidden="true">{t("app.name")}</span>
+          <span aria-hidden="true">{t("app.tabName")}</span>
         </Link>
         <ThemeSwitcher initial={theme} />
       </header>

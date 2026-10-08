@@ -92,7 +92,8 @@ test.describe("Check-ins", () => {
     await page.getByText("Change your answer").click();
     await expect(page.getByLabel("Private note")).toHaveValue("secret words 123");
     await page.getByRole("button", { name: "I slipped" }).click();
-    await expect(page).toHaveURL(/\/check-in\/new-mercies\?date=/);
+    // The same address as a clean day (D-055): history never shows the answer.
+    await expect(page).toHaveURL(/\/check-in\/done\?date=\d{4}-\d{2}-\d{2}$/);
     await expect(page.getByRole("heading", { level: 1, name: "His mercies are new this morning" })).toBeVisible();
     await expect(page.getByText("1 John 1:9 (WEB)")).toBeVisible();
 
@@ -299,8 +300,8 @@ test.describe("Check-in pages are accessible", () => {
       await expectNoAxeViolations(page, `/check-in answered (${theme})`);
       await page.getByText("Change your answer").click();
       await page.getByRole("button", { name: "I slipped" }).click();
-      await expect(page).toHaveURL(/\/check-in\/new-mercies/);
-      await expectNoAxeViolations(page, `/check-in/new-mercies (${theme})`);
+      await expect(page.getByRole("heading", { level: 1, name: "His mercies are new this morning" })).toBeVisible();
+      await expectNoAxeViolations(page, `/check-in/done after a slip (${theme})`);
       for (const path of ["/home", "/progress", "/progress?range=90", `/groups/${groupId}`]) {
         await page.goto(path);
         await expectNoAxeViolations(page, `${path} (${theme})`);
@@ -318,9 +319,9 @@ test.describe("Check-in pages are accessible", () => {
     await noOverflow(page, "/check-in");
     await page.getByRole("group", { name: "Anything that played a part?" }).getByLabel("Alone with my phone").check();
     await page.getByRole("button", { name: "I slipped" }).click();
-    await expect(page).toHaveURL(/\/check-in\/new-mercies/);
-    for (const path of ["/check-in/new-mercies", "/check-in", "/home", "/progress", `/groups/${groupId}`]) {
-      if (path !== "/check-in/new-mercies") await page.goto(path);
+    await expect(page.getByRole("heading", { level: 1, name: "His mercies are new this morning" })).toBeVisible();
+    for (const path of ["/check-in/done", "/check-in", "/home", "/progress", `/groups/${groupId}`]) {
+      if (path !== "/check-in/done") await page.goto(path);
       await noOverflow(page, path);
     }
   });

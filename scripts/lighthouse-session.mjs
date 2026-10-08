@@ -110,7 +110,8 @@ config.ci.collect.url.push(
   `${base}/groups/${groupId}/invites`,
   `${base}/groups/${groupId}/settings`,
   `${base}/check-in/done?date=${day(3)}`,
-  `${base}/check-in/new-mercies?date=${day(4)}`,
+  // The same address after a slip (D-055): this day is a slip, so it shows the grace page.
+  `${base}/check-in/done?date=${day(4)}`,
 );
 config.ci.collect.settings.extraHeaders = JSON.stringify({
   Cookie: [...jar].map(([name, value]) => `${name}=${value}`).join("; "),

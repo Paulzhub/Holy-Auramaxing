@@ -156,6 +156,17 @@ A hostile review of everything to date against §10 and OWASP ASVS 5.0 Level 2; 
 | **S**poofing          | Sending many passwords or invite codes at once to slip past "5 wrong tries" (SR-4)                            | Each try is counted before the check and given back if it was right (D-053)                                  |
 | **T**ampering         | Forging encrypted notes with a truncated GCM tag (SR-5)                                                       | 16-byte tags only (D-054)                                                                                    |
 
+## Privacy review 1 (after security review 1)
+
+A review of what people near the user could see, and of data we hold but don't need; the full report is `docs/privacy-review-1.md`.
+
+| STRIDE                     | Threat                                                                                                        | Mitigation                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **I**nformation disclosure | Real name and Google photo kept in Supabase Auth and carried in every access token (PR-1)                     | Triggers keep only the keys Supabase Auth needs (D-056); pgTAP `040` |
+| **I**nformation disclosure | Browser history and request logs show which days were slips (PR-2)                                            | One address for both answers (D-055); `src/test/discretion.test.ts`  |
+| **I**nformation disclosure | The full app name in the header of every screen (PR-3)                                                        | "Aura" in the app's chrome (D-055); `src/test/discretion.test.ts`    |
+| **I**nformation disclosure | IP addresses, browser strings and OAuth tokens kept by Supabase Auth; activity times in counters (PR-4, PR-5) | Cleared hourly (D-057); pgTAP `040`                                  |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -186,3 +197,6 @@ A hostile review of everything to date against §10 and OWASP ASVS 5.0 Level 2; 
 - The QR decode check (jsQR at three sizes) runs by hand, not in CI (D-037).
 - Until there is hosting with `CRON_SECRET`, photos of erased accounts wait in the private bucket (nothing can serve them); run `npm run accounts:purge` locally (D-033).
 - Export and deletion don't ask for a fresh sign-in (owner's choice); revisit with the app lock (D-032).
+- Owner, before launch (privacy review 1): a neutral sending address instead of `holyauramaxxxing@gmail.com`; a domain without "xxx" or the topic; the Google OAuth consent screen named "Aura"; keep `.env.local` out of OneDrive.
+- Phase 7 must add every notification, push and digest template to `src/test/discretion.test.ts`; Phase 9's manifest uses "Aura" and `start_url` `/home`; Phase 12's Sentry scrubs query strings and request bodies (D-055).
+- The app lock (Phase 10) is the main protection when someone else holds the unlocked phone; until then Home and Progress are one tap away.

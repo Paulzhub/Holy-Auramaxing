@@ -3,7 +3,7 @@
  * new account agrees to. Stored with every consent record. Bump it whenever
  * those documents change in substance (and plan a re-consent flow).
  */
-export const POLICY_VERSION = "2026-10-05-draft";
+export const POLICY_VERSION = "2026-10-08-draft";
 
 /** NIST SP 800-63B: at least 8 characters, no composition rules, long passphrases allowed. */
 export const PASSWORD_MIN_LENGTH = 8;

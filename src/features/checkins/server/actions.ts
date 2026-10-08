@@ -66,10 +66,10 @@ export async function submitCheckinAction(formData: FormData): Promise<void> {
     return back(input.date, checkinErrorKey(error));
   }
   refresh();
-  // A slip goes to the grace page (§7.5); a clean day to a quiet thank-you.
-  return go(
-    input.outcome === "slipped" ? `/check-in/new-mercies?date=${input.date}` : `/check-in/done?date=${input.date}`,
-  );
+  // One address for both answers (D-055): the page shows the grace page
+  // after a slip (§7.5) and a quiet thank-you after a clean day, so the
+  // browser history never records which answer was given.
+  return go(`/check-in/done?date=${input.date}`);
 }
 
 /** The optional "what led to it?" reflection after a slip. */
@@ -78,7 +78,7 @@ export async function saveReflectionAction(formData: FormData): Promise<void> {
   const parsed = readReflectionForm(formData);
   const rawDate = formData.get("date");
   const date = typeof rawDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : "";
-  const page = `/check-in/new-mercies?date=${date}`;
+  const page = `/check-in/done?date=${date}`;
   if (!(await consume("checkinSaveByUser", userId)).ok) return go(`${page}&error=rateLimited`);
   if (!parsed.success) return go(`${page}&error=invalid`);
   const input = parsed.data;
