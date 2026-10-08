@@ -58,6 +58,8 @@ export const rateLimitRules = {
   inviteCodeFailuresByIp: { limit: 20, windowSeconds: 15 * 60 },
   /** Opening invite links and the join page. */
   invitePreviewByIp: { limit: 60, windowSeconds: 60 },
+  /** Saving check-ins, edits and slip reflections (one a day is normal; edits are allowed in the window). */
+  checkinSaveByUser: { limit: 30, windowSeconds: 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;

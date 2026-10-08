@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
+import { getGroupToday, GroupToday } from "@/features/checkins";
 import {
   CovenantSummary,
   getOpenProposal,
@@ -20,11 +21,16 @@ export async function generateMetadata(): Promise<Metadata> {
 type Params = Promise<{ groupId: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-/** A group's home (CLAUDE.md §7.4). Check-ins, leaderboard and wall arrive in Phases 4 and 5. */
+/** A group's home (CLAUDE.md §7.4). Today's check-ins (Phase 4) at each member's share level; leaderboard and wall arrive in Phases 5 and 6. */
 export default async function Page({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const { groupId } = await params;
   const ctx = await requireGroup(groupId);
-  const [t, proposal, query] = await Promise.all([getTranslations("groups"), getOpenProposal(ctx), searchParams]);
+  const [t, proposal, query, today] = await Promise.all([
+    getTranslations("groups"),
+    getOpenProposal(ctx),
+    searchParams,
+    getGroupToday(groupId, ctx.userId),
+  ]);
   const { group } = ctx;
 
   return (
@@ -39,7 +45,7 @@ export default async function Page({ params, searchParams }: { params: Params; s
         ) : null}
         {group.description ? <p className="group-description">{group.description}</p> : null}
         {proposal ? <ProposalCard ctx={ctx} proposal={proposal} /> : null}
-        <GroupHomeSkeleton ctx={ctx} />
+        <GroupHomeSkeleton ctx={ctx} today={<GroupToday members={today} />} />
         <CovenantSummary
           text={group.covenantText}
           minShareLevel={group.minShareLevel}

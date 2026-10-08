@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getTranslations } from "next-intl/server";
 
 import { exportAuthData, getAccount } from "@/features/auth";
+import { exportCheckinsData } from "@/features/checkins";
 import { exportGroupsData } from "@/features/groups";
 import { exportProfileData } from "@/features/profile";
 import { buildExportArchive, exportFileName } from "@/lib/data-export";
@@ -42,7 +43,12 @@ export async function POST(request: NextRequest) {
   try {
     const generatedAt = new Date();
     const t = await getTranslations({ locale: "en", namespace: "accountData.export" });
-    const parts = await Promise.all([exportAuthData(), exportProfileData(userId), exportGroupsData(userId)]);
+    const parts = await Promise.all([
+      exportAuthData(),
+      exportProfileData(userId),
+      exportGroupsData(userId),
+      exportCheckinsData(userId),
+    ]);
     const archive = buildExportArchive({ generatedAt, parts, readmeIntro: t("readme") });
     await audit("account.exported", userId);
 

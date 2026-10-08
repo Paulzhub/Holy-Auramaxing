@@ -170,6 +170,8 @@ export interface MyGroupItem {
   endDate: string | null;
   timezone: string;
   archivedAt: string | null;
+  /** An open covenant change is waiting for my answer (D-039). Until Phase 7's notifications, this marker is the signal. */
+  needsMyAnswer: boolean;
 }
 
 /** Every group I'm in or have asked to join, for /groups and the switcher. */
@@ -183,7 +185,31 @@ export const getMyGroups = cache(async (userId: string): Promise<MyGroupItem[]> 
     .eq("user_id", userId)
     .in("status", ["active", "pending"])
     .order("requested_at", { ascending: true });
-  return (data ?? []).map((row) => {
+  const rows = data ?? [];
+  // Open covenant changes in groups where I'm a member (not the owner, who proposed it), and my answers.
+  const askable = rows.filter((r) => r.status === "active" && r.role !== "owner").map((r) => r.groups.id);
+  const waiting = new Set<string>();
+  if (askable.length) {
+    const { data: proposals } = await supabase
+      .from("group_covenant_proposals")
+      .select("id, group_id")
+      .in("group_id", askable)
+      .is("closed_at", null)
+      .gt("expires_at", new Date().toISOString());
+    if (proposals?.length) {
+      const { data: mine } = await supabase
+        .from("group_covenant_agreements")
+        .select("proposal_id")
+        .eq("user_id", userId)
+        .in(
+          "proposal_id",
+          proposals.map((p) => p.id),
+        );
+      const agreed = new Set((mine ?? []).map((a) => a.proposal_id));
+      for (const p of proposals) if (!agreed.has(p.id)) waiting.add(p.group_id);
+    }
+  }
+  return rows.map((row) => {
     const g = row.groups;
     return {
       id: g.id,
@@ -196,6 +222,7 @@ export const getMyGroups = cache(async (userId: string): Promise<MyGroupItem[]> 
       endDate: g.end_date,
       timezone: g.group_timezone,
       archivedAt: g.archived_at,
+      needsMyAnswer: waiting.has(g.id),
     };
   });
 });

@@ -1,5 +1,6 @@
 import { CircleAlert, Info, Users } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
+import type { ReactNode } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button-variants";
@@ -199,6 +200,7 @@ export async function GroupList({ groups }: { groups: MyGroupItem[] }) {
             </>
           )}
         </span>
+        {g.needsMyAnswer ? <span className="needs-answer">{t("list.needsAnswer")}</span> : null}
       </div>
       {g.status === "pending" ? (
         <form action={leaveGroupAction.bind(null, g.id)} className="group-row__actions">
@@ -660,7 +662,8 @@ export async function DangerZone({ ctx, members, error }: { ctx: GroupContext; m
 }
 
 /** Placeholder cards for what later phases bring to a group's home. */
-export async function GroupHomeSkeleton({ ctx }: { ctx: GroupContext }) {
+/** The group home's panels. `today` is the check-in panel, supplied by the page (checkins module). */
+export async function GroupHomeSkeleton({ ctx, today }: { ctx: GroupContext; today?: ReactNode }) {
   const t = await getTranslations("groups.home");
   const card = (key: "today" | "leaderboard" | "wall" | "together") => (
     <section key={key} className="ui-card group-placeholder" aria-labelledby={`home-${key}`}>
@@ -681,7 +684,7 @@ export async function GroupHomeSkeleton({ ctx }: { ctx: GroupContext }) {
           </Link>
         </section>
       ) : null}
-      {card("today")}
+      {today ?? card("today")}
       {card("leaderboard")}
       {card("wall")}
       {card("together")}

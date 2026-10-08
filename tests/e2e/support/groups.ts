@@ -78,7 +78,11 @@ export async function createInviteAs(
 }
 
 /** Joins with a link token through the API (for setting up groups quickly). */
-export async function joinAs(member: Member, token: string): Promise<void> {
+export async function joinAs(
+  member: Member,
+  token: string,
+  shareLevel: "checkin_only" | "streak" | "full" = "full",
+): Promise<void> {
   const tokenHash = createHash("sha256").update(token).digest("hex");
   const { data: details } = await member.client
     .rpc("group_invite_details", { p_token_hash: tokenHash })
@@ -86,7 +90,7 @@ export async function joinAs(member: Member, token: string): Promise<void> {
   const { error } = await member.client.rpc("join_group", {
     p_token_hash: tokenHash,
     p_code_hash: "",
-    p_share_level: "full",
+    p_share_level: shareLevel,
     p_leaderboard_hidden: false,
     p_accept_covenant: true,
     p_covenant_seen: details?.covenant_updated_at,

@@ -6,7 +6,6 @@ import { PageHeader } from "@/components/shell/app-shell";
 import { Avatar } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Card, CardTitle } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
 import { requireAccount } from "@/features/auth";
 import { getOwnProfile, type Visibility } from "@/features/profile";
 import { Link } from "@/i18n/navigation";
@@ -84,11 +83,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
           </Card>
         ))}
 
-        <EmptyState
-          icon={<Sprout className="h-6 w-6" />}
-          title={t("pages.me.progressTitle")}
-          body={t("pages.me.progressBody")}
-        />
+        <Link href="/progress" className="ui-card flex items-center gap-4">
+          <Sprout aria-hidden="true" className="h-6 w-6 flex-none" />
+          <span className="grid flex-1">
+            <span className="ui-card__title">{t("pages.me.progressLink")}</span>
+            <span className="text-muted">{t("pages.me.progressBody")}</span>
+          </span>
+          <ChevronRight aria-hidden="true" className="h-5 w-5 flex-none" />
+        </Link>
 
         <Link href="/settings" className="ui-card flex items-center gap-4">
           <Settings aria-hidden="true" className="h-6 w-6 flex-none" />
