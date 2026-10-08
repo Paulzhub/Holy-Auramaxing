@@ -31,6 +31,15 @@ describe("encryptText / decryptText", () => {
     expect(() => decryptText(parts.join(":"), "u")).toThrow();
   });
 
+  // Security review 1, finding SR-5 (D-054): GCM tags shorter than 16 bytes
+  // make forgery far cheaper; Node accepts them unless told the length.
+  it("refuses a truncated authentication tag", () => {
+    const stored = encryptText("hello", "u");
+    const parts = stored.split(":");
+    parts[2] = Buffer.from(parts[2]!, "base64url").subarray(0, 4).toString("base64url");
+    expect(() => decryptText(parts.join(":"), "u")).toThrow();
+  });
+
   it("refuses a value copied onto another user's row", () => {
     const stored = encryptText("mine", "user-a");
     expect(() => decryptText(stored, "user-b")).toThrow();

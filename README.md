@@ -189,7 +189,7 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
 - **Turnstile:**
   - Create a widget in Cloudflare.
   - Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in the host.
-  - Enable Turnstile with the secret key in Supabase (Authentication → Attack protection).
+  - Enable Turnstile with the secret key in Supabase (Authentication → Attack protection). Required, not optional: the 5-wrong-passwords lock-out lives in the app, and Turnstile is what slows down anyone calling Supabase Auth directly (security review 1).
 - **Email, small launch without a domain (D-031): a dedicated Gmail account.**
   1. Create a Gmail account with a neutral name (the address appears as the sender). Turn on 2-Step Verification, then create an **app password** (Google account → Security → App passwords).
   2. Check it from your computer: put `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER` and `SMTP_PASSWORD` in `.env.local`, then run `npm run email:test -- you@example.com`.
@@ -199,4 +199,6 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
 - **Account purge:** set `CRON_SECRET` (32+ random characters) in the host. `vercel.json` already asks Vercel Cron to call `/api/cron/account-purge` daily; on another host, schedule a daily GET with `Authorization: Bearer <CRON_SECRET>`.
 - **Encryption key:** set `APP_ENCRYPTION_KEY` (32 random bytes, base64) in the host and keep a secure backup; see `.env.example`.
 - **Upstash:** set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
+- **Visitor address for rate limits (D-052):** on Vercel alone, leave `TRUSTED_IP_HEADER` unset. With Cloudflare's proxy in front, set `TRUSTED_IP_HEADER=cf-connecting-ip`.
+- **Security review 1:** see `docs/security-review-1.md` for findings, fixes and what was attacked.
 - **Before launch:** consider moving the grievance contact on `/privacy` (currently Paulz, a personal Gmail) to a dedicated address such as `privacy@<domain>`, and have all three policy pages reviewed by a lawyer.

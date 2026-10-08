@@ -8,7 +8,7 @@ import { redirect as redirectExternal } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { siteOrigin } from "@/lib/env";
 import { checkPwnedPassword } from "@/lib/security/pwned-passwords";
-import { check, clear, consume } from "@/lib/security/rate-limit";
+import { clear, consume, refund } from "@/lib/security/rate-limit";
 import { clientIp } from "@/lib/security/request-info";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -202,8 +202,11 @@ export async function signInAction(_prev: AuthFormState, formData: FormData): Pr
 
   const ipLimit = await consume("signInByIp", await clientIp());
   if (!ipLimit.ok) return tooMany(ipLimit.retryAfterSeconds, email);
-  // Progressive lock-out: after 5 wrong passwords for an address, wait out the window.
-  const lockout = await check("signInFailuresByEmail", email);
+  // Progressive lock-out: after 5 wrong passwords for an address, wait out the
+  // window. The try is counted before the password is checked, so passwords
+  // sent all at once can't all slip past it (D-053); anything other than a
+  // wrong password gives it back.
+  const lockout = await consume("signInFailuresByEmail", email);
   if (!lockout.ok) return tooMany(lockout.retryAfterSeconds, email);
 
   const supabase = await createSupabaseServerClient();
@@ -211,8 +214,9 @@ export async function signInAction(_prev: AuthFormState, formData: FormData): Pr
   if (error || !data.user) {
     const key = error ? authErrorKey(error) : "somethingWentWrong";
     if (key === "invalidCredentials") {
-      await consume("signInFailuresByEmail", email);
       await audit("auth.sign_in_failed", null, { method: "password", reason: "invalid_credentials" });
+    } else {
+      await refund("signInFailuresByEmail", email);
     }
     return { status: "error", formError: key, email };
   }

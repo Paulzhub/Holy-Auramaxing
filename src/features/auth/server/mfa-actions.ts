@@ -13,7 +13,7 @@ import type { AuthFormState } from "../form-state";
 import { hashRecoveryCode, normaliseRecoveryCode } from "../recovery-codes";
 import { fieldErrors, safeNextPath } from "../schemas";
 import { recoveryCodeInputSchema, totpCodeSchema } from "../security-schemas";
-import { queueSecurityAlert, readAuthGate } from "./security-events";
+import { markTwoStepPassed, queueSecurityAlert, readAuthGate } from "./security-events";
 import { syncThemeCookie } from "./theme-sync";
 
 /**
@@ -64,11 +64,18 @@ export async function verifyTotpAction(_prev: AuthFormState, formData: FormData)
     devLog("mfa", listError ?? "no verified TOTP factor");
     return { status: "error", formError: "somethingWentWrong" };
   }
-  const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code: parsed.data });
+  const { data: verified, error } = await supabase.auth.mfa.challengeAndVerify({
+    factorId: factor.id,
+    code: parsed.data,
+  });
   if (error) {
     await audit("auth.mfa_failed", userId, { method: "totp" });
     if (error.status === 429) return tooMany(60);
     return { status: "error", fieldErrors: { code: "codeInvalid" } };
+  }
+  // The database only accepts aal2 sessions this step has vouched for (D-050).
+  if (!(await markTwoStepPassed(userId, verified?.access_token))) {
+    return { status: "error", formError: "somethingWentWrong" };
   }
 
   await audit("auth.mfa_verified", userId, { method: "totp" });

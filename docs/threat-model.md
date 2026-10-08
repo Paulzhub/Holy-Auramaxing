@@ -144,6 +144,18 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 | **D**enial of service      | Hammering the check-in endpoint                                                   | `checkinSaveByUser` 30 an hour; one row per person per day by a unique key                                                                                                                                                                                                     |
 | **I**nformation disclosure | Accounts closing for deletion still showing in a group's Today                    | The view joins only open profiles; pgTAP `032` (D-033)                                                                                                                                                                                                                         |
 
+## Security review 1 (after Phase 4)
+
+A hostile review of everything to date against §10 and OWASP ASVS 5.0 Level 2; the full report is `docs/security-review-1.md`. Cross-group reads, member-to-admin escalation, invite reuse and brute force, script injection, uploads and secrets in the repo or the client bundle all held up (46 direct API attacks, 0 leaks). Five findings were fixed:
+
+| STRIDE                | Threat                                                                                                        | Mitigation                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **S**poofing          | Guessing two-step codes straight against Supabase Auth's verify endpoint, past the app's 5-tries limit (SR-1) | The gate also needs a mark only the app writes after its own rate-limited check (D-050); pgTAP `016`         |
+| **D**enial of service | Calling write functions through the Data API to skip the app's rate limits (SR-2)                             | `private.throttle()` in every check-in and group write, a little above the app's limits (D-051); pgTAP `025` |
+| **S**poofing          | Choosing a new "address" per request through `X-Forwarded-For` (SR-3)                                         | Only the header the platform writes is read, last entry first; `TRUSTED_IP_HEADER` for Cloudflare (D-052)    |
+| **S**poofing          | Sending many passwords or invite codes at once to slip past "5 wrong tries" (SR-4)                            | Each try is counted before the check and given back if it was right (D-053)                                  |
+| **T**ampering         | Forging encrypted notes with a truncated GCM tag (SR-5)                                                       | 16-byte tags only (D-054)                                                                                    |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -156,7 +168,9 @@ Browser ⇄ Next.js (proxy, server components, server actions) ⇄ Supabase (Pos
 - Turnstile is not exercised by automated tests (off in CI); verify it by hand on the first preview deploy (D-018).
 - Supabase Auth applies its per-IP limits to our server's IP for server-side calls; set dashboard limits generously before launch (D-019).
 - Back up `APP_ENCRYPTION_KEY` securely: without it, encrypted text can't be read (D-025).
-- The app must run behind a proxy that overwrites `X-Forwarded-For` (Vercel, Cloudflare), or per-IP rate limits can be bypassed (D-019).
+- Per-network limits trust one header (D-052): on Vercel leave `TRUSTED_IP_HEADER` unset; behind Cloudflare's proxy set it to `cf-connecting-ip`. Anywhere else, check which header the platform overwrites before launch.
+- Turn on Turnstile in the Supabase dashboard before launch: the per-address password lock-out (5 wrong tries) lives in the app, so someone calling Supabase Auth directly meets only Supabase's per-IP limit and the captcha (D-018).
+- Phase 6's posts, comments, reactions and nudges must call `private.throttle()` too (D-051).
 - Sign Google Cloud's data processing terms and name Google as a processor before launch; avatars are screened by Cloud Vision (D-026).
 - Rejected photos are deleted immediately. Phase 11's written CSAM procedure must decide whether flagged images are preserved for reporting (NCMEC, cybercrime.gov.in) instead.
 - Avatar screening runs in `after()` until Phase 7's job queue exists; a photo left pending is retried when its owner opens their profile (D-026).

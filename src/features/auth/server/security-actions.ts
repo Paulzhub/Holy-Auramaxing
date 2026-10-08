@@ -14,6 +14,7 @@ import { fieldErrors } from "../schemas";
 import { idSchema, totpCodeSchema } from "../security-schemas";
 import type { RecoveryCodesState, TwoStepSetupState } from "../security-state";
 import { requireAccount } from "./account";
+import { markTwoStepPassed } from "./security-events";
 
 /**
  * Settings → Security (D-028, D-030). Every action re-checks the account:
@@ -91,11 +92,18 @@ export async function twoStepSetupAction(prev: TwoStepSetupState, formData: Form
     if (!code.success) return { status: "scanning", ...keep, error: fieldErrors(code.error).code ?? "codeInvalid" };
     if (!(await consume("mfaVerifyByUser", userId)).ok) return { status: "scanning", ...keep, error: "rateLimited" };
 
-    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factorId.data, code: code.data });
+    const { data: verified, error } = await supabase.auth.mfa.challengeAndVerify({
+      factorId: factorId.data,
+      code: code.data,
+    });
     if (error) {
       // An expired or unknown factor can't be confirmed; anything else is a wrong code.
       if (error.code === "mfa_factor_not_found") return { status: "error", error: "twoStepSetupExpired" };
       return { status: "scanning", ...keep, error: "codeInvalid" };
+    }
+    // This session just passed the code step here, so it stays signed in (D-050).
+    if (!(await markTwoStepPassed(userId, verified?.access_token))) {
+      return { status: "error", error: "somethingWentWrong" };
     }
     await audit("auth.mfa_enrolled", userId, { method: "totp" });
     const recoveryCodes = await createRecoveryCodes(userId);

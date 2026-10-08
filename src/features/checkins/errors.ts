@@ -12,6 +12,8 @@ const fromDatabase: Record<string, CheckinErrorKey> = {
   checkin_window_closed: "windowClosed",
   checkin_invalid: "invalid",
   checkin_not_found: "notFound",
+  // The database's own limit (D-051).
+  rate_limited: "rateLimited",
 };
 
 export function checkinErrorKey(error: { message?: string } | null | undefined): CheckinErrorKey {

@@ -121,6 +121,10 @@ select results_eq($$ select session_active, mfa_pending from public.auth_gate() 
 select throws_ok($$ select public.replace_recovery_codes(array_fill(repeat('0', 64), array[10])) $$,
   '42501', null, 'Recovery codes cannot be created at aal1');
 
+-- The app's code step passed and recorded it (D-050).
+select pg_temp.as_postgres();
+insert into private.mfa_verified_sessions (session_id, user_id)
+values ('00000000-0000-7000-8000-00000000a201', '00000000-0000-7000-8000-0000000000a2');
 select pg_temp.as_session('00000000-0000-7000-8000-0000000000a2', '00000000-0000-7000-8000-00000000a201', 'aal2');
 select is((select count(*) from public.profiles), 1::bigint, 'At aal2 the profile is readable again');
 

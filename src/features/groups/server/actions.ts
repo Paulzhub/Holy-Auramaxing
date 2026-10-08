@@ -9,7 +9,7 @@ import { requireAccount } from "@/features/auth";
 import { redirect } from "@/i18n/navigation";
 import { siteOrigin } from "@/lib/env";
 import { processSquareImage, SquareImageError } from "@/lib/images/square-image";
-import { check, consume } from "@/lib/security/rate-limit";
+import { consume, refund } from "@/lib/security/rate-limit";
 import { clientIp } from "@/lib/security/request-info";
 import { audit } from "@/lib/server/audit";
 import { devLog } from "@/lib/server/dev-log";
@@ -468,32 +468,27 @@ export async function enterInviteCodeAction(_prev: GroupFormState, formData: For
   // Put the typed code back on every refusal, so a typo can be fixed in place.
   const typed = String(formData.get("code") ?? "").slice(0, 20);
   const values = { code: typed };
-  const [byUser, byIp] = await Promise.all([
-    check("inviteCodeFailuresByUser", userId),
-    check("inviteCodeFailuresByIp", ip),
+  const code = normaliseInviteCode(typed);
+  if (!code) return { status: "error", fieldErrors: { code: "codeInvalid" }, values };
+
+  // Count the try before looking it up, and give it back if the code works:
+  // codes sent all at once can't all slip past the limit (D-053).
+  const counted = await Promise.all([
+    consume("inviteCodeFailuresByUser", userId),
+    consume("inviteCodeFailuresByIp", ip),
   ]);
-  if (!byUser.ok || !byIp.ok) {
+  if (counted.some((r) => !r.ok)) {
     await audit("group.invite_code_rate_limited", userId);
     return { status: "error", fieldErrors: { code: "codeRateLimited" }, values };
   }
-
-  const code = normaliseInviteCode(typed);
-  if (!code) return { status: "error", fieldErrors: { code: "codeInvalid" }, values };
 
   const hash = hashInviteCode(code);
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.rpc("preview_group_invite", { p_token_hash: "", p_code_hash: hash }).maybeSingle();
   if (!data || data.status === "invalid") {
-    const counted = await Promise.all([
-      consume("inviteCodeFailuresByUser", userId),
-      consume("inviteCodeFailuresByIp", ip),
-    ]);
-    if (counted.some((r) => !r.ok)) {
-      await audit("group.invite_code_rate_limited", userId);
-      return { status: "error", fieldErrors: { code: "codeRateLimited" }, values };
-    }
     return { status: "error", fieldErrors: { code: "inviteInvalid" }, values };
   }
+  await Promise.all([refund("inviteCodeFailuresByUser", userId), refund("inviteCodeFailuresByIp", ip)]);
   await holdInvite("code", hash);
   return go("/join");
 }
