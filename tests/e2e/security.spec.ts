@@ -104,7 +104,7 @@ test.describe("two-step sign-in with an authenticator app", () => {
     await expect(page.getByRole("heading", { name: /Two-step sign-in/ })).toContainText("Off");
 
     const alert = await waitForEmail(email, /A recovery code was used/);
-    expect(alert.from).toMatch(/^Aura </);
+    expect(alert.from).toMatch(/^Holy Auramaxing </);
     expect(`${alert.subject} ${alert.html} ${alert.text}`).not.toMatch(sensitive);
     expect(alert.html).toContain("/settings/security");
   });
@@ -208,8 +208,8 @@ test.describe("devices and sessions", () => {
     // The account's first device: no email.
     const laptop = await signedInContext(browser, baseURL!, email, password);
 
-    const alert = await waitForEmail(email, /New sign-in to your Aura account/);
-    expect(alert.from).toMatch(/^Aura </);
+    const alert = await waitForEmail(email, /New sign-in to your Holy Auramaxing account/);
+    expect(alert.from).toMatch(/^Holy Auramaxing </);
     expect(alert.text).toMatch(/Chrome on (Linux|Windows|macOS|Android)/);
     expect(`${alert.subject} ${alert.html} ${alert.text}`).not.toMatch(sensitive);
     expect(await listEmails(email, /New sign-in/)).toHaveLength(1);

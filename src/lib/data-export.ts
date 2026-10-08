@@ -73,7 +73,7 @@ export function buildExportArchive({ generatedAt, parts, readmeIntro }: ExportAr
   for (const f of files) if (!FILE_NAME.test(f.name)) throw new Error(`Bad file name: ${f.name}`);
 
   const json = {
-    format: "aura-data-export",
+    format: "holy-auramaxing-data-export",
     version: 1,
     generated_at: generatedAt.toISOString(),
     sections: Object.fromEntries(sections.map((s) => [s.name, s.rows])),
@@ -98,7 +98,7 @@ export function buildExportArchive({ generatedAt, parts, readmeIntro }: ExportAr
   return createZip(entries, generatedAt);
 }
 
-/** "aura-data-2026-10-06.zip": neutral, like everything else people see (§2.3). */
+/** "holy-auramaxing-data-2026-10-06.zip": neutral, like everything else people see (§2.3). */
 export function exportFileName(generatedAt: Date): string {
-  return `aura-data-${generatedAt.toISOString().slice(0, 10)}.zip`;
+  return `holy-auramaxing-data-${generatedAt.toISOString().slice(0, 10)}.zip`;
 }

@@ -29,15 +29,15 @@ export interface EmailSender {
   send(message: EmailMessage): Promise<void>;
 }
 
-const DEFAULT_RESEND_FROM = "Aura <onboarding@resend.dev>";
-const DEFAULT_LOCAL_FROM = "Aura <no-reply@aura.localhost>";
+const DEFAULT_RESEND_FROM = "Holy Auramaxing <onboarding@resend.dev>";
+const DEFAULT_LOCAL_FROM = "Holy Auramaxing <no-reply@holy-auramaxing.localhost>";
 const TIMEOUT_MS = 5000;
 
-/** "Name <address>" → parts; a bare address keeps the name "Aura". */
+/** "Name <address>" → parts; a bare address keeps the name "Holy Auramaxing". */
 export function parseFrom(from: string): { name: string; email: string } {
   const match = /^\s*(.*?)\s*<([^<>\s]+@[^<>\s]+)>\s*$/.exec(from);
-  if (match) return { name: match[1] || "Aura", email: match[2]! };
-  return { name: "Aura", email: from.trim() };
+  if (match) return { name: match[1] || "Holy Auramaxing", email: match[2]! };
+  return { name: "Holy Auramaxing", email: from.trim() };
 }
 
 class ResendSender implements EmailSender {
@@ -152,7 +152,7 @@ export function selectSender(env: ServerEnv): EmailSender {
       user: env.SMTP_USER,
       password: env.SMTP_PASSWORD,
       // Gmail sends only as the signed-in account, so that address is the default.
-      from: env.EMAIL_FROM ?? `Aura <${env.SMTP_USER}>`,
+      from: env.EMAIL_FROM ?? `Holy Auramaxing <${env.SMTP_USER}>`,
     });
   }
   if (provider === "resend") {

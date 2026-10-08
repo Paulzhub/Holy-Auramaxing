@@ -40,7 +40,7 @@ const serverEnvSchema = z.object({
    * else mailpit with a URL, else none.
    */
   EMAIL_PROVIDER: z.enum(["resend", "smtp", "mailpit", "none"]).optional(),
-  /** Sender, e.g. "Aura <hello@example.com>". Without a verified domain Resend only accepts onboarding@resend.dev. */
+  /** Sender, e.g. "Holy Auramaxing <hello@example.com>". Without a verified domain Resend only accepts onboarding@resend.dev. */
   EMAIL_FROM: z.string().min(3).max(200).optional(),
   /** Resend API key (server-only). */
   RESEND_API_KEY: z.string().min(1).optional(),

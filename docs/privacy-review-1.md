@@ -1,5 +1,7 @@
 # Privacy and discretion review 1 (after security review 1)
 
+> **Update (D-059):** the owner has since renamed the app to "Holy Auramaxing" everywhere people see it, replacing both "Aura" and "Holy Auramaxxxing". Where this report says "Aura", read "Holy Auramaxing".
+
 **Scope:** everything on `main` after Phase 4 and security review 1, reviewed two ways: as a privacy officer (CLAUDE.md §2.3, §11, DPDP data minimisation), and as someone whose spouse, parent or roommate might pick up their phone or open their laptop. **Method:** went through every page title, the in-app chrome, every app and Supabase Auth email (subject, preview, body, sender), invite share text, downloads, cookie and storage names, URLs, error pages, log lines (`devLog`, `audit()`, the database's `util.audit`) and every table and column, including the ones Supabase Auth keeps for itself. Then a local Supabase stack, with real rows, to confirm what Supabase Auth actually stores.
 
 Most surfaces were already discreet: tab titles use "Aura" and never a group name, the slip page's tab says "Check in", emails are neutral and sent as "Aura", the export downloads as `aura-data-<date>.zip`, invite shares say "Join my group on Aura", cookies are `aura_device` / `aura_invite` / `theme`, `devLog` is silent in production, audit metadata carries no content, and check-in notes are encrypted.
@@ -42,9 +44,9 @@ The Privacy Policy now lists Google Cloud Vision and Google sign-in as processor
 
 ## For the owner (can't be fixed in code)
 
-1. **Sending address.** Every email arrives from `holyauramaxxxing@gmail.com`. The display name is "Aura", but Gmail and phone mail apps show the address too. Before launch, create a neutral Gmail account (or verify a neutral domain with Resend) and update `SMTP_USER`, the host's environment and Supabase's custom SMTP.
+1. **Sending address.** Every email arrived from `holyauramaxxxing@gmail.com`. **Done (D-059):** the app now sends from `holyauramaxing@gmail.com`. Update `SMTP_USER` and `SMTP_PASSWORD` (the new account's own app password) in the host's environment and Supabase's custom SMTP too.
 2. **Domain.** Choose a domain without "xxx" or the topic in it. It sits in browser history, password managers and router logs, and the DNS content filters that the resources page will recommend (Phase 8) may block a domain containing "xxx".
-3. **Google sign-in consent screen.** Name the Google Cloud OAuth app "Aura", with a neutral logo. That name shows on Google's sign-in screen and in the person's Google Account under third-party connections.
+3. **Google sign-in consent screen.** Name the Google Cloud OAuth app "Holy Auramaxing", with a neutral logo. That name shows on Google's sign-in screen and in the person's Google Account under third-party connections.
 4. **Secrets on OneDrive.** The project folder on your PC is inside OneDrive, so `.env.local` and `.env.local.bak-before-vision-fix` (Gmail app password, Vision and Resend keys, `APP_ENCRYPTION_KEY`) are copied to Microsoft's cloud. Consider moving the project outside OneDrive, deleting the `.bak`, and rotating the Gmail app password and API keys once production keys exist.
 
 ## Checked, nothing to change
@@ -62,8 +64,8 @@ The Privacy Policy now lists Google Cloud Vision and Google sign-in as processor
 ## Requirements carried forward
 
 - **Phase 5:** level-up and share cards, and the challenge certificate, must not show streak counts or the topic. Add their text to `src/test/discretion.test.ts`. A level drop is never shown to anyone else (§7.6).
-- **Phase 7:** add every notification, push and digest template, in discreet mode, to `src/test/discretion.test.ts` (the Phase 7 prompt asks for exactly this test). Push titles use "Aura". The quiet-hours exception for partner SOS must still be discreet.
+- **Phase 7:** add every notification, push and digest template, in discreet mode, to `src/test/discretion.test.ts` (the Phase 7 prompt asks for exactly this test). Push titles use "Holy Auramaxing". The quiet-hours exception for partner SOS must still be discreet.
 - **Phase 8:** the resources page's DNS-filter advice should be checked against our own domain.
-- **Phase 9:** manifest `name` and `short_name` "Aura", `apple-mobile-web-app-title` "Aura", `start_url` `/home` (not the public landing page), and install-sheet screenshots made from sample data, with no topic words.
+- **Phase 9:** manifest `name` and `short_name` "Holy Auramaxing", `apple-mobile-web-app-title` "Holy Auramaxing", `start_url` `/home` (not the public landing page), and install-sheet screenshots made from sample data, with no topic words.
 - **Phase 10:** the app lock (PIN or biometrics) is the main protection when someone else holds the unlocked phone. Until then, anyone with the phone sees Home and Progress.
 - **Phase 12:** Sentry must scrub query strings and request bodies as well as PII. URLs carry dates, and the server-action bodies carry answers.

@@ -6,7 +6,7 @@
  */
 export const globalErrorMessages = {
   en: {
-    app: { tabName: "Aura" },
+    app: { tabName: "Holy Auramaxing" },
     meta: { titleTemplate: "{page} | {app}", error: "Something went wrong" },
     errors: {
       errorTitle: "Something went wrong on our side",

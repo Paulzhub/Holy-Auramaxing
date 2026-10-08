@@ -119,7 +119,7 @@ test("sign up with email, confirm, sign out, sign in again", async ({ page }) =>
 
   // Until the email is confirmed, the password doesn't sign in.
   const { subject, link, html } = await waitForEmailLink(email, /Confirm your email/);
-  expect(subject).toBe("Confirm your email for Aura");
+  expect(subject).toBe("Confirm your email for Holy Auramaxing");
   for (const word of sensitiveWords) expect(html.toLowerCase()).not.toContain(word);
 
   await openEmailLink(page, link);
@@ -187,8 +187,8 @@ test("reset a forgotten password from the emailed link", async ({ page }) => {
   await page.getByRole("button", { name: "Send reset link" }).click();
   await expect(page.getByRole("status").filter({ hasText: "reset link is on its way" })).toBeVisible();
 
-  const { subject, link } = await waitForEmailLink(email, /Reset your Aura password/);
-  expect(subject).toBe("Reset your Aura password");
+  const { subject, link } = await waitForEmailLink(email, /Reset your Holy Auramaxing password/);
+  expect(subject).toBe("Reset your Holy Auramaxing password");
   await openEmailLink(page, link);
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/reset-password$/);
@@ -210,7 +210,7 @@ test("an emailed link works only once", async ({ page }) => {
   await page.goto("/forgot-password");
   await page.getByLabel("Email address").fill(email);
   await page.getByRole("button", { name: "Send reset link" }).click();
-  const { link } = await waitForEmailLink(email, /Reset your Aura password/);
+  const { link } = await waitForEmailLink(email, /Reset your Holy Auramaxing password/);
 
   await openEmailLink(page, link);
   await page.getByRole("button", { name: "Continue" }).click();
@@ -237,7 +237,7 @@ test("sign in with a magic link; unknown addresses look the same", async ({ page
   await expect(sent).toBeVisible();
 
   const { subject, link } = await waitForEmailLink(email, /sign-in link/);
-  expect(subject).toBe("Your Aura sign-in link");
+  expect(subject).toBe("Your Holy Auramaxing sign-in link");
   await openEmailLink(page, link);
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/home$/);

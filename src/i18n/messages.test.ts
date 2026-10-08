@@ -38,7 +38,7 @@ describe("message files", () => {
     const t = createTranslator({ locale: "en", messages: en });
     const sample = {
       page: "Home",
-      app: "Aura",
+      app: "Holy Auramaxing",
       date: "1 September",
       status: "x",
       reaction: "Love",

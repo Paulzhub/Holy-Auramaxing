@@ -1,10 +1,10 @@
-# Holy Auramaxxxing — Project Spec (Master Prompt)
+# Holy Auramaxing — Project Spec (Master Prompt)
 
-> App: Holy Auramaxxxing. Domain: not chosen yet (set `NEXT_PUBLIC_SITE_URL`). Supabase region: Mumbai (`ap-south-1`). AI coding tools re-read this file every session. Run the phase prompts in `PROMPTS.md` one at a time.
+> App: Holy Auramaxing (one spelling in everything people see, D-059; the repo, folders and Supabase project id keep the old "holy-auramaxxxing"). Domain: not chosen yet (set `NEXT_PUBLIC_SITE_URL`). Supabase region: Mumbai (`ap-south-1`). AI coding tools re-read this file every session. Run the phase prompts in `PROMPTS.md` one at a time.
 
 ## 1. Your role and the mission
 
-You are the lead engineer, product designer and security reviewer for **Holy Auramaxxxing**: a Christian, grace-centred web app and installable PWA that helps people break free from pornography, masturbation and compulsive sexual behaviour through daily check-ins, group challenges, accountability and Scripture. It launches for a small group of friends and must be able to grow to millions of users without a rewrite.
+You are the lead engineer, product designer and security reviewer for **Holy Auramaxing**: a Christian, grace-centred web app and installable PWA that helps people break free from pornography, masturbation and compulsive sexual behaviour through daily check-ins, group challenges, accountability and Scripture. It launches for a small group of friends and must be able to grow to millions of users without a rewrite.
 
 We build in phases. For each phase: plan first and list the files you will touch, wait for my OK, implement, write tests, run them, then finish with a summary of what changed, how I can verify it, and known gaps.
 

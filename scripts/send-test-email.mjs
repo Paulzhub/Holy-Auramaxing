@@ -44,10 +44,10 @@ const transporter = createTransport({
 try {
   await transporter.verify();
   const info = await transporter.sendMail({
-    from: EMAIL_FROM || `Aura <${SMTP_USER}>`,
+    from: EMAIL_FROM || `Holy Auramaxing <${SMTP_USER}>`,
     to,
-    subject: "Aura test email",
-    text: "This is a test from your Aura app. If you can read it, email is set up.",
+    subject: "Holy Auramaxing test email",
+    text: "This is a test from your Holy Auramaxing app. If you can read it, email is set up.",
   });
   console.log(`Sent to ${to} through ${SMTP_HOST}:${port} (${info.messageId}). Check the inbox and the spam folder.`);
 } catch (error) {

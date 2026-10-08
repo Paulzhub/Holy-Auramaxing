@@ -75,7 +75,7 @@ export async function twoStepSetupAction(prev: TwoStepSetupState, formData: Form
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: "totp",
       friendlyName: "Authenticator app",
-      issuer: "Aura",
+      issuer: "Holy Auramaxing",
     });
     if (error || !data) {
       devLog("mfa", error?.message ?? "enroll returned nothing");

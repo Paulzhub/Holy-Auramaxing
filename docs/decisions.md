@@ -554,3 +554,12 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - Processors now include Google Cloud Vision (it receives only the picture being checked) and Google, only for people who sign in with Google. The policy says we keep only the email from Google, lists profile content, and describes the device name kept with security records.
 - The export page lists check-ins and their private notes.
 - `POLICY_VERSION` is now `2026-10-08-draft` and the legal pages say "Last updated 8 October 2026". Accounts made earlier keep their `2026-10-05-draft` consent records. The policy is still a draft awaiting legal review, so the planned re-consent flow (Phase 11) is not needed yet.
+
+## D-059 · The app's name is "Holy Auramaxing" everywhere people see it; email from holyauramaxing@gmail.com
+
+- **Owner's decision (2026-10-08):** "Aura" (the short name from D-030 and D-055) and "Holy Auramaxxxing" are both replaced by **"Holy Auramaxing"** in everything people see: tab titles, the app's header, the landing and legal pages, every email subject, body and sender name, Supabase Auth's templates and subjects, the invite share text, the authenticator-app label (TOTP issuer), the passkey prompt (`rp_display_name`) and the data export (`holy-auramaxing-data-<date>.zip`, `"format": "holy-auramaxing-data-export"`).
+- **Kept as they are (nobody sees them):** the repo and folder names, `package.json`'s name, the Supabase `project_id`, and the cookie names `aura_device` and `aura_invite`. Renaming `aura_device` would make every browser look new and send everyone a "New sign-in" email.
+- Authenticator apps that were set up earlier keep showing "Aura" until two-step sign-in is set up again. Existing passkeys keep working, because the relying party ID is unchanged.
+- **Handles:** `auramaxing`, `holy_auramaxing` and `holyauramaxing` are reserved (migration `20261012000100_profile_reserved_handles_rename.sql`).
+- **Discretion:** the name says the app is Christian but not what it is for. `src/test/discretion.test.ts` now forbids "xxx" rather than the name, and checks that the name has one spelling everywhere.
+- **Email:** the dedicated Gmail account is now `holyauramaxing@gmail.com`, replacing `holyauramaxxxing@gmail.com`. `SMTP_USER` and `SMTP_PASSWORD` (the new account's own app password) change in `.env.local`, the host and Supabase's custom SMTP.
