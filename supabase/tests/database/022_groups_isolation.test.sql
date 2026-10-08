@@ -8,7 +8,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(14);
+select plan(15);
 
 create function pg_temp.make_user(id uuid, email text) returns void language plpgsql as $$
 declare token text := 'token-' || replace(id::text, '-', '');
@@ -78,6 +78,8 @@ select c.table_name, 'group_id'
 grant select on iso_tables to authenticated;
 
 select ok((select count(*) from iso_tables) >= 5, 'At least the five group tables are checked');
+select ok((select count(*) from iso_tables where tbl in ('group_checkins_today', 'group_member_stats')) = 2,
+  'Phase 4''s share-level view and challenge stats are among them');
 
 -- Counts, as the current role, the rows of group `gid` in every table.
 create function pg_temp.visible_rows(gid uuid)
@@ -96,7 +98,7 @@ $$;
 select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
 select ok((select bool_and(n > 0) from pg_temp.visible_rows(pg_temp.gb())
             where tbl in ('groups', 'group_members', 'group_invites', 'group_covenant_proposals',
-                          'group_covenant_agreements')),
+                          'group_covenant_agreements', 'group_checkins_today', 'group_member_stats')),
   'B''s owner sees B''s rows in every group table (the check below is meaningful)');
 
 -- ---------------------------------------------------------------- reading
