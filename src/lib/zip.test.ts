@@ -90,7 +90,7 @@ describe("buildExportArchive", () => {
     ]);
     const json = JSON.parse(decode(entries[1]!.data)) as Record<string, unknown>;
     expect(json).toMatchObject({
-      format: "aura-data-export",
+      format: "holy-auramaxing-data-export",
       version: 1,
       generated_at: "2026-10-06T10:00:00.000Z",
       sections: { profile: [{ handle: "grace" }], consents: [] },
@@ -120,6 +120,6 @@ describe("buildExportArchive", () => {
   });
 
   it("names the file neutrally with the date", () => {
-    expect(exportFileName(generatedAt)).toBe("aura-data-2026-10-06.zip");
+    expect(exportFileName(generatedAt)).toBe("holy-auramaxing-data-2026-10-06.zip");
   });
 });

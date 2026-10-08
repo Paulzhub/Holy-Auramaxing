@@ -8,7 +8,7 @@ import en from "../../messages/en.json";
  * Security alerts the app sends itself (D-030). Supabase sends the
  * password-changed and two-step on/off notices from supabase/templates.
  *
- * Discreet by design (CLAUDE.md §7.8): sender "Aura", neutral subjects, and
+ * Discreet by design (CLAUDE.md §7.8): sender "Holy Auramaxing", neutral subjects, and
  * nothing that says what the app is for. Server-only.
  */
 export type SecurityEmailKind = "newSignIn" | "recoveryCodeUsed" | "passkeyAdded" | "accountClosing" | "accountKept";

@@ -19,9 +19,9 @@ import { parseFrom } from "../lib/email/sender";
 const root = join(__dirname, "..", "..");
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 
-/** Words that give the topic away, plus the full name (whose "xxx" reads badly at a glance). */
+/** Words that give the topic away, plus "xxx" (the old spelling of the name, which read badly at a glance; D-059). */
 const SENSITIVE =
-  /porn|fap|lust|masturbat|sexual|\bsex\b|relapse|addict|temptation|purity|\bslip|\bstreak|\burges?\b|clean day|sobriety|auramax|xxx/i;
+  /porn|fap|lust|masturbat|sexual|\bsex\b|relapse|addict|temptation|purity|\bslip|\bstreak|\burges?\b|clean day|sobriety|xxx/i;
 
 function strings(value: unknown, path = ""): Array<[string, string]> {
   if (typeof value === "string") return [[path, value]];
@@ -74,8 +74,8 @@ describe("discretion: what people see outside the app", () => {
     const sender = read("src/lib/email/sender.ts");
     const defaults = [...sender.matchAll(/const DEFAULT_\w+_FROM = "(.*)";/g)].map((m) => m[1]!);
     expect(defaults.length).toBeGreaterThan(0);
-    for (const from of defaults) expect(parseFrom(from).name).toBe("Aura");
-    expect(parseFrom("someone@example.com").name).toBe("Aura");
+    for (const from of defaults) expect(parseFrom(from).name).toBe("Holy Auramaxing");
+    expect(parseFrom("someone@example.com").name).toBe("Holy Auramaxing");
   });
 
   it("downloads and shares: the export file, its README and the invite share text", () => {
@@ -86,7 +86,14 @@ describe("discretion: what people see outside the app", () => {
     ]);
   });
 
-  it("the name in the app's header is the short one; the full name stays on public pages", () => {
+  it('the app\'s own name has one spelling everywhere, without the old "xxx" (D-059)', () => {
+    expect(en.app.name).toBe("Holy Auramaxing");
+    expect(en.app.tabName).toBe(en.app.name);
+    expect(en.emails.brand).toBe(en.app.name);
+    expect(read("supabase/config.toml")).toMatch(/rp_display_name = "Holy Auramaxing"/);
+  });
+
+  it("the app's header uses the short name key, like the tab", () => {
     const chrome = [
       "src/components/shell/app-shell.tsx",
       "src/app/[locale]/_frames/auth-frame.tsx",

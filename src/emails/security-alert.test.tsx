@@ -18,7 +18,7 @@ describe("renderSecurityEmail", () => {
       timeZone: "Asia/Kolkata",
       siteOrigin: "https://aura.example",
     });
-    expect(email.subject).toMatch(/Aura/);
+    expect(email.subject).toMatch(/Holy Auramaxing/);
     for (const part of [email.subject, email.html, email.text]) expect(part).not.toMatch(sensitive);
     expect(email.html).toContain("Chrome on Windows");
     expect(email.text).toContain("Chrome on Windows");
@@ -38,7 +38,7 @@ describe("renderSecurityEmail", () => {
       siteOrigin: "https://aura.example",
     });
     // 20:00 UTC is already the 21st in India.
-    expect(email.subject).toBe("Your Aura account will close on October 21, 2026");
+    expect(email.subject).toBe("Your Holy Auramaxing account will close on October 21, 2026");
     expect(email.text).toContain("October 21, 2026");
     expect(email.text).toContain("Keep my account");
   });

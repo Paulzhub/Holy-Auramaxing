@@ -35,7 +35,7 @@ test.describe("Download my data", () => {
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: "Download my data" }).click();
     const download = await downloadPromise;
-    expect(download.suggestedFilename()).toMatch(/^aura-data-\d{4}-\d{2}-\d{2}\.zip$/);
+    expect(download.suggestedFilename()).toMatch(/^holy-auramaxing-data-\d{4}-\d{2}-\d{2}\.zip$/);
     const zip = new Uint8Array(await readFile((await download.path())!));
     const entries = new Map(readZip(zip).map((e) => [e.path, decode(e.data)]));
 
@@ -58,7 +58,7 @@ test.describe("Download my data", () => {
       format: string;
       sections: Record<string, Record<string, unknown>[]>;
     };
-    expect(json.format).toBe("aura-data-export");
+    expect(json.format).toBe("holy-auramaxing-data-export");
     expect(json.sections.account?.[0]).toMatchObject({ email, sign_in_methods: "email", two_step_sign_in: false });
     expect(json.sections.my_why?.[0]?.my_why).toBe(why);
     expect(json.sections.consents?.map((c) => c.kind).sort()).toEqual(["sensitive_data", "terms_privacy"]);
@@ -152,7 +152,7 @@ test.describe("Deleting an account", () => {
 
     // A discreet email with the date.
     const closing = await waitForEmail(email, /will close on/);
-    expect(closing.from).toMatch(/^Aura </);
+    expect(closing.from).toMatch(/^Holy Auramaxing </);
     expect(`${closing.subject} ${closing.html} ${closing.text}`).not.toMatch(sensitive);
 
     // The rest of the app is closed; the other device was signed out.

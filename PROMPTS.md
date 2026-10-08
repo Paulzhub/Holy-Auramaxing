@@ -1,4 +1,4 @@
-# Holy Auramaxxxing — Phase Prompts
+# Holy Auramaxing — Phase Prompts
 
 How to use:
 

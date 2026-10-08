@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Holy Auramaxxxing",
-    "tabName": "Aura",
+    "name": "Holy Auramaxing",
+    "tabName": "Holy Auramaxing",
     "description": "Daily check-ins, small groups and encouragement, grounded in grace."
   },
   "meta": {
@@ -415,7 +415,7 @@
     "checkEmail": {
       "title": "Check your email",
       "lede": "We’ve sent you a link to confirm your address.",
-      "body": "Open the email and press the link to finish. It comes from “Aura” and says nothing about what the app is for. If you can’t see it, check your spam folder.",
+      "body": "Open the email and press the link to finish. It comes from “Holy Auramaxing” and says nothing about what the app is for. If you can’t see it, check your spam folder.",
       "resendTitle": "Didn’t get it?",
       "resendBody": "Enter your email and we’ll send a fresh link.",
       "wrongEmail": "Used the wrong address? <link>Go back and change it</link>."
@@ -522,7 +522,7 @@
       "sections": {
         "whoWeAre": {
           "heading": "Who we are",
-          "body": "Holy Auramaxxxing (“Aura”, “we”) is a small, grace-centred app run for friends walking together toward freedom. For anything about your data, contact our grievance officer at the address below."
+          "body": "Holy Auramaxing (“we”) is a small, grace-centred app run for friends walking together toward freedom. For anything about your data, contact our grievance officer at the address below."
         },
         "whatWeCollectAndWhy": {
           "heading": "What we collect, and why",
@@ -592,7 +592,7 @@
         },
         "discreetEverywhere": {
           "heading": "Discreet everywhere",
-          "body": "Browser tabs, emails and notifications use the neutral name “Aura” and never mention what the app is about."
+          "body": "Browser tabs, emails and notifications use the name “Holy Auramaxing” and never mention what the app is about."
         },
         "yoursToTakeOrDelete": {
           "heading": "Yours to take or delete",
@@ -748,10 +748,10 @@
     }
   },
   "emails": {
-    "brand": "Aura",
+    "brand": "Holy Auramaxing",
     "footer": "You get this email because security alerts can’t be turned off. They only go to the address on your account.",
     "newSignIn": {
-      "subject": "New sign-in to your Aura account",
+      "subject": "New sign-in to your Holy Auramaxing account",
       "preview": "Your account was signed in to from a new device.",
       "heading": "New sign-in",
       "body": "Your account was just signed in to from a device it hasn’t used before: {device}, {when}.",
@@ -760,7 +760,7 @@
       "secondary": "Reset your password"
     },
     "recoveryCodeUsed": {
-      "subject": "A recovery code was used on your Aura account",
+      "subject": "A recovery code was used on your Holy Auramaxing account",
       "preview": "Two-step sign-in is now off for your account.",
       "heading": "A recovery code was used",
       "body": "Someone signed in with one of your recovery codes ({device}, {when}). Two-step sign-in is now off, and every other device was signed out.",
@@ -769,7 +769,7 @@
       "secondary": "Reset your password"
     },
     "passkeyAdded": {
-      "subject": "A passkey was added to your Aura account",
+      "subject": "A passkey was added to your Holy Auramaxing account",
       "preview": "You can now sign in with a new passkey.",
       "heading": "New passkey",
       "body": "A passkey was added to your account ({device}, {when}). It can now be used to sign in.",
@@ -778,7 +778,7 @@
       "secondary": "Reset your password"
     },
     "accountClosing": {
-      "subject": "Your Aura account will close on {date}",
+      "subject": "Your Holy Auramaxing account will close on {date}",
       "preview": "You asked to delete your account.",
       "heading": "Your account is closing",
       "body": "You asked to delete your account ({device}, {when}). It will be deleted for good on {date}. Until then, nobody else can see your profile.",
@@ -787,7 +787,7 @@
       "secondary": "Reset your password"
     },
     "accountKept": {
-      "subject": "Your Aura account will stay open",
+      "subject": "Your Holy Auramaxing account will stay open",
       "preview": "Your account is no longer scheduled for deletion.",
       "heading": "Your account stays open",
       "body": "Your account is no longer scheduled for deletion ({device}, {when}). Everything is as you left it.",
@@ -880,7 +880,7 @@
       "body": "One file with everything we hold about you: your profile and photo, your settings, your private “my why”, your check-ins with their private notes, your groups and what you share in them, what you agreed to at sign-up, and your security records. It opens on any phone or computer, and includes a copy for spreadsheets.",
       "warning": "The file includes private things. Keep it somewhere safe, and delete it when you no longer need it.",
       "button": "Download my data",
-      "readme": "This is a copy of everything Aura holds about you.\r\n\r\ndata.json has everything in one file. The csv folder has the same information as one spreadsheet per topic. Times are in UTC.\r\n\r\nThis file includes private things. Keep it somewhere safe, and delete it when you no longer need it.\r\n\r\nWhat's inside:"
+      "readme": "This is a copy of everything Holy Auramaxing holds about you.\r\n\r\ndata.json has everything in one file. The csv folder has the same information as one spreadsheet per topic. Times are in UTC.\r\n\r\nThis file includes private things. Keep it somewhere safe, and delete it when you no longer need it.\r\n\r\nWhat's inside:"
     },
     "delete": {
       "title": "Delete my account",
@@ -1113,7 +1113,7 @@
       "copyCode": "Copy code",
       "copied": "Copied",
       "share": "Share",
-      "shareText": "Join my group on Aura",
+      "shareText": "Join my group on Holy Auramaxing",
       "downloadQr": "Download QR code",
       "listTitle": "Invites",
       "listEmpty": "No invites yet.",

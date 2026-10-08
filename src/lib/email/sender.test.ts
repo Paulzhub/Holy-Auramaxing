@@ -57,18 +57,24 @@ describe("providers", () => {
     expect(url).toBe("https://api.resend.com/emails");
     expect(init.headers.Authorization).toBe("Bearer re_secret");
     const body = JSON.parse(init.body);
-    expect(body).toMatchObject({ from: "Aura <onboarding@resend.dev>", to: ["person@example.test"], subject: "Hello" });
+    expect(body).toMatchObject({
+      from: "Holy Auramaxing <onboarding@resend.dev>",
+      to: ["person@example.test"],
+      subject: "Hello",
+    });
     expect(String(url)).not.toContain("re_secret");
   });
 
   it("posts to Mailpit's send API", async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
-    await selectSender({ MAILPIT_URL: "http://127.0.0.1:54324", EMAIL_FROM: "Aura <a@b.test>" }).send(message);
+    await selectSender({ MAILPIT_URL: "http://127.0.0.1:54324", EMAIL_FROM: "Holy Auramaxing <a@b.test>" }).send(
+      message,
+    );
     const [url, init] = fetchMock.mock.calls[0]!;
     expect(String(url)).toBe("http://127.0.0.1:54324/api/v1/send");
     expect(JSON.parse(init.body)).toMatchObject({
-      From: { Email: "a@b.test", Name: "Aura" },
+      From: { Email: "a@b.test", Name: "Holy Auramaxing" },
       To: [{ Email: "person@example.test" }],
       Text: "Hi",
     });
@@ -94,7 +100,7 @@ describe("smtp provider", () => {
       }),
     );
     expect(sendMail).toHaveBeenCalledWith({
-      from: "Aura <aura.notices@gmail.com>",
+      from: "Holy Auramaxing <aura.notices@gmail.com>",
       to: "person@example.test",
       subject: "Hello",
       html: "<p>Hi</p>",
@@ -126,7 +132,10 @@ describe("smtp provider", () => {
 
 describe("parseFrom", () => {
   it("splits a display name from the address", () => {
-    expect(parseFrom("Aura <hello@example.com>")).toEqual({ name: "Aura", email: "hello@example.com" });
-    expect(parseFrom("hello@example.com")).toEqual({ name: "Aura", email: "hello@example.com" });
+    expect(parseFrom("Holy Auramaxing <hello@example.com>")).toEqual({
+      name: "Holy Auramaxing",
+      email: "hello@example.com",
+    });
+    expect(parseFrom("hello@example.com")).toEqual({ name: "Holy Auramaxing", email: "hello@example.com" });
   });
 });

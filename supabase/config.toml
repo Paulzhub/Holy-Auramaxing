@@ -208,7 +208,7 @@ enabled = true
 # The relying party: passkeys are bound to this host name. Local only works
 # on http://localhost (not 127.0.0.1). Ports: 3000 app, 3100 e2e, 3200 Lighthouse.
 [auth.webauthn]
-rp_display_name = "Aura"
+rp_display_name = "Holy Auramaxing"
 rp_id = "localhost"
 rp_origins = ["http://localhost:3000", "http://localhost:3100", "http://localhost:3200"]
 
@@ -255,23 +255,23 @@ otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Discreet emails: neutral subjects, sender "Aura", nothing about what the app is for.
+# Discreet emails: neutral subjects, sender "Holy Auramaxing", nothing about what the app is for.
 # Links go to /confirm, which asks for one button press, so link scanners
 # can't use up the one-time token.
 [auth.email.template.confirmation]
-subject = "Confirm your email for Aura"
+subject = "Confirm your email for Holy Auramaxing"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Reset your Aura password"
+subject = "Reset your Holy Auramaxing password"
 content_path = "./supabase/templates/recovery.html"
 
 [auth.email.template.magic_link]
-subject = "Your Aura sign-in link"
+subject = "Your Holy Auramaxing sign-in link"
 content_path = "./supabase/templates/magic_link.html"
 
 [auth.email.template.email_change]
-subject = "Confirm your new email for Aura"
+subject = "Confirm your new email for Holy Auramaxing"
 content_path = "./supabase/templates/email_change.html"
 
 # Use a production-ready SMTP server
@@ -299,17 +299,17 @@ content_path = "./supabase/templates/email_change.html"
 # is made (D-030). Discreet: nothing says what the app is for.
 [auth.email.notification.password_changed]
 enabled = true
-subject = "Your Aura password was changed"
+subject = "Your Holy Auramaxing password was changed"
 content_path = "./supabase/templates/password_changed_notification.html"
 
 [auth.email.notification.mfa_factor_enrolled]
 enabled = true
-subject = "Two-step sign-in is on for your Aura account"
+subject = "Two-step sign-in is on for your Holy Auramaxing account"
 content_path = "./supabase/templates/mfa_factor_enrolled_notification.html"
 
 [auth.email.notification.mfa_factor_unenrolled]
 enabled = true
-subject = "Two-step sign-in is off for your Aura account"
+subject = "Two-step sign-in is off for your Holy Auramaxing account"
 content_path = "./supabase/templates/mfa_factor_unenrolled_notification.html"
 
 [auth.sms]
