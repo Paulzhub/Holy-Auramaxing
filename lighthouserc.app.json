@@ -5,6 +5,8 @@
       "startServerReadyPattern": "Ready",
       "url": [
         "http://localhost:3200/home",
+        "http://localhost:3200/check-in",
+        "http://localhost:3200/progress",
         "http://localhost:3200/settings",
         "http://localhost:3200/settings/security",
         "http://localhost:3200/me",

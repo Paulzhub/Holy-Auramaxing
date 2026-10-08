@@ -81,6 +81,27 @@ if (!groupId) {
   groupId = data;
 }
 
+// Check-in pages need history (Phase 4): five weeks of check-ins in Asia/Kolkata,
+// a clean day three days ago and a slip four days ago (outside the window, so
+// nothing here can be changed through the app).
+const day = (offset) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date(Date.now() - offset * 86_400_000));
+await admin.from("checkins").delete().eq("user_id", member.id);
+const { error: seedError } = await admin.from("checkins").insert(
+  Array.from({ length: 35 }, (_, i) => i + 2)
+    .filter((n) => n % 8 !== 0)
+    .map((n) => ({
+      user_id: member.id,
+      local_date: day(n),
+      timezone: "Asia/Kolkata",
+      outcome: n === 4 || n === 19 ? "slipped" : "clean",
+      mood: (n % 5) + 1,
+      urge_level: (n * 3) % 6,
+      triggers: n % 3 === 0 ? ["tired", "late_night"] : ["stressed"],
+    })),
+);
+if (seedError) throw seedError;
+
 const config = JSON.parse(readFileSync("lighthouserc.app.json", "utf8"));
 const base = "http://localhost:3200";
 config.ci.collect.url.push(
@@ -88,6 +109,8 @@ config.ci.collect.url.push(
   `${base}/groups/${groupId}/members`,
   `${base}/groups/${groupId}/invites`,
   `${base}/groups/${groupId}/settings`,
+  `${base}/check-in/done?date=${day(3)}`,
+  `${base}/check-in/new-mercies?date=${day(4)}`,
 );
 config.ci.collect.settings.extraHeaders = JSON.stringify({
   Cookie: [...jar].map(([name, value]) => `${name}=${value}`).join("; "),

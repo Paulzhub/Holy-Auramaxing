@@ -59,8 +59,9 @@ export async function exportCheckinsData(userId: string): Promise<ExportPart> {
         })),
       },
       {
-        name: "streaks",
-        description: "Your streaks and totals as last calculated. The current streak here is as of your last check-in.",
+        name: "day_counts",
+        description:
+          "Your running day counts and totals, as last calculated. The current count is as of your last check-in.",
         rows: (stats.data ?? []).map((s) => ({ ...s })),
       },
       {

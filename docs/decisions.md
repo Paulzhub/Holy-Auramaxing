@@ -405,3 +405,85 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **JavaScript budget (gzip -9, first load):** `/groups`, the group home and members 156.0 KB; `/join` 154.2 KB; `/groups/new` 159.7 KB; invites 159.9 KB; settings 160.8 KB. The invites page has its own client entry point (`@/features/groups/ui-invites`) and settings keeps `ui-manage`, so neither downloads the other's forms (D-023, D-030). The group switcher is server-rendered `<details>`, with no client JavaScript.
 - **The wizard without a jump:** without JavaScript every step shows and the form still works. With scripting on, CSS shows only step 1 until the wizard takes over (`@media (scripting: enabled)`), so the first paint already matches and nothing shifts (CLS 0).
 - **A mistyped invite code stays in the box** after a refusal, so a typo can be fixed in place (§9: never ask for the same information twice).
+
+## D-042 · Phase 4 · Check-ins are written only through database functions
+
+- **Decision (owner approved the plan, 2026-10-08):** `checkins`, `user_stats` and `group_member_stats` have no insert, update or delete grants for API roles (as in D-034). Reads are owner-only through RLS, and every table has the RESTRICTIVE `session_ok()` policy.
+- `public.submit_checkin()` and `public.save_checkin_reflection()` check `util.session_ok()`, refuse accounts closing for deletion, check the window and every field, save, replay the person's stats, refresh their group stats, and audit an edit, all in one transaction.
+- **The window lives in the database:** `util.checkin_dates(tz, now)` is today in the person's own zone, plus yesterday until 12:00 local time. There is no other backfilling. A direct API call can't get around it.
+- **Testable time:** every clock-dependent function takes `p_now` (the public wrappers pass `now()`), so pgTAP pins instants: midnight in India (18:30 UTC) and Nepal (+5:45), the same instant being different days in India and New York, noon on both sides, and both 2026 daylight-saving changes in New York.
+- **Edits are audited** as `checkin.edited` with the check-in's id and no content. First answers aren't audited.
+- Errors are short keys (`checkin_window_closed`, `checkin_invalid`…) turned into copy by `src/features/checkins/errors.ts`; only known keys are accepted from `?error=`.
+
+## D-043 · Phase 4 · Streaks are replayed, and read "live"
+
+- Stats are recalculated by replaying all of a person's check-ins (gaps and islands) on every save. An edit inside the window (clean to slipped, or back) is therefore always right, and Phase 5's level engine can use the same approach. This is cheap: even ten years of check-ins is about 3,650 rows.
+- `user_stats.current_streak` and `checkin_streak` are the runs ending at the last check-in, which go stale overnight. Reads go through `util.live_count()`. A run is alive while its next day can still be answered: its last day is today or yesterday, or the day before yesterday while it is still before 12:00. Otherwise it reads 0. So no nightly job is needed.
+- **A missed day is never a slip:** it ends the run and is shown as "No check-in". A slip resets only the current streak; longest streak, total clean days and the check-in streak stay. pgTAP `031` covers all of this.
+
+## D-044 · Phase 4 · What a group sees: `group_checkins_today`, and encrypted notes
+
+- **The view:** a security-definer view with `security_barrier`. It returns rows only for groups the viewer is an active member of, and only for active members whose accounts aren't closing. Columns are cut by the member's share level **in that group**:
+
+  | Share level          | What the group sees             |
+  | -------------------- | ------------------------------- |
+  | checkin_only         | checked in today: yes / no      |
+  | streak               | + the live current streak       |
+  | full                 | + today's answer                |
+  | an active partner    | + mood, urge level and triggers |
+  | you, on your own row | everything                      |
+
+- **Partners:** `util.are_partners()` is still false until Phase 6; pgTAP `032` stands in a partnership inside its rolled-back transaction, so that path is already tested.
+- **"Today"** is each member's own today.
+- **No outcome is ever exposed at checkin_only,** neither directly nor through filters (`032`, and the e2e test reads the view through the API). The 022 isolation meta-test picks the view up automatically.
+- **Notes:** encrypted by `encryption.ts` (AES-256-GCM) with `checkin-note:<user id>:<date>` as associated data, so a note can't be moved to another person or day. The database refuses anything not in the `v1:` format, even from the table owner. Only the author can read a note, decrypted in their own pages and their data export.
+- **Not shown yet:** the group's "Together" total. In a small group, a sum of clean days could reveal a checkin_only member's slip (a check-in that adds nothing). Phase 5 decides that rule alongside the leaderboard.
+
+## D-045 · Phase 4 · Challenge stats per group, recalculated in the transaction for now
+
+- `group_member_stats` counts a member's clean days and check-ins from the later of the challenge's start and the day they joined (their own time zone), up to the challenge's end. Rows come and go with active membership (a trigger and a foreign key). Moving the challenge's dates recalculates the group.
+- The table is **owner-only**: the counts could reveal a slip. Groups will see them only through Phase 5's share-level leaderboards.
+- **Departure from §5 ("stats updates go through a job queue"), owner approved:** there is no queue until Phase 5. A save recalculates the person's own stats and their rows in at most 30 groups inside the same transaction, which takes a few milliseconds. Phase 5 moves group stats to the pgmq job with XP and leaderboards.
+
+## D-046 · Phase 4 · The slip page, and "look at everything you kept"
+
+- After "I slipped", `/check-in/new-mercies` (tab title "Check in") shows:
+  1. A grace message and 1 John 1:9 (WEB).
+  2. **The owner's request:** "Your streak may have reset today, but look at everything you kept", listing total clean days, the number of streaks built and the longest streak.
+  3. An optional private reflection: triggers plus a note, saved encrypted as that day's note, so there is no second encrypted column.
+  4. A card about not carrying it alone. Asking a partner or the group to pray needs Phase 6, so the card links to your groups for now.
+  5. One suggested next step, rotated by date (breathe with SOS, a walk, Psalm 51, a message to a friend).
+- **The same "kept" message** shows on Home and Progress whenever the current streak is 0 and there are clean days to look back on ("Your streak paused…" after a missed day).
+- **Data model:** `user_stats.clean_streaks` (how many separate clean streaks), plus `total_checkins`, `last_clean_date` and `updated_at`. Phase 5 adds `xp`, `level`, `level_progress_days` and `highest_level` with the level engine.
+- **No red, no failure words:** slips use the soft `--color-slip` lavender and a sunrise icon. A unit test scans all check-in copy for failure words ("fail", "relapse", "shame", "lost", …).
+
+## D-047 · Phase 4 · Time-zone changes
+
+- "Today" comes from the profile's current zone. Changing zone could open at most one extra day (for example, jumping from UTC+14 to UTC−12). The owner accepted this rather than adding a lockout.
+- Every change is now audited (`profile.timezone_changed`), without the zone itself, which hints at where someone lives.
+- Each check-in stores the zone it was answered in.
+
+## D-048 · Phase 4 · `/join` inside the app shell; "needs your answer"
+
+- **`/join`:** moved to a `(join)` route group whose layout picks the frame by session:
+  - **The app shell** (sidebar, bottom navigation, group switcher) for signed-in, onboarded people with a live session.
+  - **The sign-in frame** for everyone else, including people still in onboarding or closing their account.
+  - The two frames are shared components (`src/app/[locale]/_frames/`), also used by the `(app)` and `(auth)` layouts.
+  - Unchanged: `noindex`, `referrer: no-referrer`, the held-invite cookie and the onboarding hand-off.
+  - e2e checks the nav on `/join` when signed in and its absence when signed out, with axe and 320 px reflow.
+- **"Needs your answer":** `getMyGroups()` marks groups where an open covenant change is waiting for my agreement (D-039). `/groups` shows "A covenant change needs your answer"; the switcher shows a dot (with screen-reader text) and a label next to the group. Phase 7 adds real notifications.
+
+## D-049 · Phase 4 · Pages, charts, export and limits
+
+- **Pages:**
+  - `/check-in`: today, or yesterday via `?date=` while open. Once answered, it shows the answer with "Change your answer".
+  - `/check-in/done`: a thank-you, the streak ring and a verse.
+  - `/check-in/new-mercies`: the slip page.
+  - `/progress`, "Your journey": streaks, the month calendar (two years back), mood and urge charts over 30 or 90 days, triggers and insights.
+  - `/home`: shows today's status and streaks.
+  - The group home's "Today" panel replaces its placeholder. Progress is linked from Home, Check in and Me; the bottom navigation stays at the spec's five items.
+- **Forms are plain HTML posting to Server Actions,** so check-ins work without JavaScript. The only client code is the two answer buttons (`@/features/checkins/ui`), which hold both buttons while saving and show "Saving…", with labels passed as props, so no message namespace ships for them.
+- **Charts:** server-rendered SVG, no library and no JavaScript. Mood and urges are two small charts rather than one chart with two measures. They have 2 px lines, 8 px markers with native tooltips, a missed day breaks the line, and a table holds the same numbers. Trigger bars are SVG `width` attributes, since the CSP allows no inline styles (D-007).
+- **Insights:** pure, unit-tested functions on the person's own data (`src/features/checkins/insights.ts`), for example free days out of days checked in, triggers that come up most, weekday or weekend urges, one weekday that stands out, mood lifting or dipping, low moods with strong urges, and what came up on harder days.
+- **"Download my data"** gains `checkins` (notes decrypted for the person), `day_counts` and `group_challenge_counts`.
+- **Rate limit:** `checkinSaveByUser`, 30 an hour (answers, changes and reflections).
