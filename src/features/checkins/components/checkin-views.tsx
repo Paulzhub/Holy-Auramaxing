@@ -20,6 +20,7 @@ import { Link } from "@/i18n/navigation";
 import { MOODS, NOTE_MAX, TRIGGERS, URGE_LEVELS } from "../constants";
 import type { CheckinErrorKey } from "../errors";
 import type { Insight } from "../insights";
+import { nextStepFor, type NextStepKey } from "../next-steps";
 import { saveReflectionAction, submitCheckinAction } from "../server/actions";
 import type { CheckinDetails, CheckinOverview, MemberToday } from "../server/queries";
 import { CheckinChoices } from "./checkin-choices";
@@ -364,19 +365,12 @@ export async function TodayCard({ overview }: { overview: CheckinOverview }) {
 
 // ---------------------------------------------------------------- the slip page
 
-const NEXT_STEPS = ["breathe", "walk", "verse", "message"] as const;
-const NEXT_ICONS: Record<(typeof NEXT_STEPS)[number], ReactNode> = {
+const NEXT_ICONS: Record<NextStepKey, ReactNode> = {
   breathe: <Wind aria-hidden="true" />,
   walk: <Footprints aria-hidden="true" />,
   verse: <BookOpen aria-hidden="true" />,
   message: <MessageCircle aria-hidden="true" />,
 };
-
-/** One suggested next step (§7.5), varied by day so it doesn't feel canned. */
-export function nextStepFor(date: string): (typeof NEXT_STEPS)[number] {
-  const day = Number(date.replaceAll("-", "")) || 0;
-  return NEXT_STEPS[day % NEXT_STEPS.length] ?? "breathe";
-}
 
 export async function NextStep({ date }: { date: string }) {
   const t = await getTranslations("checkins.mercies");

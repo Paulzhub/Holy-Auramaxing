@@ -108,7 +108,12 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
       <PageHeader title={t("title")} lede={t("lede")} />
       <div className="stack progress-page">
         <StreakStats overview={overview} />
-        {overview.currentStreak === 0 ? <KeptMessage overview={overview} reason="paused" /> : null}
+        {overview.currentStreak === 0 ? (
+          <KeptMessage
+            overview={overview}
+            reason={overview.answered[overview.today] === "slipped" ? "slip" : "paused"}
+          />
+        ) : null}
 
         <section className="ui-card" aria-labelledby="calendar-title">
           <h2 id="calendar-title" className="ui-card__title">
