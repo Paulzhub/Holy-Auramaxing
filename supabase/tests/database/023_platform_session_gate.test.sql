@@ -66,8 +66,11 @@ select throws_ok($$ select public.archive_group(current_setting('test.g')::uuid)
 select throws_ok($$ select public.create_group('Another', null, 'ongoing', null, current_date, 'UTC', 50,
                    'invite_only', 'We keep watch together.', 'checkin_only', true, 'checkin_only') $$,
   '42501', 'not_signed_in', '... not even creating a group');
+select pg_temp.as_postgres();
+insert into private.mfa_verified_sessions (session_id, user_id)
+values ('00000000-0000-7000-8000-00000000c401', '00000000-0000-7000-8000-000000000401');
 select pg_temp.as_session('00000000-0000-7000-8000-000000000401', '00000000-0000-7000-8000-00000000c401', 'aal2');
-select is((select count(*) from public.groups), 1::bigint, 'At aal2 the group is back');
+select is((select count(*) from public.groups), 1::bigint, 'At aal2 (after the app''s code step) the group is back');
 
 -- Signed out from another device: the session row is gone.
 select pg_temp.as_postgres();

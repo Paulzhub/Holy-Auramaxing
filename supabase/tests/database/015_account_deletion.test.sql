@@ -115,8 +115,11 @@ select throws_ok($$ select public.request_account_deletion() $$, '42501', null,
   'With two-step sign-in on, a session that hasn''t entered its code cannot request a deletion');
 select is((select count(*) from public.my_audit_events()), 0::bigint,
   '... and reads no audit events');
+select pg_temp.as_postgres();
+insert into private.mfa_verified_sessions (session_id, user_id)
+values ('00000000-0000-7000-8000-00000000b501', '00000000-0000-7000-8000-0000000000b5');
 select pg_temp.as_session('00000000-0000-7000-8000-0000000000b5', '00000000-0000-7000-8000-00000000b501', 'aal2');
-select ok(public.request_account_deletion() is not null, 'At aal2 it can');
+select ok(public.request_account_deletion() is not null, 'At aal2 (after the app''s code step) it can');
 
 -- ---------------------------------------------------------------- the daily purge
 -- A asked 15 days ago (due); B asked just now (not due).

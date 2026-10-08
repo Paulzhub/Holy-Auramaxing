@@ -13,6 +13,7 @@ import { readServerEnv } from "@/lib/env";
  * never in the database or Git. See docs/decisions.md D-025.
  */
 const VERSION = "v1";
+const TAG_BYTES = 16;
 
 function key(): Buffer {
   const raw = readServerEnv().APP_ENCRYPTION_KEY;
@@ -25,7 +26,7 @@ function key(): Buffer {
 /** `context` (e.g. the user id) is bound into the tag, so a value can't be moved to another row. */
 export function encryptText(plaintext: string, context: string): string {
   const iv = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", key(), iv);
+  const cipher = createCipheriv("aes-256-gcm", key(), iv, { authTagLength: TAG_BYTES });
   cipher.setAAD(Buffer.from(context, "utf8"));
   const ciphertext = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
@@ -35,9 +36,15 @@ export function encryptText(plaintext: string, context: string): string {
 export function decryptText(stored: string, context: string): string {
   const [version, iv, tag, ciphertext] = stored.split(":");
   if (version !== VERSION || !iv || !tag || ciphertext === undefined) throw new Error("Unknown encrypted format.");
-  const decipher = createDecipheriv("aes-256-gcm", key(), Buffer.from(iv, "base64url"));
+  const authTag = Buffer.from(tag, "base64url");
+  // Node accepts GCM tags as short as 4 bytes unless told the length; a short
+  // tag makes forging a value far cheaper (D-054). Ours are always 16.
+  if (authTag.length !== TAG_BYTES) throw new Error("Unknown encrypted format.");
+  const decipher = createDecipheriv("aes-256-gcm", key(), Buffer.from(iv, "base64url"), {
+    authTagLength: TAG_BYTES,
+  });
   decipher.setAAD(Buffer.from(context, "utf8"));
-  decipher.setAuthTag(Buffer.from(tag, "base64url"));
+  decipher.setAuthTag(authTag);
   return Buffer.concat([decipher.update(Buffer.from(ciphertext, "base64url")), decipher.final()]).toString("utf8");
 }
 

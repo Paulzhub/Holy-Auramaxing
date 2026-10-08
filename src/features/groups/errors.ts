@@ -34,6 +34,8 @@ const fromDatabase: Record<string, GroupErrorKey> = {
   max_members_too_low: "maxMembersTooLow",
   start_date_out_of_range: "startDateOutOfRange",
   timezone_invalid: "timezoneInvalid",
+  // The database's own limit (D-051), met only by calls that skip the app.
+  rate_limited: "rateLimited",
 };
 
 export function groupErrorKey(error: { message?: string } | null | undefined): GroupErrorKey {

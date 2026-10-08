@@ -92,6 +92,24 @@ export async function recordSignIn(input: {
   }
 }
 
+/**
+ * After the app's own (rate-limited) check of an authenticator code, records
+ * that this session passed two-step sign-in (D-050). The database gate
+ * requires the mark as well as aal2, so a session upgraded by guessing codes
+ * straight against Supabase Auth's API reads nothing. False if it couldn't be
+ * recorded; the caller then reports an error rather than half-signing in.
+ */
+export async function markTwoStepPassed(userId: string, accessToken: string | null | undefined): Promise<boolean> {
+  const sessionId = accessToken ? sessionIdOf(accessToken) : null;
+  if (!sessionId) return false;
+  const { data, error } = await createSupabaseAdminClient().rpc("mark_session_mfa_verified", {
+    p_user_id: userId,
+    p_session_id: sessionId,
+  });
+  if (error) devLog("mfa", error);
+  return data === true;
+}
+
 /** Queue a security email for after the response (Phase 7's job queue takes over). */
 export async function queueSecurityAlert(
   kind: SecurityEmailKind,

@@ -799,6 +799,7 @@ export type Database = {
         }[];
       };
       leave_group: { Args: { p_group: string }; Returns: undefined };
+      mark_session_mfa_verified: { Args: { p_session_id: string; p_user_id: string }; Returns: boolean };
       my_audit_events: {
         Args: Record<PropertyKey, never>;
         Returns: {

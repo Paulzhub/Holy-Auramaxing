@@ -76,6 +76,8 @@ interface Store {
   /** Current count without changing it. */
   peek(key: string): Promise<{ count: number; ttlMs: number }>;
   reset(key: string): Promise<void>;
+  /** Takes one back (never below zero), keeping the window. */
+  decrement(key: string): Promise<void>;
 }
 
 class MemoryStore implements Store {
@@ -105,6 +107,11 @@ class MemoryStore implements Store {
 
   async reset(key: string) {
     this.entries.delete(key);
+  }
+
+  async decrement(key: string) {
+    const entry = this.live(key);
+    if (entry && entry.count > 0) entry.count -= 1;
   }
 
   private sweep() {
@@ -154,6 +161,12 @@ class UpstashStore implements Store {
 
   async reset(key: string) {
     await this.pipeline([["DEL", key]]);
+  }
+
+  async decrement(key: string) {
+    // Only while the window lasts; an expired key isn't brought back.
+    const [count] = await this.pipeline([["DECR", key]]);
+    if (Number(count) <= 0) await this.pipeline([["DEL", key]]);
   }
 }
 
@@ -209,6 +222,19 @@ export async function check(rule: RateLimitRule, subject: string): Promise<RateL
     return { ok: count < limit, retryAfterSeconds: count < limit ? 0 : Math.max(1, Math.ceil(ttlMs / 1000)) };
   } catch {
     return { ok: true, retryAfterSeconds: 0 };
+  }
+}
+
+/**
+ * Gives back one attempt counted with consume(). For "wrong tries" limits:
+ * count the try BEFORE the slow check (so tries sent all at once can't all
+ * pass a peek at the count, D-053), then give it back if it turned out right.
+ */
+export async function refund(rule: RateLimitRule, subject: string): Promise<void> {
+  try {
+    await getStore().decrement(storageKey(rule, subject));
+  } catch {
+    // Best effort.
   }
 }
 

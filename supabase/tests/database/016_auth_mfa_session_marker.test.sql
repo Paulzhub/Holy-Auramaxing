@@ -78,12 +78,13 @@ select is(util.session_ok(), true, 'Verified through the app, the session passes
 select is((select count(*) from public.profiles), 1::bigint, '... and reads her profile');
 select is((select mfa_pending from public.auth_gate()), false, '... and is not asked for a code again');
 
--- Signing out removes the session and its mark with it.
+-- Signing out ends the session; the hourly clean-up removes its mark.
 select pg_temp.as_postgres();
 delete from auth.sessions where id = '00000000-0000-7000-8000-00000000cd01';
+select private.hourly_auth_maintenance();
 select is((select count(*) from private.mfa_verified_sessions
             where session_id = '00000000-0000-7000-8000-00000000cd01'), 0::bigint,
-  'A signed-out session''s mark goes with it');
+  'A signed-out session''s mark is cleaned up');
 
 -- People without an authenticator app are unaffected.
 select pg_temp.as_session('00000000-0000-7000-8000-000000000d02', '00000000-0000-7000-8000-00000000cd03', 'aal2');

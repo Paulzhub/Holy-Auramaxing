@@ -488,3 +488,44 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **"Download my data"** gains `checkins` (notes decrypted for the person), `day_counts` and `group_challenge_counts`.
 - **Rate limit:** `checkinSaveByUser`, 30 an hour (answers, changes and reflections).
 - **SQL lint fixed:** CI's "Lint SQL" step had been failing since Phase 3. Seven group functions declared an unused `g` variable. Migration `20261009000400_groups_lint_unused_variables.sql` recreates them without it; their behaviour is unchanged.
+
+## D-050 · Security review 1 · Two-step sign-in counts only when the app checked the code (SR-1, high)
+
+- **Finding:** Supabase Auth's public `/auth/v1/factors/:id/verify` endpoint upgrades a session to aal2 on the right code. Someone holding only the password could call it directly with the publishable key and skip the app's limit of 5 wrong codes per 15 minutes. Verified locally: 40 wrong codes in a row, no refusal, then the right one gave aal2 tokens. Hosted Supabase allows 15 challenge/verify requests a minute per IP address (not tunable), so a few addresses find a 6-digit code within a day. The hook that could limit attempts per factor (MFA verification attempt) needs the Team plan.
+- **Fix:** `private.mfa_verified_sessions` records sessions whose code the app itself checked. `public.mark_session_mfa_verified(user, session)` (secret key only; refuses sessions that aren't the person's or aren't aal2) is called right after the app's rate-limited `challengeAndVerify` in `/sign-in/verify` and in authenticator setup. `util.mfa_passed()` = aal2 **and** that mark; `util.session_ok()`, `auth_gate()` and `replace_recovery_codes()` use it. A session upgraded behind the app's back reads nothing and `auth_gate()` reports the code step as pending, so the person lands on `/sign-in/verify`, where the 5-tries limit applies.
+- **Migration:** `20261010000100_auth_mfa_session_marker.sql`. Sessions already at aal2 are marked when it runs, so nobody is signed out. Marks for ended sessions go in the hourly clean-up.
+- **Tests:** pgTAP `016_auth_mfa_session_marker` (14 checks); `014`, `015` and `023` now record the mark where a test session passes the code step.
+
+## D-051 · Security review 1 · Rate limits inside the database (SR-2, medium)
+
+- **Finding:** the app's limits run in server actions, but any signed-in person can call the write functions straight through the Data API with their own token. Verified: 100 `submit_checkin` calls and 200 `update_my_group_membership` calls all succeeded, writing 299 audit rows (the app allows 30 and 120 an hour). Phase 6's posts, reactions and nudges would inherit the gap.
+- **Fix:** `private.throttle(user, bucket, limit, window)` keeps a fixed-window count per person and bucket in `private.rate_limit_counters` and refuses the call over the limit with SQLSTATE `PT429` (HTTP 429 from PostgREST), message `rate_limited`. Limits sit a little above the app's, so the app's friendlier message always comes first:
+
+  | Bucket         | Where                                                             | Database    | App |
+  | -------------- | ----------------------------------------------------------------- | ----------- | --- |
+  | `checkin_save` | `submit_checkin`, `save_checkin_reflection`                       | 40 an hour  | 30  |
+  | `group_manage` | every function through `private.lock_group()`, plus `leave_group` | 150 an hour | 120 |
+  | `group_create` | `create_group`                                                    | 8 a day     | 5   |
+  | `group_join`   | `join_group`                                                      | 20 an hour  | 10  |
+
+- Only calls that succeed count: a refused or failing call rolls back with its count. The app maps `rate_limited` to its existing "rateLimited" copy.
+- **Phase 6 must** call `private.throttle()` in the post, comment, reaction and nudge functions.
+- **Tests:** pgTAP `025_platform_db_rate_limits` (10 checks).
+
+## D-052 · Security review 1 · Which header names the visitor (SR-3, medium)
+
+- **Finding:** `clientIp()` used the **first** `X-Forwarded-For` entry, which is whatever the client sent whenever a proxy appends rather than replaces (Cloudflare appends). Anyone could pick a new "address" per request and get fresh per-network limits (sign-in, sign-up, emails, invite codes). And with Cloudflare in front of Vercel, the address Vercel sees is Cloudflare's, so every visitor behind one Cloudflare data centre would share one limit.
+- **Fix:** `TRUSTED_IP_HEADER` names the one header the platform writes: unset means `X-Forwarded-For`, using its **last** entry (the one the nearest proxy added; on Vercel, the only entry); `cf-connecting-ip` behind Cloudflare's proxy. Other headers are ignored; with nothing usable, requests share the key `unknown`.
+- **Tests:** `src/lib/security/request-info.test.ts`.
+
+## D-053 · Security review 1 · Count the try before checking it (SR-4, low)
+
+- **Finding:** "5 wrong passwords per address" and "5 wrong invite codes per person" peeked at the count, did the slow check, then counted the failure. Twenty requests sent together all peeked at zero, so all twenty were tried.
+- **Fix:** `consume()` first; a new `refund()` gives the try back when it turns out right (an invite code that works, or a sign-in refused for a reason other than a wrong password). A successful sign-in still clears the count.
+- **Tests:** `src/test/rate-limit-races.test.ts`.
+
+## D-054 · Security review 1 · Full-length GCM tags only (SR-5, low)
+
+- **Finding:** Node accepts AES-GCM tags as short as 4 bytes unless told the length, and `decryptText()` didn't say. A truncated tag makes forging a value far cheaper.
+- **Fix:** encryption and decryption pass `authTagLength: 16`, and a tag of any other length is refused before decrypting.
+- **Tests:** `src/lib/security/encryption.test.ts`.
