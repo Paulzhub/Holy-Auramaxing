@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/cn";
 
 /**
  * The two large answers (CLAUDE.md §7.5). Plain submit buttons, so the form
@@ -33,7 +34,7 @@ export function CheckinChoices({
       type="submit"
       name="outcome"
       value={value}
-      className={`checkin-choice checkin-choice--${value}${current === value ? "checkin-choice--current" : ""}`}
+      className={cn("checkin-choice", `checkin-choice--${value}`, current === value && "checkin-choice--current")}
       aria-disabled={pending || undefined}
       onClick={(event) => {
         if (pending) event.preventDefault();
