@@ -447,7 +447,7 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 
 ## D-046 · Phase 4 · The slip page, and "look at everything you kept"
 
-- After "I slipped", `/check-in/new-mercies` (tab title "Check in") shows:
+- After "I slipped", the check-in lands on `/check-in/done` (tab title "Check in"; until privacy review 1 it was `/check-in/new-mercies`, D-055), which shows:
   1. A grace message and 1 John 1:9 (WEB).
   2. **The owner's request:** "Your streak may have reset today, but look at everything you kept", listing total clean days, the number of streaks built and the longest streak.
   3. An optional private reflection: triggers plus a note, saved encrypted as that day's note, so there is no second encrypted column.
@@ -477,8 +477,7 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 
 - **Pages:**
   - `/check-in`: today, or yesterday via `?date=` while open. Once answered, it shows the answer with "Change your answer".
-  - `/check-in/done`: a thank-you, the streak ring and a verse.
-  - `/check-in/new-mercies`: the slip page.
+  - `/check-in/done`: a thank-you, the streak ring and a verse; after a slip, the slip page (one address for both answers since D-055).
   - `/progress`, "Your journey": streaks, the month calendar (two years back), mood and urge charts over 30 or 90 days, triggers and insights.
   - `/home`: shows today's status and streaks.
   - The group home's "Today" panel replaces its placeholder. Progress is linked from Home, Check in and Me; the bottom navigation stays at the spec's five items.
@@ -529,3 +528,29 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Finding:** Node accepts AES-GCM tags as short as 4 bytes unless told the length, and `decryptText()` didn't say. A truncated tag makes forging a value far cheaper.
 - **Fix:** encryption and decryption pass `authTagLength: 16`, and a tag of any other length is refused before decrypting.
 - **Tests:** `src/lib/security/encryption.test.ts`.
+
+## D-055 · Privacy review 1 · Nothing outside the app's content gives the topic away (PR-2, PR-3, PR-7)
+
+- **One address after a check-in.** Both answers redirect to `/check-in/done?date=…`; the page shows the slip page or the thank-you from the saved check-in, never from the URL. `/check-in/new-mercies` is gone, because browser history and the host's request logs showed which days were slips.
+- **"Aura" in the app's own chrome.** The app shell, sign-in frame, onboarding header, error and 404 pages show the short name, like tabs, emails and (Phase 9) the home screen. "Holy Auramaxxxing" stays on the public landing page and the legal pages. When unsure, the more private option (§15).
+- **Group names:** the hint now says the name shows at the top of members' screens, so a plain name keeps things discreet.
+- **A standing test,** `src/test/discretion.test.ts`, scans the short name, page description, every tab title, the last-resort error page, every app email, Supabase Auth's subjects and templates, the sender name, the export file name and README, and the invite share text for topic words (and "auramaxx"/"xxx"). It also fails if a URL segment names the topic or an answer, or if the check-in redirect depends on the answer. Phases 5–9 add their share cards, notifications and manifest to it.
+
+## D-056 · Privacy review 1 · Keep nothing from Google but the email (PR-1, high)
+
+- Google sign-in wrote the person's real name and Google photo into `auth.users.raw_user_meta_data` and `auth.identities.identity_data` at every sign-in. `user_metadata` goes into every access token, so the name rode in each request's cookie, and the export didn't include it.
+- BEFORE INSERT/UPDATE triggers (`on_auth_user_strip_profile`, `on_auth_identity_strip_profile` → `private.strip_provider_profile()`) keep only `sub`, `iss`, `email`, `email_verified`, `phone_verified` and `provider_id`. The key list is written out in the triggers rather than in a helper function, because they run as Supabase Auth's role, which can't see our schemas. The sign-up ticket is still read first: BEFORE triggers fire in name order and `on_auth_user_before_insert` sorts before `on_auth_user_strip_profile`.
+- Migration `20261011000100_platform_privacy_minimisation.sql` also cleans existing rows. pgTAP `040_platform_privacy`.
+
+## D-057 · Privacy review 1 · Supabase Auth's own records and stale counters (PR-4, PR-5)
+
+- Supabase Auth stores IP addresses (`auth.audit_log_entries`, `auth.sessions`, `auth.mfa_challenges`), full User-Agent strings (`auth.sessions`) and finished OAuth flows that can hold provider tokens (`auth.flow_state`). Our Privacy Policy says we keep no IP addresses, and our sessions page and `audit_log` use a coarse device label instead.
+- `private.hourly_auth_maintenance()` now: blanks `auth.sessions.ip` and `user_agent` (nobody is signed out); keeps one day of `auth.audit_log_entries` and blanks their IPs; deletes `auth.mfa_challenges` and `auth.flow_state` rows older than an hour; and deletes `private.rate_limit_counters` rows whose window started more than a day ago (the longest window), which were a permanent "last active" record.
+- So an IP address lives at most about an hour, only in Supabase Auth's tables. The policy now says so.
+- pgTAP `040_platform_privacy`.
+
+## D-058 · Privacy review 1 · The Privacy Policy and export page say what we actually hold (PR-6)
+
+- Processors now include Google Cloud Vision (it receives only the picture being checked) and Google, only for people who sign in with Google. The policy says we keep only the email from Google, lists profile content, and describes the device name kept with security records.
+- The export page lists check-ins and their private notes.
+- `POLICY_VERSION` is now `2026-10-08-draft` and the legal pages say "Last updated 8 October 2026". Accounts made earlier keep their `2026-10-05-draft` consent records. The policy is still a draft awaiting legal review, so the planned re-consent flow (Phase 11) is not needed yet.

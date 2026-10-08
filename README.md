@@ -185,7 +185,7 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
   - The four email templates and subjects from `supabase/templates/`, plus the three security notices (password changed, two-step on, two-step off).
   - MFA: authenticator app (TOTP) enroll and verify on.
   - Passkeys (beta): on, with the production domain as the relying party ID and origin. Then set `PASSKEYS_ENABLED=true` in the host.
-  - Google provider with the production OAuth client.
+  - Google provider with the production OAuth client. Name its Google Cloud OAuth consent screen **"Aura"** with a neutral logo: that name shows on Google's sign-in screen and in people's Google Account (privacy review 1).
 - **Turnstile:**
   - Create a widget in Cloudflare.
   - Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in the host.
@@ -201,4 +201,5 @@ CodeQL runs on every pull request and weekly. Dependabot opens weekly update PRs
 - **Upstash:** set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 - **Visitor address for rate limits (D-052):** on Vercel alone, leave `TRUSTED_IP_HEADER` unset. With Cloudflare's proxy in front, set `TRUSTED_IP_HEADER=cf-connecting-ip`.
 - **Security review 1:** see `docs/security-review-1.md` for findings, fixes and what was attacked.
+- **Privacy review 1:** see `docs/privacy-review-1.md`. Before launch, send email from a neutral address (not `holyauramaxxxing@gmail.com`; the address shows next to "Aura" in every inbox), and choose a domain without "xxx" or the topic in it.
 - **Before launch:** consider moving the grievance contact on `/privacy` (currently Paulz, a personal Gmail) to a dedicated address such as `privacy@<domain>`, and have all three policy pages reviewed by a lawyer.
