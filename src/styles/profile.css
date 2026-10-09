@@ -140,10 +140,6 @@
     cursor: pointer;
   }
 
-  .profile-avatar__status:empty {
-    display: none;
-  }
-
   .profile-avatar__status {
     margin: 0;
   }

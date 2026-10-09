@@ -249,10 +249,6 @@
     color: var(--color-accent-ink);
   }
 
-  .auth-sent:empty {
-    display: none;
-  }
-
   .auth-divider {
     display: flex;
     align-items: center;

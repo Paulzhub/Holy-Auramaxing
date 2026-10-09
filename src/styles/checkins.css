@@ -667,5 +667,9 @@
     .trigger-bars__bar {
       fill: CanvasText;
     }
+    /* Box shadows vanish in forced colours; mark the current answer with a border. */
+    .checkin-choice--current {
+      border: 3px double CanvasText;
+    }
   }
 }

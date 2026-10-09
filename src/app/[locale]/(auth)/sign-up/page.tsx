@@ -7,7 +7,8 @@ import { AgeForm } from "@/features/auth/ui";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
-  return { title: t("signUp") };
+  // Each step has its own title (WCAG 2.4.2).
+  return { title: t("signUpStep", { current: 1, total: 3 }) };
 }
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;

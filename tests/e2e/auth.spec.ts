@@ -220,7 +220,8 @@ test("an emailed link works only once", async ({ page }) => {
   await openEmailLink(page, link);
   await page.getByRole("button", { name: "Continue" }).click();
   await expect(page).toHaveURL(/\/forgot-password\?notice=link-invalid$/);
-  await expect(page.getByRole("status")).toContainText("expired or was already used");
+  // The email form's own (empty) live region is a status too (accessibility review 1, A-4).
+  await expect(page.getByRole("status").filter({ hasText: "expired or was already used" })).toBeVisible();
 });
 
 // ------------------------------------------------------------- magic link

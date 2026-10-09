@@ -7,7 +7,8 @@ import { ConsentForm } from "@/features/auth/ui";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
-  return { title: t("signUp") };
+  // Each step has its own title (WCAG 2.4.2).
+  return { title: t("signUpStep", { current: 2, total: 3 }) };
 }
 
 /** Sign-up, step 2 of 3: what we collect and the two consents. */

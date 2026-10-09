@@ -37,10 +37,6 @@
     font-weight: 650;
   }
 
-  .group-status:empty {
-    display: none;
-  }
-
   .group-description {
     margin: 0;
     white-space: pre-line;
@@ -578,6 +574,39 @@
     .shell-topbar .group-switcher__summary {
       max-inline-size: 9rem;
     }
+  }
+
+  /*
+   * The words "Your groups" are never cut to "Your gr…" (WCAG 1.4.10): only a
+   * group's own name may shorten, and it is shown in full in the menu and on
+   * the group's page. The brand wraps onto two lines instead to make room.
+   */
+  .shell-topbar .group-switcher__summary:has(> .group-switcher__current[aria-hidden="true"]) {
+    max-inline-size: none;
+  }
+
+  .shell-topbar .group-switcher__current[aria-hidden="true"] {
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  /*
+   * In the top bar the switcher sits mid-row, so its menu spans the bar
+   * (positioned against the sticky bar) instead of hanging off the left edge
+   * of narrow screens, and scrolls when the screen is short (WCAG 1.4.10, 2.4.11).
+   */
+  .shell-topbar .group-switcher {
+    position: static;
+  }
+
+  .shell-topbar .group-switcher__panel {
+    inset-inline: var(--space-4);
+    inline-size: auto;
+    max-inline-size: 22rem;
+    margin-inline-start: auto;
+    max-block-size: calc(100dvh - var(--topbar-height) - var(--bottom-nav-height) - var(--space-5));
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   /* In the desktop sidebar the switcher spans the column and opens downwards. */

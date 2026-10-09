@@ -54,9 +54,10 @@ export function TextField({
         />
         {loading ? <Spinner /> : null}
       </div>
-      {loading && loadingLabel ? (
+      {/* The live region is always there, so screen readers notice when the words arrive (WCAG 4.1.3). */}
+      {loadingLabel !== undefined ? (
         <p className="visually-hidden" role="status">
-          {loadingLabel}
+          {loading ? loadingLabel : ""}
         </p>
       ) : null}
       {error ? (

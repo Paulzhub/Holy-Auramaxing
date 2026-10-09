@@ -136,6 +136,7 @@ export async function CheckinForm({
         cleanLabel={isToday ? t("cleanToday") : t("cleanYesterday")}
         slipLabel={t("slipped")}
         savingLabel={t("saving")}
+        currentLabel={t("currentAnswer")}
         current={existing?.outcome ?? null}
       />
     </form>
@@ -420,11 +421,10 @@ export async function ReflectionForm({ existing, saved }: { existing: CheckinDet
         {t("reflectionTitle")}
       </h2>
       <p className="text-muted">{t("reflectionLede")}</p>
-      {saved ? (
-        <p className="group-status" role="status">
-          {t("reflectionSaved")}
-        </p>
-      ) : null}
+      {/* Always in the page, so saving (which reloads this same page) is announced (WCAG 4.1.3). */}
+      <p className="group-status" role="status">
+        {saved ? t("reflectionSaved") : null}
+      </p>
       <form action={saveReflectionAction} className="stack-sm">
         <input type="hidden" name="date" value={existing.date} />
         <TriggerChoices legend={tForm("triggersLegend")} selected={existing.triggers} label={(k) => tTrig(k)} />

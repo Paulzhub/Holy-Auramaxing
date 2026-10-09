@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlert, CircleCheckBig, Info, X } from "lucide-react";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -25,8 +25,11 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-/** Info and success toasts leave after this long (paused on hover or focus). Errors stay. */
-const AUTO_DISMISS_MS = 8000;
+/**
+ * Toasts never leave on a timer (WCAG 2.2.1, D-060): each stays until it is
+ * dismissed or pushed out by newer ones, so nobody has to read against a clock.
+ */
+const MAX_TOASTS = 3;
 
 export function useToast(): ToastContextValue {
   const context = useContext(ToastContext);
@@ -53,7 +56,7 @@ export function ToastProvider({
   const show = useCallback((toast: ToastInput) => {
     const id = nextId.current++;
     setToasts((items) => [
-      ...items.slice(-2),
+      ...items.slice(-(MAX_TOASTS - 1)),
       { id, title: toast.title, description: toast.description, tone: toast.tone ?? "info" },
     ]);
   }, []);
@@ -90,22 +93,10 @@ export function ToastView({
   announce?: boolean;
 }) {
   const Icon = icons[toast.tone];
-  const [paused, setPaused] = useState(false);
   const { id, tone } = toast;
 
-  useEffect(() => {
-    if (tone === "error" || paused || id === undefined || !onDismiss) return;
-    const timer = window.setTimeout(() => onDismiss(id), AUTO_DISMISS_MS);
-    return () => window.clearTimeout(timer);
-  }, [id, tone, paused, onDismiss]);
-
   return (
-    <li
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-    >
+    <li>
       {/* Errors are announced assertively; others via the region's polite live setting. */}
       <div className={cn("ui-toast", `ui-toast--${tone}`)} role={announce && tone === "error" ? "alert" : undefined}>
         <Icon className="ui-toast__icon" aria-hidden="true" />

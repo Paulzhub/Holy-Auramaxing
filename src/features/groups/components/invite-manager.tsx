@@ -265,7 +265,15 @@ export function InviteManager({
                   </span>
                 </div>
                 {invite.state === "active" && !archived ? (
-                  <div className="group-row__actions">
+                  // Names the invite, so "Replace" and "Stop" say which one they act on (WCAG 2.4.6).
+                  <div
+                    className="group-row__actions"
+                    role="group"
+                    aria-label={t("invites.actionsFor", {
+                      created: date(invite.createdAt),
+                      expires: date(invite.expiresAt),
+                    })}
+                  >
                     <form action={replace}>
                       <input type="hidden" name="inviteId" value={invite.id} />
                       <ReplaceButton />

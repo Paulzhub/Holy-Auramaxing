@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/cn";
 
 /**
  * The two large answers (CLAUDE.md §7.5). Plain submit buttons, so the form
@@ -17,12 +18,15 @@ export function CheckinChoices({
   slipLabel,
   savingLabel,
   groupLabel,
+  currentLabel,
   current,
 }: {
   cleanLabel: string;
   slipLabel: string;
   savingLabel: string;
   groupLabel: string;
+  /** Read after the label of the answer already given, e.g. "(your answer now)". */
+  currentLabel: string;
   /** The answer already given, when changing it. */
   current?: "clean" | "slipped" | null;
 }) {
@@ -33,7 +37,8 @@ export function CheckinChoices({
       type="submit"
       name="outcome"
       value={value}
-      className={`checkin-choice checkin-choice--${value}${current === value ? "checkin-choice--current" : ""}`}
+      // cn(): a template string here once merged two class names, hiding the ring.
+      className={cn("checkin-choice", `checkin-choice--${value}`, current === value && "checkin-choice--current")}
       aria-disabled={pending || undefined}
       onClick={(event) => {
         if (pending) event.preventDefault();
@@ -43,7 +48,12 @@ export function CheckinChoices({
       <span className="checkin-choice__icon" aria-hidden="true">
         {pending && pressed === value ? <Spinner /> : icon}
       </span>
-      <span className="checkin-choice__label">{pending && pressed === value ? savingLabel : label}</span>
+      <span className="checkin-choice__label">
+        {pending && pressed === value ? savingLabel : label}
+        {current === value && !(pending && pressed === value) ? (
+          <span className="visually-hidden"> {currentLabel}</span>
+        ) : null}
+      </span>
     </button>
   );
   return (

@@ -16,6 +16,8 @@
     "notFound": "Page not found",
     "error": "Something went wrong",
     "signUp": "Create your account",
+    "signUpStep": "Create your account, step {current} of {total}",
+    "underEighteen": "Thank you for being honest",
     "signIn": "Sign in",
     "checkEmail": "Check your email",
     "forgotPassword": "Reset your password",
@@ -1130,6 +1132,7 @@
       },
       "revoke": "Stop this invite",
       "regenerate": "Replace with a new one",
+      "actionsFor": "Invite made {created}, working until {expires}",
       "confirmRevoke": "Stop this invite? Anyone holding it won't be able to join with it."
     },
     "settings": {
@@ -1318,6 +1321,7 @@
       "slipped": "I slipped",
       "saving": "Saving…",
       "choicesLabel": "Your answer",
+      "currentAnswer": "(your answer now)",
       "honest": "Either answer earns the same reward. Honesty is what counts.",
       "detailsSummary": "Add how it went (optional)",
       "detailsHint": "Fill in any of these, then choose your answer below.",
