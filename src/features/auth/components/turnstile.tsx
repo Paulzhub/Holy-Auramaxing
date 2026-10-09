@@ -105,11 +105,10 @@ export function Turnstile({ action, resetSignal }: { action: string; resetSignal
     <>
       <div ref={container} className="auth-turnstile" />
       <input type="hidden" name="captchaToken" value={token} />
-      {failed ? (
-        <p className="ui-hint" role="status">
-          {t("captchaUnavailable")}
-        </p>
-      ) : null}
+      {/* The live region exists from the start, so the message is announced when it appears (WCAG 4.1.3). */}
+      <p className="ui-hint" role="status">
+        {failed ? t("captchaUnavailable") : null}
+      </p>
     </>
   );
 }

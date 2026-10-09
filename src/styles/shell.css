@@ -44,6 +44,17 @@
     .brand {
       font-size: var(--text-base);
     }
+
+    /* The brand gives way first: "Holy Auramaxing" wraps onto two lines
+       rather than squeezing the controls beside it (WCAG 1.4.10). */
+    .shell-topbar .brand {
+      flex: 0 1 auto;
+      min-inline-size: 0;
+    }
+
+    .shell-topbar__end {
+      flex: none;
+    }
   }
 
   .brand svg {
@@ -63,6 +74,22 @@
     background-color: color-mix(in srgb, var(--color-bg) 92%, transparent);
     backdrop-filter: blur(8px);
     border-block-end: 1px solid var(--color-line-subtle);
+  }
+
+  /*
+   * Short screens (a laptop at 200% zoom, a phone held sideways): the top bar
+   * scrolls away with the page, so it and the bottom navigation don't cover
+   * almost half the content (WCAG 1.4.10, 2.4.11). The bottom navigation and
+   * the SOS button stay.
+   */
+  @media (max-height: 30rem) {
+    .shell-topbar {
+      position: relative;
+    }
+
+    html {
+      scroll-padding-block-start: var(--space-4);
+    }
   }
 
   .shell-topbar__row {

@@ -5,7 +5,7 @@ import { AuthHeading } from "@/features/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
-  return { title: t("signUp") };
+  return { title: t("underEighteen") };
 }
 
 const resources = ["parent", "pastor", "teleManas", "us988", "findAHelpline"] as const;

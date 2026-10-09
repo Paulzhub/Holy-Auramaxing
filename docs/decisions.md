@@ -68,6 +68,7 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 
 - **Context:** WCAG 2.2.1 says no time limits.
 - **Decision:** Info and success toasts close after 8 seconds and pause while hovered or focused. Error toasts stay until dismissed. Nothing important exists only in a toast: Phase 7 keeps every notification in the notification centre.
+- **Superseded by D-060** (accessibility review 1): no toast closes on a timer.
 
 ## D-013 · Phase 2a · No new dependencies for auth
 
@@ -563,3 +564,20 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Handles:** `auramaxing`, `holy_auramaxing` and `holyauramaxing` are reserved (migration `20261012000100_profile_reserved_handles_rename.sql`).
 - **Discretion:** the name says the app is Christian but not what it is for. `src/test/discretion.test.ts` now forbids "xxx" rather than the name, and checks that the name has one spelling everywhere.
 - **Email:** the dedicated Gmail account is now `holyauramaxing@gmail.com`, replacing `holyauramaxxxing@gmail.com`. `SMTP_USER` and `SMTP_PASSWORD` (the new account's own app password) change in `.env.local`, the host and Supabase's custom SMTP.
+
+## D-060 · Accessibility review 1 · No toast closes on a timer (A-3, replaces D-012)
+
+- WCAG 2.2.1 and CLAUDE.md §9 ("No time limits"). Pausing on hover or focus doesn't help screen-reader and keyboard users, who rarely do either.
+- Every toast stays until it is dismissed. Only the newest three are kept, so they can't pile up. Errors are still announced assertively, and the others politely.
+- Phase 7 should still keep everything important in the notification centre too.
+
+## D-061 · Accessibility review 1 · On short screens the top bar scrolls away (A-8)
+
+- At 200% zoom a laptop window is about 640 × 430 CSS px. The sticky top bar (57 px), the bottom navigation (69 px) and the floating SOS button left little room for the page.
+- When the viewport is 30 rem (480 px) tall or less, `.shell-topbar` is no longer sticky. The bottom navigation and the SOS button stay, so navigation and help keep the same place (3.2.3, 3.2.6).
+- The group switcher's menu is positioned against the top bar on phones (A-1), so it still opens below the bar when the bar scrolls.
+
+## D-062 · Accessibility review 1 · Group slugs never end in a hyphen (side find)
+
+- `private.make_group_slug` trimmed hyphens before cutting to 40 characters, so names with a space or punctuation at character 40 made slugs like `…narrow--e2c8…`. The slug check refused them, and creating the group failed.
+- Migration `20261013000100_groups_slug_trailing_hyphen.sql` trims again after the cut. Existing slugs were all valid already (the check guarantees it). pgTAP `026_groups_slug`.

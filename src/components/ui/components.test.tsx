@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { renderWithIntl } from "@/test/intl";
@@ -8,6 +8,7 @@ import { Button } from "./button";
 import { ProgressRing, ringOffset } from "./progress-ring";
 import { ReactionBar } from "./reaction-bar";
 import { TextField } from "./text-field";
+import { ToastProvider, useToast } from "./toast";
 
 describe("Button", () => {
   it("calls onClick when enabled", () => {
@@ -56,6 +57,56 @@ describe("TextField", () => {
   it("is valid when there is no error", () => {
     render(<TextField id="name" label="Display name" />);
     expect(screen.getByLabelText("Display name")).not.toHaveAttribute("aria-invalid");
+  });
+
+  // Accessibility review 1 (WCAG 4.1.3): the live region is there before its words.
+  it("keeps the loading status region in place before and after a check", () => {
+    const { rerender } = render(<TextField id="handle" label="Handle" loadingLabel="Checking the name" />);
+    const status = screen.getByRole("status");
+    expect(status).toBeEmptyDOMElement();
+    rerender(<TextField id="handle" label="Handle" loadingLabel="Checking the name" loading />);
+    expect(screen.getByRole("status")).toBe(status);
+    expect(status).toHaveTextContent("Checking the name");
+  });
+});
+
+describe("Toast", () => {
+  function Trigger() {
+    const { show } = useToast();
+    return (
+      <button type="button" onClick={() => show({ title: "Saved", tone: "success" })}>
+        Show
+      </button>
+    );
+  }
+
+  // Accessibility review 1 (WCAG 2.2.1, D-060): no toast leaves on a timer.
+  it("keeps a success toast until it is dismissed", () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <ToastProvider regionLabel="Notifications" dismissLabel="Dismiss">
+          <Trigger />
+        </ToastProvider>,
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Show" }));
+      act(() => vi.advanceTimersByTime(60 * 60 * 1000));
+      expect(screen.getByText("Saved")).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+      expect(screen.queryByText("Saved")).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("keeps only the newest three", () => {
+    render(
+      <ToastProvider regionLabel="Notifications" dismissLabel="Dismiss">
+        <Trigger />
+      </ToastProvider>,
+    );
+    for (let i = 0; i < 5; i++) fireEvent.click(screen.getByRole("button", { name: "Show" }));
+    expect(screen.getAllByText("Saved")).toHaveLength(3);
   });
 });
 
