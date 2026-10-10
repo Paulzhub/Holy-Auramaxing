@@ -581,3 +581,13 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 
 - `private.make_group_slug` trimmed hyphens before cutting to 40 characters, so names with a space or punctuation at character 40 made slugs like `…narrow--e2c8…`. The slug check refused them, and creating the group failed.
 - Migration `20261013000100_groups_slug_trailing_hyphen.sql` trims again after the cut. Existing slugs were all valid already (the check guarantees it). pgTAP `026_groups_slug`.
+
+## D-063 · Grace review 1 · A missed day costs the same as a slip; offline check-ins; streak leaderboards stay
+
+- **Context:** grace review 1 (`docs/grace-review-1.md`, G-1) found that a reported slip cost 10 levels while a missed day cost none, so skipping the check-in was safer than telling the truth (§2.2). It also suggested softening the streak leaderboards (G-2).
+- **Decision (owner, 2026-10-10):**
+  - **Every missed day costs 10 levels**, exactly like a slip (`RELAPSE_LEVEL_PENALTY`), never below 0, and empties the progress bar. It counts per day once that day's window has closed (yesterday at 12:00 local time); a week without check-ins costs 70 levels. Days before the account existed never count. A missed day is still shown as "No check-in", never as a slip.
+  - **Offline check-ins:** a check-in made without internet keeps its local date and time on the device, syncs automatically, and counts for the day it was made even after the window has closed; the replay then removes that day's penalty. The server accepts it only within `OFFLINE_SYNC_MAX_DAYS` (owner to confirm; suggested 7), for a day inside its recorded window and not before the account existed, and logs `checkin.synced_late`.
+  - **The Current streak and Clean days leaderboards and group goals stay.** The app is built "not to hide but to be free through accountability". G-2 is closed.
+- **Consequences:** Phase 5 updates `data/build_levels.py` (`replay`) first, then makes the Postgres level engine match it, and reads the level "live" (like D-043) so missed days count even when the person never opens the app. The server path for late offline check-ins is built in Phase 5; the device queue in Phase 10. The device clock can be changed, so the sync limit is the guard against backfilling (threat model). CLAUDE.md §2.2, §7.5, §7.6, §13 and PROMPTS.md Phases 5 and 10 are updated.
+- **Open:** the `OFFLINE_SYNC_MAX_DAYS` value, and whether days while an account is closing count as missed (suggested: no).

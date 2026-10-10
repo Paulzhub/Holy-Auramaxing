@@ -102,7 +102,8 @@ Read CLAUDE.md. Phase 5: Levels, XP, badges and leaderboards (section 7.6). Plan
 
 Build:
 - `level_tiers` seeded from data/levels.json (tiers 0–167), and a pure function level_label(level) returning "Name", "Name Lite" … "Name Ultra Pro Max", with the "Well Done 2" fallback past Level 1002.
-- The level engine as a Postgres function that replays a user's check-ins in date order: +1 progress per clean day; 5 days per level up to Level 20, then 10; a missed day empties progress; a slip drops 10 levels (never below 0) and empties progress. Store level, level_progress_days and highest_level in user_stats.
+- The level engine as a Postgres function that replays a user's check-ins in date order: +1 progress per clean day; 5 days per level up to Level 20, then 10; a slip drops 10 levels (never below 0) and empties progress; each missed day (once its window has closed) costs exactly the same as a slip. Store level, level_progress_days and highest_level in user_stats, and read the level "live" so missed days count even when the person never opens the app. Update data/build_levels.py (`replay`) to the same rule first, and make the Postgres function match it.
+- Server side of offline check-ins (section 7.5): accept a check-in made offline for the day it was made, within OFFLINE_SYNC_MAX_DAYS, even after the normal window, and replay the level, streaks and group stats. The device queue itself is Phase 10.
 - Level card: name, era, verse and progress ("3 of 10 days to Ark Builder Max"); level-up animation and share card; era celebrations; a quiet grace message on level-down.
 - Append-only `xp_ledger`, an XP config table, `badges` and `user_badges`; XP and badges awarded by idempotent queue jobs with the daily caps.
 - Per-group leaderboards: Consistency XP (default), Level, Current streak, Clean days this challenge, Encourager; this-week and all-time; opt-out; ties to whoever got there first; precomputed tables refreshed by jobs.
@@ -110,7 +111,9 @@ Build:
 
 Done when:
 - Tests match data/levels.csv for every level 0–1002 (label and days), e.g. Level 6 = "Breath of Life Ultra Pro Max" on day 30, Level 21 on day 110, Level 1000 = "Well Done Max" on day 9,900.
-- Relapse tests: Level 25 drops to 15, Level 7 drops to 0, Level 0 stays 0, and progress empties; a missed day costs no levels.
+- Relapse tests: Level 25 drops to 15, Level 7 drops to 0, Level 0 stays 0, and progress empties.
+- Missed-day tests: one missed day costs the same as one slip (Level 25 to 15); three missed days in a row drop Level 40 to 10; yesterday isn't missed until 12:00 local time; days before the account existed never count; a missed day still shows as "No check-in", never as a slip.
+- An offline check-in for a missed day that syncs later removes that day's penalty; one older than OFFLINE_SYNC_MAX_DAYS, or claiming a day outside its window, is refused.
 - Editing a check-in inside the grace window recalculates the level correctly.
 - A member on "checkin_only" never shows a level to that group.
 - A slip check-in earns the same check-in XP as a clean one, and replaying an event never awards XP twice.
@@ -202,12 +205,13 @@ Read CLAUDE.md. Phase 10: PWA hardening (section 13). Plan first.
 
 Build:
 - Manifest with the discreet name, maskable and monochrome icons, shortcuts and screenshots.
-- Service-worker caching strategies, offline page, offline check-in queue with Background Sync, update prompt.
+- Service-worker caching strategies, offline page, offline check-in queue with Background Sync (each queued check-in keeps the local date and time it was made), update prompt.
 - Custom install prompt and the iOS install sheet; Web Share and QR codes for invites.
 
 Done when:
 - The app installs on Android (Chrome) and iPhone (Safari) and opens full-screen.
 - A check-in made in airplane mode syncs exactly once when back online.
+- A check-in made offline yesterday, synced today after 12:00, counts for yesterday, and that day costs no levels.
 - A new deploy shows "new version available" instead of serving stale code.
 - Push notifications arrive on an installed iPhone.
 ```
