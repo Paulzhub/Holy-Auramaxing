@@ -285,7 +285,7 @@ export async function StreakStats({
 }
 
 /**
- * "Your streak may have reset, but look at everything you kept" (owner's
+ * "Your streak starts again, but look at everything you kept" (owner's
  * request, D-046): after a slip, and on Home whenever a streak has ended.
  * Shown only when there is something to look back on.
  */
@@ -515,6 +515,7 @@ export async function GroupToday({ members }: { members: MemberToday[] }) {
                     {m.currentStreak !== null && m.currentStreak > 0 ? (
                       <span className="today-chip">{t("streak", { count: m.currentStreak })}</span>
                     ) : null}
+                    {m.level !== null ? <span className="today-chip">{t("level", { level: m.level })}</span> : null}
                     {m.outcome ? (
                       <span className={`today-chip today-chip--${m.outcome}`}>
                         {m.outcome === "clean" ? t("clean") : t("slipped")}

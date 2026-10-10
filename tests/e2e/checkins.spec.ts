@@ -94,14 +94,14 @@ test.describe("Check-ins", () => {
     await page.getByRole("button", { name: "I slipped" }).click();
     // The same address as a clean day (D-055): history never shows the answer.
     await expect(page).toHaveURL(/\/check-in\/done\?date=\d{4}-\d{2}-\d{2}$/);
-    await expect(page.getByRole("heading", { level: 1, name: "His mercies are new this morning" })).toBeVisible();
-    await expect(page.getByText("1 John 1:9 (WEB)")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "His mercies are new every morning" })).toBeVisible();
+    await expect(page.getByRole("main").getByText("1 John 1:9 (WEB)")).toBeVisible();
 
     // The owner's request: the streak reset, but everything kept is listed.
     const kept = page.getByRole("region", {
-      name: /Your streak may have reset today, but look at everything you kept/,
+      name: /Your streak starts again, but look at everything you kept/,
     });
-    await expect(kept).toContainText("4 clean days");
+    await expect(kept).toContainText("4 free days");
     await expect(kept).toContainText("1 streak built");
     await expect(kept).toContainText("longest streak: 4 days");
     await expect(page.getByRole("heading", { name: "One next step" })).toBeVisible();
@@ -117,7 +117,7 @@ test.describe("Check-ins", () => {
     expect(audits).toEqual([{ action: "checkin.edited", metadata: {} }]);
 
     // A private reflection.
-    const reflection = page.getByRole("region", { name: "What led to it?" });
+    const reflection = page.getByRole("region", { name: "What was going on?" });
     await reflection.getByLabel("Lonely").check();
     await reflection.getByLabel("Your reflection").fill("late scrolling, alone");
     await reflection.getByRole("button", { name: "Save my reflection" }).click();
@@ -134,17 +134,19 @@ test.describe("Check-ins", () => {
 
     // Home: today's answer, the streak numbers and what was kept.
     await page.goto("/home");
-    await expect(page.getByText("You checked in today. Grace covers it.")).toBeVisible();
-    await expect(page.getByRole("region", { name: /look at everything you kept/ })).toContainText("4 clean days");
+    await expect(page.getByText("You checked in honestly today. You’re held in grace.")).toBeVisible();
+    await expect(page.getByRole("region", { name: /look at everything you kept/ })).toContainText("4 free days");
 
     // Progress: calendar (today is a forgiven slip), charts, triggers, insights.
     await page.goto("/progress");
     await expect(page.getByRole("heading", { level: 1, name: "Your journey" })).toBeVisible();
-    await expect(page.locator(".ui-calendar")).toContainText("Slipped, forgiven");
+    await expect(page.locator(".ui-calendar")).toContainText("Slipped, held in grace");
     await expect(page.getByRole("img", { name: "Mood (1 to 5)" })).toBeVisible();
     await expect(page.locator(".trigger-bars")).toContainText("Lonely");
     await expect(page.getByRole("heading", { name: "What stands out" })).toBeVisible();
-    await expect(page.getByText("You stayed free on 4 of the 5 days you checked in.")).toBeVisible();
+    await expect(
+      page.getByText("You stayed free on 4 of the 5 days you checked in, and you were honest every time."),
+    ).toBeVisible();
   });
 
   test("the window: yesterday is open only before 12:00, and older days are refused", async ({ page }) => {
@@ -300,7 +302,7 @@ test.describe("Check-in pages are accessible", () => {
       await expectNoAxeViolations(page, `/check-in answered (${theme})`);
       await page.getByText("Change your answer").click();
       await page.getByRole("button", { name: "I slipped" }).click();
-      await expect(page.getByRole("heading", { level: 1, name: "His mercies are new this morning" })).toBeVisible();
+      await expect(page.getByRole("heading", { level: 1, name: "His mercies are new every morning" })).toBeVisible();
       await expectNoAxeViolations(page, `/check-in/done after a slip (${theme})`);
       for (const path of ["/home", "/progress", "/progress?range=90", `/groups/${groupId}`]) {
         await page.goto(path);
@@ -319,7 +321,7 @@ test.describe("Check-in pages are accessible", () => {
     await noOverflow(page, "/check-in");
     await page.getByRole("group", { name: "Anything that played a part?" }).getByLabel("Alone with my phone").check();
     await page.getByRole("button", { name: "I slipped" }).click();
-    await expect(page.getByRole("heading", { level: 1, name: "His mercies are new this morning" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "His mercies are new every morning" })).toBeVisible();
     for (const path of ["/check-in/done", "/check-in", "/home", "/progress", `/groups/${groupId}`]) {
       if (path !== "/check-in/done") await page.goto(path);
       await noOverflow(page, path);

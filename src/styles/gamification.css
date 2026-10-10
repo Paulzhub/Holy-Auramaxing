@@ -1,0 +1,167 @@
+/* ---------- levels (Home, Progress, the page after a check-in) ----------
+   Restrained motion (§8): the level-up light is transform and opacity only,
+   plays once, and is gone under reduced motion. A level-down is one quiet
+   line, never red. */
+@layer components {
+  .level-card {
+    display: grid;
+    gap: var(--space-3);
+    min-inline-size: 0;
+  }
+
+  .level-card > * {
+    margin: 0;
+  }
+
+  .level-card__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .level-card__name {
+    display: grid;
+    gap: var(--space-1);
+    min-inline-size: 0;
+  }
+
+  .level-card__name > * {
+    margin: 0;
+  }
+
+  .level-card__kicker {
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  .level-card__label {
+    font-family: var(--font-display-stack);
+    font-size: var(--text-2xl);
+    line-height: var(--leading-snug);
+    overflow-wrap: anywhere;
+  }
+
+  .level-card__era {
+    color: var(--color-accent-ink);
+    font-weight: 650;
+  }
+
+  .level-card__quiet,
+  .level-down {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+
+  .level-card__verse {
+    margin: 0;
+  }
+
+  .level-up {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    overflow: hidden;
+    padding: var(--space-5);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+    background-color: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+    text-align: center;
+  }
+
+  .level-up > :not(.level-up__light) {
+    position: relative;
+    margin: 0;
+  }
+
+  .level-up__icon {
+    inline-size: 2rem;
+    block-size: 2rem;
+    color: var(--color-accent-ink);
+  }
+
+  .level-up__title {
+    font-family: var(--font-display-stack);
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+  }
+
+  /* Three soft rays of dawn light rising once behind the text. */
+  .level-up__light {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .level-up__light span {
+    position: absolute;
+    inset-block-end: -40%;
+    inset-inline-start: 50%;
+    inline-size: 30%;
+    block-size: 140%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 45%, transparent), transparent);
+    opacity: 0;
+    transform: translate(-50%, 30%) scaleY(0.6);
+    animation: level-light 1.6s var(--ease-out) forwards;
+  }
+
+  .level-up__light span:nth-child(2) {
+    inset-inline-start: 25%;
+    animation-delay: 120ms;
+  }
+
+  .level-up__light span:nth-child(3) {
+    inset-inline-start: 75%;
+    animation-delay: 240ms;
+  }
+
+  @keyframes level-light {
+    40% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0.35;
+      transform: translate(-50%, 0) scaleY(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .level-up__light span {
+      animation: none;
+      opacity: 0.35;
+      transform: translate(-50%, 0);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .level-up__light {
+      display: none;
+    }
+  }
+
+  /* SOS: "Already slipped?" (grace review 1, G-7). */
+  .sos-after-slip {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .sos-after-slip summary {
+    cursor: pointer;
+    font-weight: 650;
+    color: var(--color-primary);
+    min-block-size: 24px;
+  }
+
+  .sos-after-slip > :not(summary) {
+    margin: 0;
+  }
+
+  .delete-hard-stretch {
+    margin: 0;
+    padding: var(--space-4);
+    border-inline-start: 4px solid var(--color-accent);
+    background-color: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+  }
+}

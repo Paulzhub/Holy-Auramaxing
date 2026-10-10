@@ -7,6 +7,7 @@
 @import "../styles/security.css";
 @import "../styles/groups.css";
 @import "../styles/checkins.css";
+@import "../styles/gamification.css";
 
 /*
  * Tailwind is used for layout utilities only. Colours always come from the

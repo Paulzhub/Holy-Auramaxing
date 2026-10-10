@@ -11,7 +11,7 @@
 - **G-1, decided differently from the suggestion:** instead of making slips cheaper, **every missed day now costs the same as a slip: 10 levels**, counted per day (a week with no check-ins costs 70 levels). Silence no longer beats the truth. A missed day still shows as "No check-in", never as a slip.
 - **Offline check-ins (new):** a member without internet can check in; it syncs automatically when they reconnect and counts for the day it was made, which removes that day's penalty.
 - **G-2, closed:** the Current streak and Clean days leaderboards and the group goals stay. The app is built "not to hide but to be free through accountability". The suggested covenant warning won't be added.
-- G-3 to G-15 and S-1 are still open.
+- **Wording (owner, 2026-10-10): go with the suggestions.** G-3 to G-9, G-11, G-12, G-14, G-15 and S-1 were applied in Phase 5a (D-068). G-10 (reactions) is done when Phase 6 builds them, G-13 (reminders and nudges) in Phase 7.
 
 These are recorded in `claude/master-spec.md` (§2.2, §7.5, §7.6, §13), `claude/phase-prompts.md` (Phases 5 and 10) and `claude/handoff-phase-5.md`; the Phase 5 session applies them to `CLAUDE.md`, `PROMPTS.md`, `data/build_levels.py` and D-063.
 
