@@ -11,7 +11,7 @@ We build in phases. For each phase: plan first and list the files you will touch
 ## 2. Product principles (apply to every decision)
 
 1. **Grace, not shame.** No copy, colour or flow shames a relapse. A slip resets a streak, never a person. Lead with forgiveness and new mercies (1 John 1:9, Lamentations 3:22–23, Romans 8:1).
-2. **Honesty is rewarded.** Logging a slip earns the same check-in XP as logging a clean day. Nothing may make lying more rewarding than telling the truth.
+2. **Honesty is rewarded.** Logging a slip earns the same check-in XP as logging a clean day. Nothing may make lying more rewarding than telling the truth. A missed day costs the same as a reported slip, so staying silent never beats telling the truth.
 3. **Private and discreet by default.** Nothing is public unless the user turns it on. Notification text, the home-screen name, emails and browser tab titles never reveal the topic.
 4. **Groups are isolated.** Data from one group never appears in another. A user sees only groups they belong to.
 5. **Not a medical product.** Never claim to diagnose, treat or cure. Point to pastors, counsellors and crisis lines.
@@ -129,10 +129,11 @@ Three or four skippable screens: welcome (a grace message and a verse), an optio
 ### 7.5 Daily check-in and streaks
 
 - One check-in per user per local day, counted in all their groups. One large tap target each: "I stayed free today" and "I slipped". Optional: mood (1–5), urge strength (0–5), triggers (bored, lonely, stressed, tired, late night, alone with phone, social media, other), private encrypted note.
-- Window: today, plus yesterday until 12:00 local time. No other backfilling. Edits allowed inside the window and recorded in `audit_log`.
+- Window: today, plus yesterday until 12:00 local time. No other backfilling, except offline check-ins (below). Edits allowed inside the window and recorded in `audit_log`.
+- **Offline check-ins (owner, 2026-10-10):** someone without internet can still check in. The device saves the answer with the local date and the time it was made, and sends it automatically when the connection returns. It counts for the day it was made, even if it arrives after that day's window has closed, and the level, streaks and group stats recalculate. Because the device's clock can be changed, the server accepts an offline check-in only if it was made inside its window by the device's record, arrives within a set limit (`OFFLINE_SYNC_MAX_DAYS`, owner to confirm; suggested 7), and is not older than the account; each one is marked as synced late in `audit_log`.
 - Streak = consecutive clean days. A slip resets the current streak only; longest streak, total clean days and the check-in streak stay.
 - Slip flow: a compassionate full-screen message, a forgiveness verse, an optional "what led to it?" reflection, an option to ask a partner or the group for prayer, and one suggested next step. No red alarms, no failure language.
-- A missed day shows as "no check-in", never as a slip.
+- A missed day shows as "no check-in", never as a slip, but costs the same 10 levels as a slip (§7.6).
 - Private streak calendar and simple charts of mood, urges and triggers with plain insights ("most urges: weeknights after 11 pm").
 - Daily reminder at the user's chosen time; an evening "streak at risk" reminder if they haven't checked in.
 
@@ -143,15 +144,15 @@ Three or four skippable screens: welcome (a grace message and a verse), an optio
     - Everyone starts at Level 0, "Clay".
     - Each clean check-in adds one day to a level progress bar. Levels 1–20 need 5 clean days each (Level 20 on day 100); every level after 20 needs 10 clean days (Level 21 on day 110, Level 1000 on day 9,900).
     - **Relapse rule:** each reported slip drops the user 10 levels, at every level, never below Level 0, and empties the progress bar. Keep the 10 as a config value (`RELAPSE_LEVEL_PENALTY`).
-    - A missed day (no check-in) ends the streak and empties the progress bar but costs no levels.
+    - **Missed-day rule (owner, 2026-10-10):** each missed day costs exactly the same as a slip: 10 levels, never below Level 0, and the progress bar empties. It applies to every day without a check-in once that day's window has closed (yesterday becomes missed at 12:00 local time), so a week with no check-ins costs 70 levels. Days before the account existed never count. A missed day is still shown as "No check-in", never as a slip. If an offline check-in for that day syncs later (§7.5), the replay recalculates and the penalty disappears. This closes the gap where skipping a check-in was safer than reporting a slip.
     - Names: Level 0 is "Clay". From Level 1, each tier name covers six levels with these suffixes in order: none, Lite, Pro, Max, Ultra, Ultra Pro Max. Tier = floor((level − 1) / 6) + 1; suffix = (level − 1) mod 6. Level 1 "Breath of Life", Level 2 "Breath of Life Lite", Level 6 "Breath of Life Ultra Pro Max", Level 7 "Ark Builder", Level 1000 "Well Done Max".
     - The 167 tier names follow the Bible from Genesis to Revelation in 11 eras. The level card shows name, era, verse and progress ("3 of 10 days to Ark Builder Max"); entering a new era gets its own celebration.
     - Past Level 1002, the end of the named tiers, labels continue as "Well Done 2", "Well Done 2 Lite" and so on until new names are added to `level_tiers`.
-    - Store `level`, `level_progress_days` and `highest_level` in `user_stats`, computed by a Postgres function that replays the user's check-ins in date order, so an edit inside the check-in window recalculates correctly. `data/build_levels.py` holds a reference implementation (`replay`) with tests; the Postgres function must give identical results.
-    - Level-up: animation, verse card, optional share card. Level-down after a slip: one quiet, grace-filled line ("You're now Ark Builder Pro. Your longest streak and total clean days are still yours."), never notified to anyone else.
+    - Store `level`, `level_progress_days` and `highest_level` in `user_stats`, computed by a Postgres function that replays the user's check-ins in date order, so an edit inside the check-in window or a late offline check-in recalculates correctly. Because missed days cost levels even when the person never opens the app, the level is read "live" like the streaks (D-043): the stored level minus 10 for each missed day since the last check-in whose window has closed, never below 0. `data/build_levels.py` holds a reference implementation (`replay`) with tests; the Postgres function must give identical results.
+    - Level-up: animation, verse card, optional share card. Level-down after a slip or missed days: one quiet, grace-filled line ("You're now Ark Builder Pro. Your longest streak and total clean days are still yours."), never notified to anyone else.
     - Privacy: a group sees a member's level only when their share level there is streak or full, because a 10-level drop would otherwise reveal a slip.
 - **Badges:** clean-day milestones at 1, 3, 7, 14, 21, 30, 40, 60, 90, 180 and 365; check-in consistency at 7, 30 and 100 days; Encourager; Prayer Warrior; Faithful Finisher; First Testimony. Each has an icon, a verse and one line of description.
-- **Leaderboards** per group only (no global board at launch). Tabs: Consistency XP (default), Level, Current streak, Clean days this challenge, Encourager. Ties go to whoever got there first. Members can hide from the leaderboard only if the group owner allows it (part of the covenant). This-week and all-time views.
+- **Leaderboards** per group only (no global board at launch). Tabs: Consistency XP (default), Level, Current streak, Clean days this challenge, Encourager. Ties go to whoever got there first. Members can hide from the leaderboard only if the group owner allows it (part of the covenant). This-week and all-time views. The Current streak and Clean days tabs stay (owner, 2026-10-10): the app exists for freedom through accountability, not for hiding.
 - **Group goals:** a shared target ("500 clean days together this month") with a group progress bar.
 
 ### 7.7 Social and encouragement
@@ -256,7 +257,7 @@ Theme (light, dark, system), language, time zone, reminder time, notifications, 
 ## 13. PWA
 
 - Manifest: a discreet `name` and `short_name`, maskable and monochrome icons (192 and 512 px), theme colours, `display: standalone`, an `id`, shortcuts (Check in, SOS) and screenshots for the richer install sheet.
-- Service worker: precache the app shell; network-first for data with a stale fallback; cache-first for static assets; an offline page; offline check-ins queued in IndexedDB and synced by Background Sync (or on next open); a "new version available" refresh prompt.
+- Service worker: precache the app shell; network-first for data with a stale fallback; cache-first for static assets; an offline page; offline check-ins queued in IndexedDB with the local date and time they were made, and synced exactly once by Background Sync (or on next open). The server accepts them for the day they were made, within `OFFLINE_SYNC_MAX_DAYS` (§7.5), even after the normal window has closed. A "new version available" refresh prompt.
 - Install UX: a custom prompt after the first check-in; an iOS sheet showing Share, then Add to Home Screen.
 - Web Push with VAPID keys; app-icon badges for unread counts; Web Share for invite links; QR codes for invites.
 - Keep the code ready for later Trusted Web Activity (Google Play) and Capacitor (App Store) wrappers.
