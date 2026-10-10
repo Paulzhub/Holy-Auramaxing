@@ -590,4 +590,42 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
   - **Offline check-ins:** a check-in made without internet keeps its local date and time on the device, syncs automatically, and counts for the day it was made even after the window has closed; the replay then removes that day's penalty. The server accepts it only within `OFFLINE_SYNC_MAX_DAYS` (owner to confirm; suggested 7), for a day inside its recorded window and not before the account existed, and logs `checkin.synced_late`.
   - **The Current streak and Clean days leaderboards and group goals stay.** The app is built "not to hide but to be free through accountability". G-2 is closed.
 - **Consequences:** Phase 5 updates `data/build_levels.py` (`replay`) first, then makes the Postgres level engine match it, and reads the level "live" (like D-043) so missed days count even when the person never opens the app. The server path for late offline check-ins is built in Phase 5; the device queue in Phase 10. The device clock can be changed, so the sync limit is the guard against backfilling (threat model). CLAUDE.md §2.2, §7.5, §7.6, §13 and PROMPTS.md Phases 5 and 10 are updated.
-- **Open:** the `OFFLINE_SYNC_MAX_DAYS` value, and whether days while an account is closing count as missed (suggested: no).
+- **Settled (owner, 2026-10-10):** `OFFLINE_SYNC_MAX_DAYS` is 7; days while an account is closing don't count as missed (D-066). Grace review wording: G-3 to G-9, G-11, G-12, G-14, G-15 and S-1 applied in Phase 5a (D-068); G-10 waits for Phase 6 and G-13 for Phase 7.
+
+## D-064 · Phase 5a · The level engine: replayed, stored as of the last check-in, read live
+
+- **Decision (owner approved the plan, 2026-10-10):** `private.recompute_level(user, now)` replays every day from the day the account started (its local date in the person's time zone; earlier if they answered "yesterday" on their sign-up day) to the last check-in, exactly like `data/build_levels.py` `replay`: +1 progress per free day (5 a level up to Level 20, then 10); a slip **or a missed day** drops `relapse_level_penalty` (10) levels, never below 0, and empties the bar; a paused day costs nothing (D-066). It runs inside every save (`private.after_checkin_saved`, next to the streak replay), so an edit or a late offline check-in recalculates.
+- **Stored:** `user_stats.level`, `level_progress_days`, `highest_level` as of the last check-in. **Read live** through `private.live_level()`: minus 10 for each day after the last check-in whose window has closed (and wasn't paused), progress 0 if any. No nightly job, like the live streaks (D-043).
+- **Yesterday still open:** if today is answered before yesterday, the replay also stores the result with yesterday not yet missed (`level_open*`, valid until `level_open_until`, yesterday's 12:00). Reads use it until noon.
+- **The check-in page** compares with `level_before_save` (the live level just before the save) to show a level-up, a new era, or one quiet line after a drop.
+- **Tunable values** live in `private.app_config` (`relapse_level_penalty` 10, `offline_sync_max_days` 7), read by `util.config_int()`. They are enforced by the database, so they are not environment keys; change them with a migration.
+- **Parity:** pgTAP `050` replays 24 random histories (generated with the reference replay) and checks all 1,003 labels and day counts against `data/levels.csv`; `src/features/gamification/levels.test.ts` checks the TypeScript mirror and that `050` still embeds `levels.csv`.
+
+## D-065 · Phase 5a · Level names, verses and the level card
+
+- `public.level_tiers` (tiers 0–167) is seeded from `data/levels.json` plus `data/level_verses.json`: the World English Bible text of each tier's verse, taken from the `world-english-bible` npm package 1.0.1 (ebible.org's text) and spot-checked against ebible.org and the verses grace review 1 checked. A quotation mark opened before or closed after the verse is left off.
+- `util.level_info()` / `util.level_label()`: past Level 1002 the last name continues with a number ("Well Done 2", "Well Done 2 Lite"…).
+- **Level card** (Home, Progress): name, "Level 5 · Genesis", "0 of 5 days to …" (a progress ring), the verse. **After a check-in:** a level-up or a new era gets a small CSS-only light (transform and opacity, once; none under reduced motion or forced colours, so canvas-confetti isn't needed); a drop gets one quiet line: "You're now Clay. Your longest streak and total free days are still yours." The same line shows on Home while missed days have lowered the level. Nobody else is told.
+- **Share card** (`/api/share/level`, a PNG from `next/og`, private and never cached): the level's name, era, verse reference and the app's name, no verse text (a few name the struggle) and nothing about days. Levels whose name gives the topic away (for now only "Temptation Dodger", levels 61–66, which contains "temptation") get no share card; the list of giveaway words is shared with `discretion.test.ts` (`src/lib/discretion.ts`).
+- **Groups:** `group_checkins_today.level` and `profile_cards.level` show the live level only where the member shares their streak or more (`util.can_see_level`: a group the viewer shares where the owner is at streak or full). pgTAP `050`, e2e `levels.spec.ts`.
+
+## D-066 · Phase 5a · Days while an account is closing are paused
+
+- **Owner (2026-10-10):** a day doesn't count as missed if its window closed while the account was closing for deletion (check-ins are refused then).
+- `private.account_pauses` records each closing period (a trigger on `profiles.deletion_requested_at`). Cancelling ends the pause and replays the level, so someone who keeps their account loses nothing for those days. pgTAP `050`.
+
+## D-067 · Phase 5a · Late offline check-ins (server side)
+
+- `public.submit_offline_checkin(date, recorded_at, …)` and the route `POST /api/checkins/sync` (JSON, same-origin only, signed in, `checkinSaveByUser`). The note is encrypted in the app like any check-in.
+- Accepted only if: the day was inside its window at `recorded_at` (the device's record, in the person's time zone); `recorded_at` isn't more than 5 minutes in the future or before the account existed; it arrives within 7 days (`offline_sync_max_days`); and the day has no answer. While the day is still open it is an ordinary save (or edit). Accepted late ones are audited as `checkin.synced_late` with the check-in id and the date only.
+- Answers: `{ status }`, or `{ error, drop }`; `drop: true` (too old, already answered, outside its window, invalid) tells the Phase 10 queue to forget it.
+- **Risk accepted:** the device clock can be changed, so someone can backfill up to 7 days. Threat model updated. pgTAP `051`, e2e `levels.spec.ts`.
+
+## D-068 · Phase 5a · Grace review 1 wording
+
+- Applied (owner, 2026-10-10): "free days" for "clean days" in what people read (G-3); "His mercies are new every morning" (G-4); "What was going on?" and a reflection not framed as streak-building (G-5); "Your streak starts again…" and "Your next free day starts the next streak" (G-6); "Already slipped? There's grace for that too." in SOS, with 1 John 1:9 and a link to the check-in (G-7); "When you're ready…" (G-8); "held in grace" in place of "grace covers it", and the calendar now says "Slipped, held in grace" like the group (G-9); the insight adds "and you were honest every time" (G-11); the streak ring at 0 says "Starting again…" (G-12); Psalm 51 from verses 10 to 12 (G-14); a line for someone leaving on a hard day (G-15); Romans 8:1 "to those" (S-1).
+- Later: G-10 (reactions) in Phase 6, G-13 (reminders and nudges) in Phase 7.
+
+## D-069 · Phase 5 · No extra XP for a clean day
+
+- **Owner (2026-10-10), from the Phase 5 plan:** the spec's "+5 XP for a clean day" is dropped. It made "I stayed free" earn more than an honest "I slipped" (against §2.2), and on the Consistency board it would show a checkin_only member's slip. XP for check-ins is the same +10 for either answer, plus the check-in streak bonus. Free days still count on the Level, Current streak and days-this-challenge boards. Built in Phase 5b.

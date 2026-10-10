@@ -66,3 +66,24 @@ export function readReflectionForm(formData: FormData) {
     note: field(formData, "note"),
   });
 }
+
+/**
+ * A check-in made offline and sent later (§7.5, §13; D-067), as JSON from the
+ * device. recordedAt is when the device says it was made, with its offset.
+ * The database decides whether it still counts.
+ */
+export const offlineCheckinSchema = z.object({
+  date: isoDate,
+  recordedAt: z.iso.datetime({ offset: true }),
+  outcome: z.enum(OUTCOMES),
+  mood: z.number().int().min(1).max(5).nullable().default(null),
+  urge: z.number().int().min(0).max(5).nullable().default(null),
+  triggers: triggers.default([]),
+  note: z
+    .string()
+    .max(NOTE_MAX * 2)
+    .default("")
+    .transform((v) => v.replace(/\r\n/g, "\n").trim())
+    .pipe(z.string().max(NOTE_MAX)),
+});
+export type OfflineCheckinInput = z.infer<typeof offlineCheckinSchema>;

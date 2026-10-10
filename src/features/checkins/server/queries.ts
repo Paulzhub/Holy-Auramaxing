@@ -154,6 +154,8 @@ export interface MemberToday {
   currentStreak: number | null;
   /** Null unless they share everything with this group. */
   outcome: Outcome | null;
+  /** Live level; null unless they share at least their streak (§7.6). */
+  level: number | null;
 }
 
 /**
@@ -165,7 +167,7 @@ export async function getGroupToday(groupId: string, userId: string): Promise<Me
   const supabase = await createSupabaseServerClient();
   const { data: rows } = await supabase
     .from("group_checkins_today")
-    .select("user_id, checked_in_today, current_streak, outcome")
+    .select("user_id, checked_in_today, current_streak, outcome, level")
     .eq("group_id", groupId);
   const members = (rows ?? []).filter((r): r is typeof r & { user_id: string } => Boolean(r.user_id));
   if (!members.length) return [];
@@ -189,6 +191,7 @@ export async function getGroupToday(groupId: string, userId: string): Promise<Me
         checkedInToday: Boolean(m.checked_in_today),
         currentStreak: m.current_streak,
         outcome: (m.outcome as Outcome | null) ?? null,
+        level: m.level ?? null,
       };
     })
     .sort((a, b) => Number(b.isMe) - Number(a.isMe) || a.name.localeCompare(b.name));

@@ -19,6 +19,8 @@ export {
   type MemberToday,
 } from "./server/queries";
 export { exportCheckinsData } from "./server/export";
+export { offlineCheckinSchema, type OfflineCheckinInput } from "./schemas";
+export { syncOfflineCheckin, type OfflineSyncResult } from "./server/offline";
 
 // Server components: no JavaScript reaches the browser for these.
 export {

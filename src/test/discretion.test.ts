@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import en from "../../messages/en.json";
 import { globalErrorMessages } from "../app/global-error-messages";
 import { exportFileName } from "../lib/data-export";
+import { SENSITIVE_WORDS } from "../lib/discretion";
 import { parseFrom } from "../lib/email/sender";
 
 /**
@@ -19,9 +20,8 @@ import { parseFrom } from "../lib/email/sender";
 const root = join(__dirname, "..", "..");
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 
-/** Words that give the topic away, plus "xxx" (the old spelling of the name, which read badly at a glance; D-059). */
-const SENSITIVE =
-  /porn|fap|lust|masturbat|sexual|\bsex\b|relapse|addict|temptation|purity|\bslip|\bstreak|\burges?\b|clean day|sobriety|xxx/i;
+/** Words that give the topic away, plus "xxx" (the old spelling of the name; D-059). */
+const SENSITIVE = SENSITIVE_WORDS;
 
 function strings(value: unknown, path = ""): Array<[string, string]> {
   if (typeof value === "string") return [[path, value]];
@@ -51,6 +51,10 @@ describe("discretion: what people see outside the app", () => {
       ...strings(en.meta, "meta"),
       ...strings(globalErrorMessages.en, "global-error"),
     ]);
+  });
+
+  it("the level share card's own words (each level's name is checked in levels.test.ts)", () => {
+    expectDiscreet(strings(en.levels.shareCard, "levels.shareCard"));
   });
 
   it("every email the app sends: subject, preview and body", () => {
