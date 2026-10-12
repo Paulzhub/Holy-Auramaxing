@@ -158,10 +158,11 @@ Three or four skippable screens: welcome (a grace message and a verse), an optio
 ### 7.7 Social and encouragement
 
 - Reactions (pray, heart, fire, strong, dove) on shared check-ins, milestones, posts and comments.
-- Nudges: "Praying for you", "Check in today", "You've got this", "Call me if you need". One per sender per recipient per day; recipients can mute nudges.
-- Encouragement wall per group: short posts, prayer requests with an "I prayed" counter, testimonies, pinned owner announcements; one level of comments; edit or delete your own; report; block.
-- Accountability partners: request and accept inside a group; partners see full check-in detail and, if allowed, get an alert when the other misses two days or presses SOS.
-- Milestone moments: when a member hits a milestone, the group gets a celebration card to react to.
+- Nudges: "Praying for you", "Check in today", "You've got this", "Call me if you need". One per sender per recipient per day; recipients can mute nudges (everywhere or per group).
+- Encouragement wall per group: short posts, prayer requests with an "I prayed" counter, testimonies, pinned announcements (owners and admins, owner 2026-10-12); one level of comments; edit or delete your own; report; block. Plain text only; links show as text and links to explicit sites are refused (owner, 2026-10-12).
+- Accountability partners: request and accept inside a group, at most two active partners per person per group (owner, 2026-10-12); partners see full check-in detail in that group and, if allowed, get an alert when the other misses two days or presses SOS.
+- Milestone moments: when a member hits a milestone (a free-days badge from 7 days up), the group gets a celebration card to react to, only where they share at least their streak; on by default, and each person can turn them off (owner, 2026-10-12).
+- Live updates on a group's pages through Supabase Realtime: content-free pings on a channel only members are given, after which the page asks the server again (owner, 2026-10-12, D-086).
 - Sunday recap: your week, your group's week, a verse; in-app and optional email.
 
 ### 7.8 Notifications
