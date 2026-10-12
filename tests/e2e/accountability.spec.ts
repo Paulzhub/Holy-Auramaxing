@@ -106,7 +106,7 @@ test.describe("Nudges, partners and milestones", () => {
 
     await page.goto("/settings");
     await page.getByLabel("Don't take nudges in any group").check();
-    await page.getByRole("button", { name: "Save" }).first().click();
+    await page.getByRole("button", { name: "Save nudge settings" }).click();
     await expect(page.getByText("Saved.", { exact: true })).toBeVisible();
     await expect(page.getByLabel("Don't take nudges in any group")).toBeChecked();
     const { data: targets } = await friend.client.rpc("group_nudge_targets", { p_group: groupId });
@@ -170,7 +170,7 @@ test.describe("Nudges, partners and milestones", () => {
     // My own alert choice, by keyboard.
     await list.getByLabel("Let Quin Quiet know if I miss two days or press SOS").focus();
     await page.keyboard.press("Space");
-    await list.getByRole("button", { name: "Save" }).focus();
+    await list.getByRole("button", { name: "Save alert choice" }).focus();
     await page.keyboard.press("Enter");
     await expect(page.getByText("Saved.", { exact: true })).toBeVisible();
     const { data: row } = await admin()

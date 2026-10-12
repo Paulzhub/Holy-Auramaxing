@@ -1921,7 +1921,7 @@
       "muteAll": "Don't take nudges in any group",
       "milestoneCards": "Post a card to my groups when I reach a free-days milestone (from 7 days)",
       "milestoneCardsHint": "Only in groups where you share at least your streak.",
-      "save": "Save",
+      "save": "Save nudge settings",
       "settingsTitle": "Nudges and milestone cards",
       "settingsBody": "Choose whether friends can nudge you, and whether your groups celebrate your milestones."
     },
@@ -1951,7 +1951,7 @@
       "alertsHint": "Your own choice. These alerts arrive with notifications.",
       "theyAllow": "{name} lets you know if they miss two days or press SOS.",
       "theyDont": "{name} hasn't turned on alerts for you.",
-      "saveAlerts": "Save",
+      "saveAlerts": "Save alert choice",
       "membersLink": "Ask to be partners"
     },
     "prayer": {
