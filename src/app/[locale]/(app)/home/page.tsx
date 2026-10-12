@@ -5,20 +5,22 @@ import { PageHeader } from "@/components/shell/app-shell";
 import { getCheckinOverview, KeptMessage, StreakStats, TodayCard } from "@/features/checkins";
 import { requireAccount } from "@/features/auth";
 import { getMyLevel, getMyXpAndBadges, LevelCard, XpLine } from "@/features/gamification";
+import { getMyNudges, NudgesForYou } from "@/features/social";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
   return { title: t("home") };
 }
 
-/** Today: the check-in, the streaks, and (after a streak ends) what was kept. */
+/** Today: the check-in, nudges from friends, the streaks, and (after a streak ends) what was kept. */
 export default async function Page() {
-  const { userId } = await requireAccount();
-  const [t, overview, level, xp] = await Promise.all([
+  const { userId, profile } = await requireAccount();
+  const [t, overview, level, xp, nudges] = await Promise.all([
     getTranslations("pages.home"),
     getCheckinOverview(),
     getMyLevel(),
     getMyXpAndBadges(userId),
+    getMyNudges(null),
   ]);
   const slippedToday = overview.answered[overview.today] === "slipped";
   return (
@@ -26,6 +28,7 @@ export default async function Page() {
       <PageHeader title={t("title")} lede={t("lede")} />
       <div className="stack">
         <TodayCard overview={overview} />
+        <NudgesForYou nudges={nudges} timeZone={profile.timezone} />
         {overview.totalCheckins > 0 ? <StreakStats overview={overview} /> : null}
         <LevelCard level={level}>
           <XpLine xp={xp.xp} />

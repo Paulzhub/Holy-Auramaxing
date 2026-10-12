@@ -102,7 +102,7 @@ export async function PhaseText({ phase }: { phase: GroupPhase }) {
   }
 }
 
-type TabKey = "home" | "wall" | "leaderboard" | "members" | "invites" | "moderation" | "settings";
+type TabKey = "home" | "wall" | "partner" | "leaderboard" | "members" | "invites" | "moderation" | "settings";
 
 /** The group's name, picture and day, with its tabs. */
 export async function GroupHeader({ ctx, current }: { ctx: GroupContext; current: TabKey }) {
@@ -112,6 +112,7 @@ export async function GroupHeader({ ctx, current }: { ctx: GroupContext; current
   const tabs: Tab[] = [
     { key: "home", href: `/groups/${group.id}` },
     { key: "wall", href: `/groups/${group.id}/wall` },
+    { key: "partner", href: `/groups/${group.id}/partner` },
     { key: "leaderboard", href: `/groups/${group.id}/leaderboard` },
     { key: "members", href: `/groups/${group.id}/members` },
     ...(ctx.isAdmin ? [{ key: "invites", href: `/groups/${group.id}/invites` } as Tab] : []),

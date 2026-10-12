@@ -43,6 +43,7 @@ test.describe("Group isolation", () => {
       "",
       "/wall",
       `/wall/${postB}`,
+      "/partner",
       "/leaderboard",
       "/members",
       "/invites",
@@ -77,6 +78,8 @@ test.describe("Group isolation", () => {
       ["comments", "group_id"],
       ["reactions", "group_id"],
       ["reports", "group_id"],
+      ["nudges", "group_id"],
+      ["partnerships", "group_id"],
     ] as const) {
       const { data, error } = await me.client.from(table).select(column).eq(column, groupB);
       expect(error, table).toBeNull();
@@ -158,6 +161,13 @@ test.describe("Group isolation", () => {
       ["set_reaction", { p_target_type: "post", p_target: postB, p_kind: "pray", p_on: true }],
       ["report_content", { p_group: groupB, p_target_type: "post", p_target: postB, p_reason: "spam" }],
       ["group_reports", { p_group: groupB }],
+      // Phase 6b (D-082, D-083).
+      ["send_nudge", { p_group: groupB, p_to: bMember.userId, p_kind: "praying" }],
+      ["group_nudge_targets", { p_group: groupB }],
+      ["my_nudges", { p_group: groupB }],
+      ["set_group_nudges_muted", { p_group: groupB, p_muted: true }],
+      ["request_partner", { p_group: groupB, p_user: bMember.userId }],
+      ["my_partnerships", { p_group: groupB }],
     ];
     for (const [fn, args] of calls) {
       const { error } = await me.client.rpc(fn, args);

@@ -5,7 +5,15 @@ import { describe, expect, it } from "vitest";
 
 import en from "../../../messages/en.json";
 import { isDiscreet } from "../../lib/discretion";
-import { POST_KINDS, REACTION_KINDS, REPORT_REASONS, SOCIAL_LIMITS, WALL_FILTERS } from "./constants";
+import {
+  NUDGE_KINDS,
+  PARTNERS_MAX,
+  POST_KINDS,
+  REACTION_KINDS,
+  REPORT_REASONS,
+  SOCIAL_LIMITS,
+  WALL_FILTERS,
+} from "./constants";
 import { databaseErrorKeys, socialErrorKey } from "./errors";
 import { commentBodySchema, parseWallQuery, postSchema, reportSchema, tidyText } from "./schemas";
 
@@ -36,6 +44,19 @@ describe("the wall's lists match the database (D-077)", () => {
   });
 });
 
+describe("nudges and partners match the database (D-082, D-083)", () => {
+  const sixB = readFileSync(join(root, "supabase/migrations/20261018000100_social_nudges_partners.sql"), "utf8");
+  it("nudge kinds and the partner limit", () => {
+    expect(sixB).toContain(`kind in (${[...NUDGE_KINDS, "pray_for_me"].map((k) => `'${k}'`).join(", ")})`);
+    expect(sixB).toContain(`('partners_max_per_group', ${PARTNERS_MAX},`);
+    expect(sixB).toContain("('milestone_card_min_days', 7,");
+  });
+
+  it("every nudge has its words", () => {
+    for (const k of [...NUDGE_KINDS, "pray_for_me"] as const) expect(en.social.nudges.kinds[k]).toBeTruthy();
+  });
+});
+
 describe("messages", () => {
   it("every kind, filter, reaction and reason has its words", () => {
     for (const k of POST_KINDS) expect(en.social.kinds[k]).toBeTruthy();
@@ -48,6 +69,11 @@ describe("messages", () => {
     for (const key of databaseErrorKeys) expect(en.social.errors[key]).toBeTruthy();
     expect(socialErrorKey({ message: "content_blocked" })).toBe("contentBlocked");
     expect(socialErrorKey({ message: "something new" })).toBe("saveFailed");
+  });
+
+  it("every notice the pages can show has its words, and the list knows them all", () => {
+    const views = readFileSync(join(__dirname, "components/wall-views.tsx"), "utf8");
+    for (const key of Object.keys(en.social.notices)) expect(views, key).toContain(`"${key}"`);
   });
 
   it('G-10: the "strong" reaction reads "With you"', () => {

@@ -487,6 +487,7 @@ export type Database = {
           invite_id: string | null;
           joined_at: string | null;
           leaderboard_hidden: boolean;
+          nudges_muted: boolean;
           requested_at: string;
           role: string;
           share_level: string;
@@ -500,6 +501,7 @@ export type Database = {
           invite_id?: string | null;
           joined_at?: string | null;
           leaderboard_hidden?: boolean;
+          nudges_muted?: boolean;
           requested_at?: string;
           role?: string;
           share_level: string;
@@ -513,6 +515,7 @@ export type Database = {
           invite_id?: string | null;
           joined_at?: string | null;
           leaderboard_hidden?: boolean;
+          nudges_muted?: boolean;
           requested_at?: string;
           role?: string;
           share_level?: string;
@@ -774,6 +777,150 @@ export type Database = {
           },
         ];
       };
+      nudges: {
+        Row: {
+          created_at: string;
+          from_user: string;
+          group_id: string;
+          id: string;
+          kind: string;
+          sender_day: string;
+          to_user: string;
+        };
+        Insert: {
+          created_at?: string;
+          from_user: string;
+          group_id: string;
+          id?: string;
+          kind: string;
+          sender_day: string;
+          to_user: string;
+        };
+        Update: {
+          created_at?: string;
+          from_user?: string;
+          group_id?: string;
+          id?: string;
+          kind?: string;
+          sender_day?: string;
+          to_user?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "nudges_from_user_fkey";
+            columns: ["from_user"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "nudges_from_user_fkey";
+            columns: ["from_user"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "nudges_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "nudges_to_user_fkey";
+            columns: ["to_user"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "nudges_to_user_fkey";
+            columns: ["to_user"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      partnerships: {
+        Row: {
+          a_allows_alerts: boolean;
+          accepted_at: string | null;
+          b_allows_alerts: boolean;
+          ended_at: string | null;
+          ended_reason: string | null;
+          group_id: string;
+          id: string;
+          requested_at: string;
+          status: string;
+          user_a: string;
+          user_b: string;
+        };
+        Insert: {
+          a_allows_alerts?: boolean;
+          accepted_at?: string | null;
+          b_allows_alerts?: boolean;
+          ended_at?: string | null;
+          ended_reason?: string | null;
+          group_id: string;
+          id?: string;
+          requested_at?: string;
+          status?: string;
+          user_a: string;
+          user_b: string;
+        };
+        Update: {
+          a_allows_alerts?: boolean;
+          accepted_at?: string | null;
+          b_allows_alerts?: boolean;
+          ended_at?: string | null;
+          ended_reason?: string | null;
+          group_id?: string;
+          id?: string;
+          requested_at?: string;
+          status?: string;
+          user_a?: string;
+          user_b?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "partnerships_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "partnerships_user_a_fkey";
+            columns: ["user_a"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "partnerships_user_a_fkey";
+            columns: ["user_a"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "partnerships_user_b_fkey";
+            columns: ["user_b"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "partnerships_user_b_fkey";
+            columns: ["user_b"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       posts: {
         Row: {
           author_id: string | null;
@@ -848,6 +995,8 @@ export type Database = {
       privacy_settings: {
         Row: {
           bio_visibility: string;
+          milestone_cards: boolean;
+          nudges_muted: boolean;
           profile_visibility: string;
           testimony_visibility: string;
           updated_at: string;
@@ -856,6 +1005,8 @@ export type Database = {
         };
         Insert: {
           bio_visibility?: string;
+          milestone_cards?: boolean;
+          nudges_muted?: boolean;
           profile_visibility?: string;
           testimony_visibility?: string;
           updated_at?: string;
@@ -864,6 +1015,8 @@ export type Database = {
         };
         Update: {
           bio_visibility?: string;
+          milestone_cards?: boolean;
+          nudges_muted?: boolean;
           profile_visibility?: string;
           testimony_visibility?: string;
           updated_at?: string;
@@ -1452,6 +1605,7 @@ export type Database = {
       edit_comment: { Args: { p_body: string; p_comment: string }; Returns: undefined };
       edit_post: { Args: { p_body: string; p_post: string }; Returns: undefined };
       end_group_goal: { Args: { p_group: string }; Returns: undefined };
+      end_partnership: { Args: { p_partnership: string }; Returns: undefined };
       group_invite_details: {
         Args: { p_code_hash?: string; p_token_hash: string };
         Returns: {
@@ -1489,6 +1643,13 @@ export type Database = {
           member_id: string;
           place: number;
           score: number;
+        }[];
+      };
+      group_nudge_targets: {
+        Args: { p_group: string };
+        Returns: {
+          sent_today: boolean;
+          user_id: string;
         }[];
       };
       group_reports: {
@@ -1560,6 +1721,29 @@ export type Database = {
       };
       my_checkin_overview: { Args: Record<PropertyKey, never>; Returns: Json };
       my_level: { Args: Record<PropertyKey, never>; Returns: Json };
+      my_nudges: {
+        Args: { p_days?: number; p_group?: string };
+        Returns: {
+          created_at: string;
+          from_user: string;
+          group_id: string;
+          id: string;
+          kind: string;
+        }[];
+      };
+      my_partnerships: {
+        Args: { p_group: string };
+        Returns: {
+          accepted_at: string;
+          asked_by_me: boolean;
+          i_allow_alerts: boolean;
+          id: string;
+          partner_allows_alerts: boolean;
+          partner_id: string;
+          requested_at: string;
+          status: string;
+        }[];
+      };
       my_sessions: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -1606,7 +1790,9 @@ export type Database = {
         Returns: string;
       };
       request_account_deletion: { Args: Record<PropertyKey, never>; Returns: string };
+      request_partner: { Args: { p_group: string; p_user: string }; Returns: string };
       resolve_report: { Args: { p_outcome: string; p_report: string }; Returns: undefined };
+      respond_partner: { Args: { p_accept: boolean; p_partnership: string }; Returns: undefined };
       revoke_group_invite: { Args: { p_invite: string }; Returns: undefined };
       revoke_my_session: { Args: { p_session_id: string }; Returns: boolean };
       run_account_purge: { Args: Record<PropertyKey, never>; Returns: number };
@@ -1614,9 +1800,12 @@ export type Database = {
         Args: { p_local_date: string; p_note_encrypted?: string; p_triggers?: string[] };
         Returns: undefined;
       };
+      send_nudge: { Args: { p_group: string; p_kind: string; p_to: string }; Returns: string };
       set_group_goal: { Args: { p_group: string; p_period: string; p_target: number }; Returns: undefined };
       set_group_member_role: { Args: { p_group: string; p_role: string; p_user: string }; Returns: undefined };
+      set_group_nudges_muted: { Args: { p_group: string; p_muted: boolean }; Returns: undefined };
       set_group_picture_pending: { Args: { p_group: string; p_path: string }; Returns: string };
+      set_partner_alerts: { Args: { p_allow: boolean; p_partnership: string }; Returns: undefined };
       set_reaction: {
         Args: { p_kind: string; p_on: boolean; p_target: string; p_target_type: string };
         Returns: undefined;

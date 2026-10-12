@@ -1,4 +1,15 @@
-import { BicepsFlexed, Bird, CircleAlert, Flame, HandHeart, Heart, Info, Pin, type LucideIcon } from "lucide-react";
+import {
+  BicepsFlexed,
+  Bird,
+  CircleAlert,
+  Flame,
+  HandHeart,
+  Heart,
+  Info,
+  Pin,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
@@ -77,6 +88,14 @@ const notices = [
   "unblocked",
   "reportActioned",
   "reportDismissed",
+  "nudged",
+  "partnerAsked",
+  "partnerAccepted",
+  "partnerDeclined",
+  "partnerWithdrawn",
+  "partnerEnded",
+  "alertsSaved",
+  "nudgeSettingsSaved",
 ] as const;
 type Notice = (typeof notices)[number];
 const knownErrors = new Set<string>([...databaseErrorKeys, "saveFailed", "reasonMissing", "noteTooLong"]);
@@ -129,6 +148,15 @@ export async function WallFilters({ groupId, filter }: { groupId: string; filter
 
 function authorName(author: Author, fallback: string): string {
   return author.name || fallback;
+}
+
+/** A post's words: what was written, or for a milestone card, what was reached (D-085). */
+async function postText(post: WallPost, name: string): Promise<string> {
+  if (post.kind !== "milestone" || !post.badge) return post.body;
+  const [t, tb] = await Promise.all([getTranslations("social.milestone"), getTranslations("badges")]);
+  const badge = tb(`items.${post.badge}.name` as "items.free_1.name");
+  const days = Number(post.badge.replace(/^free_/, "")) || 0;
+  return post.isMine ? t("you", { badge, days }) : t("reached", { name, badge, days });
 }
 
 async function When({ iso, timeZone }: { iso: string; timeZone: string }) {
@@ -414,7 +442,14 @@ export async function PostCard({
           </p>
         </div>
       </header>
-      <p className="wall-post__body">{post.body}</p>
+      {post.kind === "milestone" ? (
+        <p className="wall-post__body wall-milestone">
+          <Sparkles aria-hidden="true" className="inline-icon" />{" "}
+          {await postText(post, authorName(post.author, t("post.formerMember")))}
+        </p>
+      ) : (
+        <p className="wall-post__body">{post.body}</p>
+      )}
       <Reactions
         viewer={viewer}
         targetType="post"
@@ -617,6 +652,7 @@ function preview(text: string, max = 280): string {
 export async function WallHomeCard({ viewer, page }: { viewer: WallViewer; page: WallPage }) {
   const t = await getTranslations("social");
   const posts = [...page.pinned, ...page.posts].slice(0, SOCIAL_LIMITS.homePreview);
+  const texts = await Promise.all(posts.map((p) => postText(p, authorName(p.author, t("post.formerMember")))));
   return (
     <section className="ui-card wall-home" aria-labelledby="home-wall">
       <h2 id="home-wall" className="ui-card__title">
@@ -624,7 +660,7 @@ export async function WallHomeCard({ viewer, page }: { viewer: WallViewer; page:
       </h2>
       {posts.length ? (
         <ul className="wall-home__list">
-          {posts.map((p) => (
+          {posts.map((p, i) => (
             <li key={p.id} className="wall-home__item">
               <p className="wall-home__by">
                 <span>{p.isMine ? t("post.you") : authorName(p.author, t("post.formerMember"))}</span>
@@ -633,7 +669,7 @@ export async function WallHomeCard({ viewer, page }: { viewer: WallViewer; page:
               </p>
               <p className="wall-post__body">
                 <Link href={`/groups/${viewer.groupId}/wall/${p.id}`} className="wall-home__link">
-                  {preview(p.body)}
+                  {preview(texts[i] ?? "")}
                 </Link>
               </p>
             </li>

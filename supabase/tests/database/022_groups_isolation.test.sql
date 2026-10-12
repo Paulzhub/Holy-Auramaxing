@@ -8,7 +8,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(20);
+select plan(21);
 
 create function pg_temp.make_user(id uuid, email text) returns void language plpgsql as $$
 declare token text := 'token-' || replace(id::text, '-', '');
@@ -86,6 +86,11 @@ select pg_temp.as_user('00000000-0000-7000-8000-000000000b04');
 select set_config('test.reportb', public.report_content(pg_temp.gb(), 'post', current_setting('test.postb')::uuid,
                                                         'spam')::text, true);
 select pg_temp.as_postgres();
+-- Phase 6b: a nudge and a partnership request in group B.
+select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
+select public.send_nudge(pg_temp.gb(), '00000000-0000-7000-8000-000000000b02', 'praying');
+select set_config('test.partnerb', public.request_partner(pg_temp.gb(), '00000000-0000-7000-8000-000000000b02')::text, true);
+select pg_temp.as_postgres();
 
 -- The tables to check: groups, plus everything in public with a group_id.
 create temp table iso_tables as
@@ -104,6 +109,8 @@ select ok((select count(*) from iso_tables where tbl in ('leaderboard_entries', 
   'Phase 5c''s stored boards and goals are among them');
 select ok((select count(*) from iso_tables where tbl in ('posts', 'comments', 'reactions', 'reports')) = 4,
   'Phase 6a''s wall, reactions and reports are among them');
+select ok((select count(*) from iso_tables where tbl in ('nudges', 'partnerships')) = 2,
+  'Phase 6b''s nudges and partnerships are among them');
 
 -- Counts, as the current role, the rows of group `gid` in every table.
 create function pg_temp.visible_rows(gid uuid)
@@ -123,7 +130,7 @@ select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
 select ok((select bool_and(n > 0) from pg_temp.visible_rows(pg_temp.gb())
             where tbl in ('groups', 'group_members', 'group_invites', 'group_covenant_proposals',
                           'group_covenant_agreements', 'group_checkins_today', 'group_member_stats', 'xp_ledger',
-                          'leaderboard_entries', 'group_goals', 'posts', 'comments', 'reactions', 'reports')),
+                          'leaderboard_entries', 'group_goals', 'posts', 'comments', 'reactions', 'reports', 'nudges', 'partnerships')),
   'B''s owner sees B''s rows in every group table (the check below is meaningful)');
 
 -- ---------------------------------------------------------------- reading
@@ -189,7 +196,17 @@ insert into iso_calls values
   ('resolve_report', $$ select public.resolve_report(current_setting('test.reportb')::uuid, 'dismissed') $$),
   ('group_wall', $$ select * from public.group_wall(pg_temp.gb()) $$),
   ('wall_post', $$ select * from public.wall_post(current_setting('test.postb')::uuid) $$),
-  ('post_comments', $$ select * from public.post_comments(current_setting('test.postb')::uuid) $$);
+  ('post_comments', $$ select * from public.post_comments(current_setting('test.postb')::uuid) $$),
+  -- Phase 6b: nudges and partners.
+  ('send_nudge', $$ select public.send_nudge(pg_temp.gb(), '00000000-0000-7000-8000-000000000b02', 'got_this') $$),
+  ('group_nudge_targets', $$ select * from public.group_nudge_targets(pg_temp.gb()) $$),
+  ('my_nudges', $$ select * from public.my_nudges(pg_temp.gb()) $$),
+  ('set_group_nudges_muted', $$ select public.set_group_nudges_muted(pg_temp.gb(), true) $$),
+  ('request_partner', $$ select public.request_partner(pg_temp.gb(), '00000000-0000-7000-8000-000000000b02') $$),
+  ('respond_partner', $$ select public.respond_partner(current_setting('test.partnerb')::uuid, true) $$),
+  ('end_partnership', $$ select public.end_partnership(current_setting('test.partnerb')::uuid) $$),
+  ('set_partner_alerts', $$ select public.set_partner_alerts(current_setting('test.partnerb')::uuid, true) $$),
+  ('my_partnerships', $$ select * from public.my_partnerships(pg_temp.gb()) $$);
 grant select on iso_calls to authenticated;
 
 create function pg_temp.refused(p_sql text) returns boolean language plpgsql as $$
@@ -221,6 +238,8 @@ select ok((select p.body = 'Group B only.' and p.deleted_at is null and not p.pi
              and (select count(*) from public.comments c where c.post_id = p.id and c.deleted_at is null) = 1
              and (select count(*) from public.reactions r where r.target_id = p.id) = 1
              and (select status from public.reports where id = current_setting('test.reportb')::uuid) = 'open'
+             and (select status from public.partnerships where id = current_setting('test.partnerb')::uuid) = 'pending'
+             and (select count(*) from public.nudges where group_id = p.group_id) = 1
              from public.posts p where p.id = current_setting('test.postb')::uuid),
   'B''s wall, comments, reactions and reports are untouched');
 
@@ -230,7 +249,7 @@ select set_eq(
   $$ select p.proname::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public'
         and p.proargnames && array['p_group', 'p_proposal', 'p_invite', 'p_post', 'p_comment', 'p_target',
-                                   'p_report']::text[] $$,
+                                   'p_report', 'p_partnership']::text[] $$,
   $$ select fn from iso_calls $$,
   'Every public function taking a group, proposal, invite, post, comment, target or report id is covered by the isolation test');
 

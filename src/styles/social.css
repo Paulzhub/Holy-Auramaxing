@@ -268,3 +268,62 @@
     margin: 0;
   }
 }
+
+/* ---------- nudges, partners, asking for prayer, milestone cards (6b) ---------- */
+@layer components {
+  .group-today__tools {
+    flex-basis: 100%;
+    padding-inline-start: calc(2rem + var(--space-3));
+  }
+
+  .nudge-control__list {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .nudges-for-you {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .nudges-for-you__list {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .partner-row {
+    align-items: flex-start;
+  }
+
+  .partner-row__alerts {
+    display: grid;
+    gap: var(--space-2);
+    flex-basis: 100%;
+  }
+
+  .ask-prayer {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .ask-prayer > p {
+    margin: 0;
+  }
+
+  .ask-prayer__partners {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .wall-milestone {
+    font-weight: 600;
+  }
+
+  .wall-post--milestone {
+    border-inline-start: 4px solid var(--color-accent);
+  }
+}

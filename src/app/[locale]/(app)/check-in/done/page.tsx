@@ -11,11 +11,12 @@ import {
   isCheckinErrorKey,
   KeptMessage,
   NextStep,
-  PrayerCard,
   ReflectionForm,
   StreakStats,
 } from "@/features/checkins";
 import { getMyLevel, levelChangeAfterSave, LevelChangeNotice, type LevelOverview } from "@/features/gamification";
+import { getMyGroups } from "@/features/groups";
+import { AskForPrayerCard, getMyActivePartners } from "@/features/social";
 import { Link, redirect } from "@/i18n/navigation";
 
 // A neutral tab title for both answers: never anything about a slip (§2.3).
@@ -24,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("checkIn") };
 }
 
-type SearchParams = Promise<{ date?: string; saved?: string; error?: string }>;
+type SearchParams = Promise<{ date?: string; saved?: string; error?: string; prayer?: string }>;
 type Overview = Awaited<ReturnType<typeof getCheckinOverview>>;
 type Checkin = NonNullable<Awaited<ReturnType<typeof getCheckinFor>>>;
 
@@ -49,7 +50,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
   }
 
   return checkin.outcome === "slipped" ? (
-    <NewMercies overview={overview} checkin={checkin} date={date} query={query} level={level} />
+    <NewMercies overview={overview} checkin={checkin} date={date} query={query} level={level} userId={userId} />
   ) : (
     <Done overview={overview} date={date} level={level} />
   );
@@ -108,14 +109,23 @@ async function NewMercies({
   date,
   query,
   level,
+  userId,
 }: {
   overview: Overview;
   checkin: Checkin;
   date: string;
-  query: { saved?: string; error?: string };
+  query: { saved?: string; error?: string; prayer?: string };
   level: LevelOverview;
+  userId: string;
 }) {
-  const t = await getTranslations("checkins.mercies");
+  const [t, groups, partners] = await Promise.all([
+    getTranslations("checkins.mercies"),
+    getMyGroups(userId),
+    getMyActivePartners(userId),
+  ]);
+  const openGroups = groups
+    .filter((g) => g.status === "active" && !g.archivedAt)
+    .map((g) => ({ id: g.id, name: g.name }));
   const canReflect = overview.openDates.includes(date);
 
   return (
@@ -140,7 +150,8 @@ async function NewMercies({
       <LevelChangeNotice change={levelChangeAfterSave(level)} />
       <CheckinErrorBanner error={isCheckinErrorKey(query.error) ? query.error : null} />
       {canReflect ? <ReflectionForm existing={checkin} saved={query.saved === "1"} /> : null}
-      <PrayerCard />
+      {/* Asking a group or a partner to pray (D-046, Phase 6b). */}
+      <AskForPrayerCard date={date} groups={openGroups} partners={partners} result={query.prayer} />
       <NextStep date={date} />
 
       <div className="profile-actions">

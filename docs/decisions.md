@@ -726,3 +726,30 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 ## D-081 · Phase 6a · Everyone's words are plain text
 
 - Posts, comments and report notes are stored as typed (trimmed, control characters removed, no more than one blank line in a row) and rendered as React text with `white-space: pre-wrap`. No markdown, no HTML, no automatic links. A post containing `<script>` or `<img onerror>` shows those characters and nothing runs (e2e). If rich text is ever added, it must go through DOMPurify (§10).
+
+## D-082 · Phase 6b · Nudges: once a day per person, mutable
+
+- `nudges` (group, from, to, kind, the sender's local day). Kinds: Praying for you, Check in today, You've got this, Call me if you need, and Please pray for me (only from the slip page, to a partner).
+- **One per sender per recipient per day, in any group,** held by a unique index, so twenty requests at once leave exactly one nudge (e2e); `send_nudge` answers `nudge_already_sent` to the rest. `private.throttle` adds 60 an hour (the app allows 50).
+- **Muting:** `privacy_settings.nudges_muted` (everywhere, on Settings) and `group_members.nudges_muted` (one group, on the group's Settings). People who muted don't get a Nudge button at all (`group_nudge_targets`), and the database refuses with `nudges_muted`.
+- Received nudges show in a "For you" card on Home and on the group home (last three days) until Phase 7's notifications. Nobody else can read them; a block removes them.
+- A nudge is encouragement: +1 XP in that group (once per nudge, at most 10 a day with the rest) and it counts toward Encourager.
+
+## D-083 · Phase 6b · Accountability partners
+
+- `partnerships` (group, who asked, who was asked, pending / active / ended, each person's alert choice). Inside one group, both must agree; **at most two active partners per person per group** (owner, 2026-10-12; requests count while open). Requests lapse after 14 days. Either partner ends it at any time; the reason isn't shown.
+- **What a partner sees:** `util.are_partners_in(group, a, b)` gives each partner the other's mood, urges and triggers in `group_checkins_today` **only in that group**; `util.are_partners` (any shared partnership) opens what someone set to "partners only" on their profile (the testimony starts there). It replaces the Phase 2 stand-in (D-044).
+- **Alerts:** each person chooses whether their partner may be alerted when they miss two days or press SOS (`set_partner_alerts`). The alerts themselves arrive with notifications (Phase 7) and SOS (Phase 8).
+- **What ends a partnership:** leaving or being removed from the group, a block either way, or starting to close the account (triggers), as well as either partner.
+- Page: `/groups/[id]/partner` (tab "Partner"). Functions: `request_partner`, `respond_partner` (accept, decline, or withdraw by the one who asked), `end_partnership`, `set_partner_alerts`, `my_partnerships`.
+
+## D-084 · Phase 6b · Asking for prayer from the slip page
+
+- The slip page's card (D-046) now offers "Ask {partner} to pray" (a "Please pray for me" nudge) and "Ask my group to pray" (a prayer request on the chosen group's wall, pre-filled with "Please pray for me today.", which the person can change). Nothing in either says what happened.
+- The page stays at `/check-in/done?date=…` for both answers (D-055); the result comes back as a neutral `?prayer=` value.
+
+## D-085 · Phase 6b · Milestone cards
+
+- When the job awards a free-days badge **from 7 days up** (owner, 2026-10-12), a trigger posts a milestone card (a `posts` row of kind `milestone`, carrying the badge, no text) to each group where the member is active and shares their streak or more. One card per group, person and badge.
+- A card shows only while its member still shares their streak or more there and keeps cards on (`util.milestone_visible`, applied in RLS and the wall), because it hints at a streak, like a badge (D-072). **On by default; each person can turn them off** in Settings (`privacy_settings.milestone_cards`).
+- Everyone in the group can react to and comment on a card; its member can delete it but not edit it.

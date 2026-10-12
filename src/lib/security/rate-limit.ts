@@ -70,6 +70,10 @@ export const rateLimitRules = {
   reportByUser: { limit: 20, windowSeconds: 24 * 60 * 60 },
   /** Blocking and unblocking (the database allows 40 a day). */
   blockByUser: { limit: 30, windowSeconds: 24 * 60 * 60 },
+  /** Nudges, including asking a partner to pray (D-082; the database allows 60 an hour). */
+  nudgeByUser: { limit: 50, windowSeconds: 60 * 60 },
+  /** Asking, answering and ending partnerships, and alert choices (the database allows 25 a day). */
+  partnerByUser: { limit: 20, windowSeconds: 24 * 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;

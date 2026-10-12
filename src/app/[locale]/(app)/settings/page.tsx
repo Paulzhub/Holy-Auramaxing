@@ -5,7 +5,8 @@ import { PageHeader } from "@/components/shell/app-shell";
 import { ThemeSwitcher } from "@/components/shell/theme-switcher";
 import { Card, CardTitle } from "@/components/ui/card";
 import { getThemePreference } from "@/lib/server/theme";
-import { SignOutButton } from "@/features/auth";
+import { requireAccount, SignOutButton } from "@/features/auth";
+import { getSocialSettings, SocialNotice, SocialSettingsCard } from "@/features/social";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
 
@@ -14,14 +15,20 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("settings") };
 }
 
-export default async function Page() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export default async function Page({ searchParams }: { searchParams: SearchParams }) {
+  const [{ userId }, query] = await Promise.all([requireAccount(), searchParams]);
+  const socialSettings = await getSocialSettings(userId);
   const t = await getTranslations("pages.settings");
   const tb = await getTranslations("social.block");
+  const tn = await getTranslations("social.nudges");
   const theme = await getThemePreference();
 
   return (
     <>
       <PageHeader title={t("title")} lede={t("lede")} />
+      <SocialNotice notice={query.notice} error={query.error} />
       <div className="stack">
         <Card>
           <div className="grid gap-3">
@@ -45,6 +52,13 @@ export default async function Page() {
                 {t("securityLink")}
               </Link>
             </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="grid gap-3">
+            <CardTitle as="h2">{tn("settingsTitle")}</CardTitle>
+            <p className="text-muted">{tn("settingsBody")}</p>
+            <SocialSettingsCard settings={socialSettings} />
           </div>
         </Card>
         <Card>
