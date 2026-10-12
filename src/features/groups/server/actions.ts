@@ -32,6 +32,7 @@ import {
   covenantSchema,
   createGroupFields,
   createGroupSchema,
+  goalSchema,
   groupChallengeSchema,
   groupDetailsSchema,
   inviteSchema,
@@ -319,7 +320,33 @@ export async function revokeInviteAction(groupId: string, formData: FormData): P
   if (!ctx || !uuidSchema.safeParse(inviteId).success) return go(`/groups/${groupId}/invites?error=rateLimited`);
   const { error } = await ctx.rpc("revoke_group_invite", { p_invite: inviteId });
   refresh();
-  return go(`/groups/${groupId}/invites?${error ? `error=${groupErrorKey(error)}` : "notice=inviteRevoked"}`);
+  // From the invite's own page (D-076), back to it; otherwise the list.
+  const back =
+    formData.get("from") === "detail" ? `/groups/${groupId}/invites/${inviteId}` : `/groups/${groupId}/invites`;
+  return go(`${back}?${error ? `error=${groupErrorKey(error)}` : "notice=inviteRevoked"}`);
+}
+
+// ---------------------------------------------------------------- goal
+
+/** Sets, changes or ends the group's goal (owners and admins, D-075). One-button form: redirects home. */
+export async function goalAction(groupId: string, formData: FormData): Promise<void> {
+  const back = `/groups/${groupId}`;
+  const ctx = await managing(groupId);
+  if (!ctx) return go(`${back}?error=rateLimited`);
+  if (formData.get("op") === "end") {
+    const { error } = await ctx.rpc("end_group_goal", { p_group: groupId });
+    refresh();
+    return go(`${back}?${error ? `error=${groupErrorKey(error)}` : "notice=goalEnded"}`);
+  }
+  const parsed = goalSchema.safeParse({ period: formData.get("period"), target: formData.get("target") });
+  if (!parsed.success) return go(`${back}?error=invalidInput`);
+  const { error } = await ctx.rpc("set_group_goal", {
+    p_group: groupId,
+    p_period: parsed.data.period,
+    p_target: parsed.data.target,
+  });
+  refresh();
+  return go(`${back}?${error ? `error=${groupErrorKey(error)}` : "notice=goalSet"}`);
 }
 
 // ---------------------------------------------------------------- members

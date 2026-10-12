@@ -48,3 +48,8 @@ export function allowedShareLevels(min: ShareLevel): ShareLevel[] {
 export function isShareLevel(value: unknown): value is ShareLevel {
   return typeof value === "string" && (SHARE_LEVELS as readonly string[]).includes(value);
 }
+
+/** A group's goal of free days together repeats every week, month, quarter or year (owner, 2026-10-12, D-075). */
+export const GOAL_PERIODS = ["week", "month", "quarter", "year"] as const;
+export type GoalPeriod = (typeof GOAL_PERIODS)[number];
+export const GOAL_TARGET_MAX = 1_000_000;

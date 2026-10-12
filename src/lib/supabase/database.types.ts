@@ -233,6 +233,52 @@ export type Database = {
           },
         ];
       };
+      group_goals: {
+        Row: {
+          group_id: string;
+          period: string;
+          set_at: string;
+          set_by: string | null;
+          target: number;
+        };
+        Insert: {
+          group_id: string;
+          period: string;
+          set_at?: string;
+          set_by?: string | null;
+          target: number;
+        };
+        Update: {
+          group_id?: string;
+          period?: string;
+          set_at?: string;
+          set_by?: string | null;
+          target?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "group_goals_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: true;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "group_goals_set_by_fkey";
+            columns: ["set_by"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "group_goals_set_by_fkey";
+            columns: ["set_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       group_invites: {
         Row: {
           code_hash: string;
@@ -456,6 +502,99 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [];
+      };
+      leaderboard_entries: {
+        Row: {
+          encourager: number;
+          encourager_at: string | null;
+          encourager_week: number;
+          encourager_week_at: string | null;
+          free_days: number;
+          free_days_at: string | null;
+          free_days_week: number;
+          free_days_week_at: string | null;
+          goal_days: number;
+          goal_key: string | null;
+          group_id: string;
+          level: number;
+          level_at: string | null;
+          refreshed_at: string;
+          stale_at: string | null;
+          streak: number;
+          streak_at: string | null;
+          user_id: string;
+          week_of: string;
+          xp: number;
+          xp_at: string | null;
+          xp_week: number;
+          xp_week_at: string | null;
+        };
+        Insert: {
+          encourager?: number;
+          encourager_at?: string | null;
+          encourager_week?: number;
+          encourager_week_at?: string | null;
+          free_days?: number;
+          free_days_at?: string | null;
+          free_days_week?: number;
+          free_days_week_at?: string | null;
+          goal_days?: number;
+          goal_key?: string | null;
+          group_id: string;
+          level?: number;
+          level_at?: string | null;
+          refreshed_at?: string;
+          stale_at?: string | null;
+          streak?: number;
+          streak_at?: string | null;
+          user_id: string;
+          week_of: string;
+          xp?: number;
+          xp_at?: string | null;
+          xp_week?: number;
+          xp_week_at?: string | null;
+        };
+        Update: {
+          encourager?: number;
+          encourager_at?: string | null;
+          encourager_week?: number;
+          encourager_week_at?: string | null;
+          free_days?: number;
+          free_days_at?: string | null;
+          free_days_week?: number;
+          free_days_week_at?: string | null;
+          goal_days?: number;
+          goal_key?: string | null;
+          group_id?: string;
+          level?: number;
+          level_at?: string | null;
+          refreshed_at?: string;
+          stale_at?: string | null;
+          streak?: number;
+          streak_at?: string | null;
+          user_id?: string;
+          week_of?: string;
+          xp?: number;
+          xp_at?: string | null;
+          xp_week?: number;
+          xp_week_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "leaderboard_entries_group_id_user_id_fkey";
+            columns: ["group_id", "user_id"];
+            isOneToOne: true;
+            referencedRelation: "group_checkins_today";
+            referencedColumns: ["group_id", "user_id"];
+          },
+          {
+            foreignKeyName: "leaderboard_entries_group_id_user_id_fkey";
+            columns: ["group_id", "user_id"];
+            isOneToOne: true;
+            referencedRelation: "group_members";
+            referencedColumns: ["group_id", "user_id"];
+          },
+        ];
       };
       level_tiers: {
         Row: {
@@ -972,6 +1111,7 @@ export type Database = {
       decline_covenant_change: { Args: { p_proposal: string }; Returns: undefined };
       decline_join_request: { Args: { p_group: string; p_user: string }; Returns: undefined };
       delete_group: { Args: { p_confirm_name: string; p_group: string }; Returns: undefined };
+      end_group_goal: { Args: { p_group: string }; Returns: undefined };
       group_invite_details: {
         Args: { p_code_hash?: string; p_token_hash: string };
         Returns: {
@@ -993,6 +1133,25 @@ export type Database = {
           status: string;
         }[];
       };
+      group_invite_people: {
+        Args: { p_invite: string };
+        Returns: {
+          member_id: string;
+          member_status: string;
+          since: string;
+        }[];
+      };
+      group_leaderboard: {
+        Args: { p_after?: number; p_board?: string; p_group: string; p_limit?: number; p_period?: string };
+        Returns: {
+          is_hidden: boolean;
+          is_me: boolean;
+          member_id: string;
+          place: number;
+          score: number;
+        }[];
+      };
+      group_together: { Args: { p_group: string }; Returns: Json };
       join_group: {
         Args: {
           p_accept_covenant: boolean;
@@ -1053,6 +1212,7 @@ export type Database = {
         Args: { p_local_date: string; p_note_encrypted?: string; p_triggers?: string[] };
         Returns: undefined;
       };
+      set_group_goal: { Args: { p_group: string; p_period: string; p_target: number }; Returns: undefined };
       set_group_member_role: { Args: { p_group: string; p_role: string; p_user: string }; Returns: undefined };
       set_group_picture_pending: { Args: { p_group: string; p_path: string }; Returns: string };
       submit_checkin: {

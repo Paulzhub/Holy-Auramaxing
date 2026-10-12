@@ -8,7 +8,7 @@ import { MemberBadges } from "@/features/gamification";
 import { avatarUrl } from "@/features/profile";
 import { Link } from "@/i18n/navigation";
 
-import type { ShareLevel } from "../constants";
+import { GOAL_PERIODS, GOAL_TARGET_MAX, type GoalPeriod, type ShareLevel } from "../constants";
 import { databaseErrorKeys } from "../errors";
 import type { GroupErrorKey } from "../form-state";
 import { groupPhase, type GroupPhase } from "../lifecycle";
@@ -16,6 +16,7 @@ import { groupPictureUrl } from "../picture-url";
 import {
   archiveGroupAction,
   deleteGroupAction,
+  goalAction,
   leaveGroupAction,
   memberAction,
   proposalAction,
@@ -50,6 +51,8 @@ const notices = [
   "covenantWithdrawn",
   "joined",
   "requested",
+  "goalSet",
+  "goalEnded",
 ] as const;
 type Notice = (typeof notices)[number];
 
@@ -105,13 +108,14 @@ export async function GroupHeader({
   current,
 }: {
   ctx: GroupContext;
-  current: "home" | "members" | "invites" | "settings";
+  current: "home" | "leaderboard" | "members" | "invites" | "settings";
 }) {
   const t = await getTranslations("groups");
   const { group } = ctx;
-  type Tab = { key: "home" | "members" | "invites" | "settings"; href: string };
+  type Tab = { key: "home" | "leaderboard" | "members" | "invites" | "settings"; href: string };
   const tabs: Tab[] = [
     { key: "home", href: `/groups/${group.id}` },
+    { key: "leaderboard", href: `/groups/${group.id}/leaderboard` },
     { key: "members", href: `/groups/${group.id}/members` },
     ...(ctx.isAdmin ? [{ key: "invites", href: `/groups/${group.id}/invites` } as Tab] : []),
     { key: "settings", href: `/groups/${group.id}/settings` },
@@ -665,7 +669,17 @@ export async function DangerZone({ ctx, members, error }: { ctx: GroupContext; m
 
 /** Placeholder cards for what later phases bring to a group's home. */
 /** The group home's panels. `today` is the check-in panel, supplied by the page (checkins module). */
-export async function GroupHomeSkeleton({ ctx, today }: { ctx: GroupContext; today?: ReactNode }) {
+export async function GroupHomeSkeleton({
+  ctx,
+  today,
+  leaderboard,
+  together,
+}: {
+  ctx: GroupContext;
+  today?: ReactNode;
+  leaderboard?: ReactNode;
+  together?: ReactNode;
+}) {
   const t = await getTranslations("groups.home");
   const card = (key: "today" | "leaderboard" | "wall" | "together") => (
     <section key={key} className="ui-card group-placeholder" aria-labelledby={`home-${key}`}>
@@ -687,9 +701,80 @@ export async function GroupHomeSkeleton({ ctx, today }: { ctx: GroupContext; tod
         </section>
       ) : null}
       {today ?? card("today")}
-      {card("leaderboard")}
+      {leaderboard ?? card("leaderboard")}
+      {together ?? card("together")}
       {card("wall")}
-      {card("together")}
     </div>
+  );
+}
+
+/**
+ * Setting, changing or ending the group's goal (owners and admins, D-075):
+ * plain forms inside <details>, so no JavaScript is needed.
+ */
+export async function GoalForm({
+  ctx,
+  goal,
+}: {
+  ctx: GroupContext;
+  goal: { period: GoalPeriod; target: number } | null;
+}) {
+  if (!ctx.isAdmin || ctx.group.archivedAt) return null;
+  const t = await getTranslations("leaderboard.goalForm");
+  return (
+    <details className="group-confirm goal-form">
+      <summary className={buttonVariants({ variant: "secondary", size: "sm" })}>
+        {goal ? t("change") : t("set")}
+      </summary>
+      <div className="group-confirm__body">
+        <form action={goalAction.bind(null, ctx.group.id)} className="goal-form__form">
+          <input type="hidden" name="op" value="set" />
+          <div className="ui-field">
+            <label className="ui-label" htmlFor="goal-target">
+              {t("target")}
+            </label>
+            <p className="ui-hint" id="goal-target-hint">
+              {t("targetHint")}
+            </p>
+            <input
+              id="goal-target"
+              name="target"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={GOAL_TARGET_MAX}
+              required
+              defaultValue={goal?.target ?? 100}
+              className="ui-input"
+              aria-describedby="goal-target-hint"
+            />
+          </div>
+          <div className="ui-field">
+            <label className="ui-label" htmlFor="goal-period">
+              {t("period")}
+            </label>
+            <select id="goal-period" name="period" className="ui-input" defaultValue={goal?.period ?? "month"}>
+              {GOAL_PERIODS.map((p) => (
+                <option key={p} value={p}>
+                  {t(`periods.${p}`)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button type="submit" className={buttonVariants({ variant: "primary", size: "sm" })}>
+            {t("save")}
+          </button>
+        </form>
+        {goal ? (
+          <form action={goalAction.bind(null, ctx.group.id)} className="goal-form__end">
+            <input type="hidden" name="op" value="end" />
+            <p>{t("endNote")}</p>
+            <button type="submit" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+              {t("end")}
+            </button>
+          </form>
+        ) : null}
+      </div>
+    </details>
   );
 }

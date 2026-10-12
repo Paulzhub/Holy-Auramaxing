@@ -14,11 +14,13 @@ export { groupPictureUrl } from "./picture-url";
 export {
   getGroupInvites,
   getGroupMembers,
+  getInviteDetail,
   getMyGroups,
   getOpenProposal,
   requireGroup,
   type Group,
   type GroupContext,
+  type InviteDetail,
   type MemberCard,
   type MyGroupItem,
 } from "./server/queries";
@@ -31,6 +33,7 @@ export {
   CovenantSummary,
   DangerZone,
   GroupHeader,
+  GoalForm,
   GroupHomeSkeleton,
   GroupList,
   GroupNotice,

@@ -316,4 +316,179 @@
     block-size: 0.9rem;
     flex: none;
   }
+
+  /* ---------- leaderboards (D-074) ----------
+     Boards and periods are links styled as tabs and chips, so the page
+     works without JavaScript. Nothing here is red: a place is never a
+     verdict. */
+  .lb-tabs ul,
+  .lb-periods ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lb-tabs__link,
+  .lb-periods__link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    padding-inline: var(--space-3);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .lb-periods__link {
+    min-block-size: 2.25rem;
+    font-size: var(--text-sm);
+  }
+
+  .lb-tabs__link:hover,
+  .lb-periods__link:hover {
+    border-color: var(--color-ink-muted);
+  }
+
+  .lb-tabs__link[aria-current="page"],
+  .lb-periods__link[aria-current="page"] {
+    border-color: var(--color-accent-strong);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .lb-board,
+  .lb-preview {
+    display: grid;
+    gap: var(--space-3);
+    min-inline-size: 0;
+  }
+
+  .lb-board > *,
+  .lb-preview > * {
+    margin: 0;
+  }
+
+  .lb-board__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .lb-board__head > h2 {
+    margin: 0;
+  }
+
+  .lb-me {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .lb-me__title {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 650;
+    color: var(--color-ink-muted);
+  }
+
+  .lb-more {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .lb-more a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+  }
+
+  .lb-notes {
+    display: grid;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+  }
+
+  .lb-notes p {
+    margin: 0;
+  }
+
+  /* ---------- Together and the group goal (D-075) ---------- */
+  .together-card {
+    display: grid;
+    gap: var(--space-2);
+    min-inline-size: 0;
+  }
+
+  .together-card > * {
+    margin: 0;
+  }
+
+  .together-card__total {
+    font-family: var(--font-display-stack);
+    font-size: var(--text-xl);
+    font-weight: 650;
+  }
+
+  .together-card__goal {
+    display: grid;
+    gap: var(--space-2);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--color-line-subtle);
+  }
+
+  .together-card__goal > * {
+    margin: 0;
+  }
+
+  .together-card__goal-title {
+    font-size: var(--text-base);
+    font-weight: 650;
+  }
+
+  .goal-bar {
+    display: block;
+    inline-size: 100%;
+    block-size: 0.75rem;
+  }
+
+  .goal-bar__track {
+    fill: var(--color-sunken);
+    stroke: var(--color-line);
+    stroke-width: 0.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .goal-bar__fill {
+    fill: var(--color-accent-strong);
+  }
+
+  @media (forced-colors: active) {
+    .goal-bar__fill {
+      fill: Highlight;
+    }
+
+    .goal-bar__track {
+      stroke: CanvasText;
+    }
+  }
+
+  .goal-form__form,
+  .goal-form__end {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .goal-form__end {
+    margin-block-start: var(--space-3);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--color-line-subtle);
+  }
 }

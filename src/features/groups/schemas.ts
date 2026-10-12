@@ -1,6 +1,14 @@
 import { z } from "zod";
 
-import { CHALLENGE_TYPES, GROUP_LIMITS, INVITE_LIMITS, JOIN_POLICIES, SHARE_LEVELS } from "./constants";
+import {
+  CHALLENGE_TYPES,
+  GOAL_PERIODS,
+  GOAL_TARGET_MAX,
+  GROUP_LIMITS,
+  INVITE_LIMITS,
+  JOIN_POLICIES,
+  SHARE_LEVELS,
+} from "./constants";
 import type { GroupErrorKey, GroupField } from "./form-state";
 
 /**
@@ -144,6 +152,12 @@ export const joinSchema = z.object({
 });
 
 export const uuidSchema = z.uuid();
+
+/** A group goal (D-075): free days together, every week, month, quarter or year. */
+export const goalSchema = z.object({
+  period: z.enum(GOAL_PERIODS),
+  target: z.coerce.number().int().min(1).max(GOAL_TARGET_MAX),
+});
 
 const knownKeys = new Set<string>([
   "nameLength",

@@ -36,7 +36,8 @@
     "groupInvites": "Invites",
     "groupSettings": "Group settings",
     "join": "Join a group",
-    "progress": "Progress"
+    "progress": "Progress",
+    "groupLeaderboard": "Leaderboard"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -1048,6 +1049,7 @@
     "nav": {
       "label": "Group",
       "home": "Overview",
+      "leaderboard": "Leaderboard",
       "members": "Members",
       "invites": "Invites",
       "settings": "Settings"
@@ -1139,7 +1141,8 @@
       "revoke": "Stop this invite",
       "regenerate": "Replace with a new one",
       "actionsFor": "Invite made {created}, working until {expires}",
-      "confirmRevoke": "Stop this invite? Anyone holding it won't be able to join with it."
+      "confirmRevoke": "Stop this invite? Anyone holding it won't be able to join with it.",
+      "detailsFor": "{status} invite, made {created}: see details"
     },
     "settings": {
       "lede": "Your place in this group, and the group itself.",
@@ -1261,7 +1264,9 @@
       "covenantDeclined": "You didn't agree, so the covenant stays as it was.",
       "covenantWithdrawn": "The proposed change is withdrawn.",
       "joined": "Welcome! You're in. Say hello when you check in.",
-      "requested": "Your request is sent. An owner or admin will look at it soon."
+      "requested": "Your request is sent. An owner or admin will look at it soon.",
+      "goalSet": "The goal is saved. Progress fills in within a few seconds.",
+      "goalEnded": "The goal has ended. Every free day still counts."
     },
     "errors": {
       "nameLength": "Use 3 to 60 characters for the name.",
@@ -1311,6 +1316,24 @@
       "avatarSize": "Please choose a picture under 5 MB.",
       "avatarUnreadable": "We couldn't open that picture. Please try another one.",
       "avatarTooSmall": "That picture is very small. Please choose one at least 64 pixels wide."
+    },
+    "inviteDetail": {
+      "back": "Back to all invites",
+      "title": "Invite details",
+      "status": "Status",
+      "madeBy": "Made by",
+      "madeOn": "Made on",
+      "worksUntil": "Works until",
+      "ended": "Ended",
+      "uses": "Uses",
+      "someone": "Someone",
+      "formerMember": "Someone no longer in the group",
+      "secretNote": "The link and code were shown once, when the invite was made. To share it again, replace it with a new one.",
+      "peopleTitle": "Who used it",
+      "peopleEmpty": "Nobody has used this invite yet.",
+      "joined": "Joined {date}",
+      "asked": "Asked to join {date}",
+      "peopleNote": "Each person's own privacy settings apply here."
     }
   },
   "checkins": {
@@ -1612,6 +1635,79 @@
         "name": "First Testimony",
         "description": "Shared your story with your group for the first time."
       }
+    }
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "previewLede": "Consistency: XP for checking in honestly, whatever the answer.",
+    "seeAll": "See the whole leaderboard",
+    "boardsLabel": "Leaderboards",
+    "boards": {
+      "xp": "Consistency",
+      "level": "Level",
+      "streak": "Current streak",
+      "free_days": "Free days this challenge",
+      "encourager": "Encourager"
+    },
+    "hints": {
+      "xp": "XP for every honest check-in, free or not, plus a bonus for checking in day after day.",
+      "level": "Each member's level as it stands today.",
+      "streak": "Free days in a row, as of today.",
+      "free_days": "Free days since the challenge began, or since joining.",
+      "encourager": "Encouragement given to others in this group."
+    },
+    "periodsLabel": "Show",
+    "periods": {
+      "week": "This week",
+      "all": "All time"
+    },
+    "periodSuffix": ", {period}",
+    "score": {
+      "xp": "{count} XP",
+      "level": "Level {count}",
+      "streak": "{count, plural, one {# day} other {# days}}",
+      "free_days": "{count, plural, one {# free day} other {# free days}}",
+      "encourager": "{count, plural, one {# encouragement} other {# encouragements}}"
+    },
+    "you": "You",
+    "someone": "Someone",
+    "yourPlace": "Your place",
+    "showMore": "Show the next {count}",
+    "backToTop": "Back to the top",
+    "empty": "Nobody here yet.",
+    "hiddenNote": "You're hidden on this leaderboard: the group sees your place, not your name or photo.",
+    "shareNote": "Members who share only that they checked in appear on Consistency and Encourager.",
+    "notOnBoard": "You share only that you checked in with this group, so you appear on Consistency and Encourager.",
+    "encouragerSoon": "Encouragement arrives with the group wall. Until then, everyone starts here at 0.",
+    "weekNote": "This week runs Monday to Sunday in the group's time zone.",
+    "updatedNote": "Updated within a few seconds of each check-in. Ties go to whoever got there first.",
+    "together": {
+      "title": "Together",
+      "total": "{count, plural, one {# free day} other {# free days}} together",
+      "countedAll": "Counted from every member's free days in the challenge.",
+      "counted": "Counted from {counted} of {total} members: those who share at least their streak with the group.",
+      "goalTitle": "Group goal",
+      "goalText": "{progress} of {target} free days {period, select, week {this week} month {this month} quarter {this quarter} year {this year} other {}}",
+      "goalPercent": "{percent}% of the way",
+      "goalReached": "Goal reached. Thank God for every one of these days!",
+      "goalDates": "{from} to {to}",
+      "goalNone": "No goal yet."
+    },
+    "goalForm": {
+      "set": "Set a goal",
+      "change": "Change the goal",
+      "target": "Free days together",
+      "targetHint": "Counted from members who share at least their streak. The goal starts again each period.",
+      "period": "Every",
+      "periods": {
+        "week": "Week",
+        "month": "Month",
+        "quarter": "Quarter",
+        "year": "Year"
+      },
+      "save": "Save the goal",
+      "endNote": "Ending the goal removes the progress bar. Every free day still counts.",
+      "end": "End the goal"
     }
   }
 }

@@ -669,4 +669,29 @@
       background-color: Highlight;
     }
   }
+
+  /* ---------- an invite's own page (D-076) ---------- */
+  .invite-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .invite-facts > div {
+    display: grid;
+    gap: var(--space-1);
+    min-inline-size: 0;
+  }
+
+  .invite-facts dt {
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .invite-facts dd {
+    margin: 0;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
 }

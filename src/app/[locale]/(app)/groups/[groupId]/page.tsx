@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { getGroupToday, GroupToday } from "@/features/checkins";
+import { getLeaderboard, getTogether, LeaderboardPreview, PREVIEW_SIZE, TogetherCard } from "@/features/gamification";
 import {
   CovenantSummary,
+  GoalForm,
   getOpenProposal,
   GroupHeader,
   GroupHomeSkeleton,
@@ -21,15 +23,21 @@ export async function generateMetadata(): Promise<Metadata> {
 type Params = Promise<{ groupId: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-/** A group's home (CLAUDE.md §7.4). Today's check-ins (Phase 4) at each member's share level; leaderboard and wall arrive in Phases 5 and 6. */
+/**
+ * A group's home (CLAUDE.md §7.4). Today's check-ins (Phase 4) at each
+ * member's share level, the top of the leaderboard and the Together total
+ * with the group goal (Phase 5c); the wall arrives in Phase 6.
+ */
 export default async function Page({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const { groupId } = await params;
   const ctx = await requireGroup(groupId);
-  const [t, proposal, query, today] = await Promise.all([
+  const [t, proposal, query, today, board, together] = await Promise.all([
     getTranslations("groups"),
     getOpenProposal(ctx),
     searchParams,
     getGroupToday(groupId, ctx.userId),
+    getLeaderboard(groupId, "xp", "all", 0, PREVIEW_SIZE),
+    getTogether(groupId),
   ]);
   const { group } = ctx;
 
@@ -45,7 +53,16 @@ export default async function Page({ params, searchParams }: { params: Params; s
         ) : null}
         {group.description ? <p className="group-description">{group.description}</p> : null}
         {proposal ? <ProposalCard ctx={ctx} proposal={proposal} /> : null}
-        <GroupHomeSkeleton ctx={ctx} today={<GroupToday members={today} />} />
+        <GroupHomeSkeleton
+          ctx={ctx}
+          today={<GroupToday members={today} />}
+          leaderboard={<LeaderboardPreview groupId={groupId} page={board} />}
+          together={
+            <TogetherCard together={together}>
+              <GoalForm ctx={ctx} goal={together.goal} />
+            </TogetherCard>
+          }
+        />
         <CovenantSummary
           text={group.covenantText}
           minShareLevel={group.minShareLevel}
