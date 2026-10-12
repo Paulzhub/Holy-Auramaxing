@@ -97,6 +97,8 @@ Done when:
 
 ## Phase 5 — Levels, XP, badges and leaderboards
 
+Built in three pull requests (owner, 2026-10-10): 5a levels, missed days, late offline check-ins and the grace review 1 wording (D-064–D-068); 5b XP, badges and the job queue; 5c leaderboards, the group goal, the "Together" total and invite details. A clean day earns no extra XP (D-069).
+
 ```text
 Read CLAUDE.md. Phase 5: Levels, XP, badges and leaderboards (section 7.6). Plan first.
 

@@ -68,7 +68,12 @@
     "prayer": "Lord, this moment is hard. Give me strength for the next minute, and show me the way out you promised. Amen.",
     "comingSoon": "A breathing timer, Scripture cards and one-tap calls to your partner are coming soon.",
     "close": "Close",
-    "done": "I’m okay for now"
+    "done": "I’m okay for now",
+    "afterSlip": "Already slipped? There’s grace for that too.",
+    "afterSlipText": "If we confess our sins, he is faithful and righteous to forgive us the sins, and to cleanse us from all unrighteousness.",
+    "afterSlipReference": "1 John 1:9 (WEB)",
+    "afterSlipNext": "When you’re ready, check in honestly. A slip resets a streak, never you.",
+    "afterSlipLink": "Go to your check-in"
   },
   "landing": {
     "title": "Freedom grows one day at a time",
@@ -144,7 +149,7 @@
       "cellLabel": "{date}: {status}",
       "status": {
         "clean": "Stayed free",
-        "slipped": "Slipped, forgiven",
+        "slipped": "Slipped, held in grace",
         "none": "No check-in",
         "future": "Not yet"
       }
@@ -203,7 +208,7 @@
     "card": {
       "title": "Card",
       "heading": "Day 23 of 90",
-      "body": "Together your group has 1,240 clean days.",
+      "body": "Together your group has 1,240 free days.",
       "linkHeading": "Open group",
       "linkBody": "A card that is also a link.",
       "disabledHeading": "Archived group",
@@ -402,7 +407,7 @@
       "title": "Thank you for being honest",
       "lede": "This app is for adults, so we can’t create an account for you.",
       "body": "That doesn’t mean you’re on your own. Struggles like these are common, and there is no shame in asking for help. Talking to someone you trust is a brave first step.",
-      "verseText": "There is therefore now no condemnation for those who are in Christ Jesus.",
+      "verseText": "There is therefore now no condemnation to those who are in Christ Jesus.",
       "verseReference": "Romans 8:1 (WEB)",
       "resourcesTitle": "People who can help",
       "resources": {
@@ -892,6 +897,7 @@
     "deletePage": {
       "title": "Delete your account",
       "lede": "Thank you for being here. Whatever comes next, you’re always welcome back.",
+      "hardStretch": "If you’re leaving because things feel heavy right now, nothing you’ve done closes this door. You can come back any time.",
       "whatHappens": "What happens next",
       "step1": "Your profile disappears from everyone else straight away, and your other devices are signed out.",
       "step2": "For 14 days you can sign in and choose Keep my account. Everything will be as you left it.",
@@ -1055,7 +1061,7 @@
       "wallTitle": "Encouragement wall",
       "wallBody": "Encouragement, prayer requests and testimonies will live here.",
       "togetherTitle": "Together",
-      "togetherBody": "Your group's clean days, added up, will show here.",
+      "togetherBody": "Your group's free days, added up, will show here.",
       "archivedBanner": "This group is archived. Everything is kept, but nothing new can happen here.",
       "inviteNudge": "It's just you so far. Invite the friends you trust.",
       "inviteLink": "Invite people"
@@ -1348,7 +1354,7 @@
       "noteHint": "Encrypted. Only you can ever read it. Up to {max} characters.",
       "answeredTitle": "You’ve checked in for {day}",
       "answeredClean": "Your answer: you stayed free.",
-      "answeredSlipped": "Your answer: you slipped, and grace covers it.",
+      "answeredSlipped": "Your answer: you slipped. You’re still held in grace.",
       "changeUntilToday": "You can change it until the end of today, and tomorrow until 12:00.",
       "changeUntilNoon": "You can change it until 12:00 today.",
       "changeSummary": "Change your answer",
@@ -1373,7 +1379,9 @@
       "invalid": "Something in that answer didn’t look right. Please try again.",
       "notFound": "There’s no check-in for that day yet.",
       "saveFailed": "That didn’t save. Please try again.",
-      "rateLimited": "That’s a lot of changes in a short time. Please wait a little and try again."
+      "rateLimited": "That’s a lot of changes in a short time. Please wait a little and try again.",
+      "syncTooOld": "This check-in was saved on your device too long ago to count. Today is a fresh start.",
+      "alreadyAnswered": "That day already has an answer, so this one wasn’t needed."
     },
     "done": {
       "title": "Thank you for checking in",
@@ -1384,18 +1392,18 @@
       "homeLink": "Back to today"
     },
     "mercies": {
-      "title": "His mercies are new this morning",
+      "title": "His mercies are new every morning",
       "status": "Saved. Thank you for being honest.",
       "lede": "A slip resets a streak, never you. You are forgiven, and you are not alone.",
       "verseText": "If we confess our sins, he is faithful and righteous to forgive us the sins, and to cleanse us from all unrighteousness.",
       "verseReference": "1 John 1:9 (WEB)",
-      "reflectionTitle": "What led to it?",
-      "reflectionLede": "Optional, and private to you. Noticing the pattern helps the next streak grow longer.",
+      "reflectionTitle": "What was going on?",
+      "reflectionLede": "Optional, and private to you. Noticing what was happening can help you see the next hard moment coming.",
       "reflectionNoteLabel": "Your reflection",
       "reflectionSave": "Save my reflection",
       "reflectionSaved": "Saved. Only you can read it.",
       "prayerTitle": "You don’t have to carry this alone",
-      "prayerBody": "Tell someone you trust and ask them to pray with you. Soon you’ll be able to ask your group or your partner to pray from right here.",
+      "prayerBody": "When you’re ready, tell someone you trust and ask them to pray with you. You don’t have to explain everything. Soon you’ll be able to ask your group or your partner from right here.",
       "prayerGroups": "Open your groups",
       "nextTitle": "One next step",
       "next": {
@@ -1409,7 +1417,7 @@
         },
         "verse": {
           "title": "Read one psalm",
-          "body": "Psalm 51 was written for days like this. Read it slowly, out loud if you can."
+          "body": "Psalm 51 is David’s prayer after he fell. Start with verses 10 to 12, and read slowly, out loud if you can."
         },
         "message": {
           "title": "Message a friend",
@@ -1419,22 +1427,22 @@
       "homeLink": "Back to today"
     },
     "kept": {
-      "slipTitle": "Your streak may have reset today, but look at everything you kept",
+      "slipTitle": "Your streak starts again, but look at everything you kept",
       "pausedTitle": "Your streak paused, but look at everything you’ve built",
-      "cleanDays": "{count, plural, one {# clean day} other {# clean days}}",
+      "cleanDays": "{count, plural, one {# free day} other {# free days}}",
       "streaks": "{count, plural, one {# streak built} other {# streaks built}}",
       "longest": "{count, plural, one {longest streak: # day} other {longest streak: # days}}",
-      "body": "Every one of those days was real, and none of them is undone. Today can be day one of the next streak."
+      "body": "Every one of those days was real, and none of them is undone. Your next free day starts the next streak."
     },
     "stats": {
       "label": "Your streaks",
       "currentStreak": "Current streak",
       "longestStreak": "Longest streak",
-      "totalClean": "Clean days",
+      "totalClean": "Free days",
       "checkinStreak": "Check-in streak",
       "days": "{count, plural, one {# day} other {# days}}",
       "ringLabel": "Current streak",
-      "ringValue": "{count, plural, one {# day} other {# days}}, toward your longest of {longest}",
+      "ringValue": "{count, plural, =0 {Starting again. {longest, plural, =0 {Every day ahead is a fresh start.} one {Your longest is # day, and it’s still yours.} other {Your longest is # days, and it’s still yours.}}} one {# day, toward your longest of {longest}} other {# days, toward your longest of {longest}}}",
       "ringUnit": "{count, plural, one {day} other {days}}"
     },
     "today": {
@@ -1442,7 +1450,7 @@
       "notYet": "You haven’t checked in today yet.",
       "cta": "Check in",
       "doneClean": "You checked in today: you stayed free.",
-      "doneSlipped": "You checked in today. Grace covers it.",
+      "doneSlipped": "You checked in honestly today. You’re held in grace.",
       "yesterdayOpen": "Yesterday is still open until 12:00.",
       "yesterdayLink": "Answer for yesterday",
       "change": "Change today’s answer",
@@ -1473,7 +1481,7 @@
     },
     "insights": {
       "notEnough": "{needed, plural, one {One more check-in} other {# more check-ins}} and patterns will start to show here.",
-      "freeDays": "You stayed free on {clean} of the {total} days you checked in.",
+      "freeDays": "You stayed free on {clean} of the {total} days you checked in, and you were honest every time.",
       "topTriggersOne": "“{first}” comes up most often.",
       "topTriggersTwo": "“{first}” and “{second}” come up most often.",
       "urgesWeekdays": "Urges run stronger on weekdays than at weekends.",
@@ -1491,11 +1499,31 @@
       "checkedIn": "Checked in",
       "notYet": "Not yet",
       "streak": "{count, plural, one {# day streak} other {# day streak}}",
+      "level": "Level {level}",
       "clean": "Stayed free",
       "slipped": "Slipped, held in grace",
       "someone": "A member",
       "you": "You",
       "empty": "Nobody here yet."
+    }
+  },
+  "levels": {
+    "title": "Your level",
+    "levelWord": "level",
+    "levelAndEra": "Level {level} · {era}",
+    "progressLabel": "Progress to the next level",
+    "progress": "{done} of {total} days to {next}",
+    "verseReference": "{reference} (WEB)",
+    "down": "You’re now {label}. Your longest streak and total free days are still yours.",
+    "clay": "Everyone starts as Clay. Each free day shapes you.",
+    "upTitle": "You reached {label}",
+    "upBody": "Every free day counted. Keep walking, one day at a time.",
+    "eraTitle": "A new chapter: {era}",
+    "eraBody": "You’re now {label}, and a new part of the story begins.",
+    "share": "Save a picture of your level",
+    "shareCard": {
+      "levelAndEra": "Level {level} · {era}",
+      "footer": "Holy Auramaxing"
     }
   }
 }

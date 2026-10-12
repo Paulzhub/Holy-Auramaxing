@@ -35,6 +35,8 @@ jobs:
         run: npm run typecheck
       - name: Unit tests
         run: npm test
+      - name: Level reference replay (data/build_levels.py, D-063)
+        run: python3 -I -c "import sys; sys.path.insert(0, 'data'); import build_levels; build_levels.self_test()"
       - name: Build
         run: npm run build
       - name: Audit production dependencies

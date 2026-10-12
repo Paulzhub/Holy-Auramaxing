@@ -22,6 +22,8 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
     <>
       <PageHeader title={t("title")} lede={t("lede")} />
       <div className="stack">
+        {/* Some people leave the morning after a slip (grace review 1, G-15). */}
+        <p className="delete-hard-stretch">{t("hardStretch")}</p>
         <section className="profile-section" aria-labelledby="what-happens-title">
           <h2 id="what-happens-title" className="profile-section__title">
             {t("whatHappens")}

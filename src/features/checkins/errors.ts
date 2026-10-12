@@ -12,6 +12,9 @@ const fromDatabase: Record<string, CheckinErrorKey> = {
   checkin_window_closed: "windowClosed",
   checkin_invalid: "invalid",
   checkin_not_found: "notFound",
+  // Late offline check-ins (D-067).
+  checkin_sync_too_old: "syncTooOld",
+  checkin_already_answered: "alreadyAnswered",
   // The database's own limit (D-051).
   rate_limited: "rateLimited",
 };

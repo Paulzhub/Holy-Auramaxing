@@ -8,6 +8,7 @@ import { exportProfileData } from "@/features/profile";
 import { buildExportArchive, exportFileName } from "@/lib/data-export";
 import { siteOrigin } from "@/lib/env";
 import { consume } from "@/lib/security/rate-limit";
+import { sameOrigin } from "@/lib/security/same-origin";
 import { audit } from "@/lib/server/audit";
 import { devLog } from "@/lib/server/dev-log";
 
@@ -66,19 +67,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     devLog("export", error);
     return back("export-failed");
-  }
-}
-
-function sameOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return false;
-  const site = request.headers.get("sec-fetch-site");
-  if (site && site !== "same-origin") return false;
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  try {
-    return Boolean(host) && new URL(origin).host === host;
-  } catch {
-    return false;
   }
 }
 

@@ -2,7 +2,7 @@
 
 A grace-centred web app and installable PWA for daily check-ins, small-group challenges, accountability and Scripture. The full product spec is in [`CLAUDE.md`](CLAUDE.md), and the build is split into phases in [`PROMPTS.md`](PROMPTS.md).
 
-**Status:** Phases 1, 2 (2a–2e) and 3 (groups) are done. Phase 4 (check-ins and streaks) is in review; Phase 5 (levels, XP, badges and leaderboards) is next.
+**Status:** Phases 1–4 and the four post-Phase 4 reviews (security, privacy, accessibility, grace and tone) are done. Phase 5 is being built in three parts: 5a (levels, missed days, late offline check-ins) is in review; 5b (XP and badges) and 5c (leaderboards and group goals) are next.
 
 ## What you need
 
@@ -99,7 +99,7 @@ npm ci                         # new packages
 npx supabase migration up      # new tables; keeps your local accounts
 ```
 
-Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`; 2d added `EMAIL_PROVIDER`, `PASSKEYS_ENABLED` and the optional `RESEND_API_KEY`/`EMAIL_FROM`; 2e added `CRON_SECRET`; Phases 3 and 4 add none), and restart `npm run dev`: environment files are read only at start-up. When `supabase/config.toml` changed (2d did), restart Supabase too: `npx supabase stop`, then `npx supabase start`.
+Then compare `.env.local` with `.env.example` for new settings (2b added `APP_ENCRYPTION_KEY`; 2d added `EMAIL_PROVIDER`, `PASSKEYS_ENABLED` and the optional `RESEND_API_KEY`/`EMAIL_FROM`; 2e added `CRON_SECRET`; Phases 3, 4 and 5a add none: Phase 5a's tunable values live in the database, D-064), and restart `npm run dev`: environment files are read only at start-up. When `supabase/config.toml` changed (2d did), restart Supabase too: `npx supabase stop`, then `npx supabase start`.
 
 > **Windows tips**
 >
@@ -161,6 +161,7 @@ docs/                        decisions, threat model, design system
 - **Your data (Phase 2e).** Settings → Your data downloads everything as one zip (`data.json`, a CSV per table, your photo). Deleting the account hides your profile at once, signs out your other devices and emails you; for 14 days signing in shows only "Keep my account". Then a daily database job erases the account and everything personal, and the app removes your photo files (D-032, D-033).
 - **Groups (Phase 3).** Anyone with a verified email starts a group in five short steps (name, challenge, who can join, covenant, check). Invite people by link, short code or a QR code in the app's own colours; each invite works for 1–30 days, can have a use limit, and can be stopped or replaced. The link and code are shown once: only scrambled copies are stored. `/join` shows signed-out visitors just the group's name and member count; signed in, it shows the covenant and asks what you'll share (never less than the group's minimum). The header's switcher lists your groups. Every change to a group goes through a database function that checks your role in that group, and is audited; a member of one group can't see or touch another, page or API (pgTAP `020`–`024`, `tests/e2e/group-isolation.spec.ts`; D-034–D-041).
 - **Check-ins (Phase 4).** Once a day, "I stayed free today" or "I slipped", with optional mood, strongest urge, triggers and a private note (encrypted with your id and the day bound in; nobody else can read it, admins included). "Today" is your own day in your time zone, and yesterday stays open until 12:00. Streaks, longest streak, clean days and the check-in streak are recalculated in the database from your check-ins every time you save, so changing an answer always comes out right; a missed day just ends a run, it is never a slip. A slip opens a grace page: a verse, everything you've kept (clean days, streaks built, your longest), an optional private reflection and one next step. `/progress` has your calendar, mood and urge charts and plain-language insights. Groups see you only through a database view that applies what you share **with that group**: check-in only shows "checked in today", streak adds your streak, full adds your answer (pgTAP `030`–`032`; D-042–D-049).
+- **Levels (Phase 5a).** Every free day fills a progress bar (5 days a level up to Level 20, then 10), through 1,003 named levels from "Clay" to "Well Done Ultra Pro Max", each with an era and a World English Bible verse. An honest slip and a missed day cost the same 10 levels, so staying silent never beats telling the truth; days while an account is closing are paused. The level is replayed in the database on every save and read "live", so missed days count even if someone never opens the app. Groups see it only where you share your streak or more. A check-in made offline can be sent up to 7 days later and counts for the day it was made (`POST /api/checkins/sync`; the device side is Phase 10). (pgTAP `050`–`051`; D-063–D-068.)
 - **Accounts.** Sign-up asks "Are you 18 or older?", then shows a plain-language consent notice with two unticked boxes. Only then can an account be created, and the database enforces that order (D-014). Session cookies are httpOnly; `src/proxy.ts` refreshes the session and sends signed-out visitors to `/sign-in`.
 
 ## Continuous integration

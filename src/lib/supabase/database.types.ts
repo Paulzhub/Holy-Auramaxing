@@ -424,6 +424,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      level_tiers: {
+        Row: {
+          era: string;
+          name: string;
+          reference: string;
+          tier: number;
+          verse_text: string;
+        };
+        Insert: {
+          era: string;
+          name: string;
+          reference: string;
+          tier: number;
+          verse_text: string;
+        };
+        Update: {
+          era?: string;
+          name?: string;
+          reference?: string;
+          tier?: number;
+          verse_text?: string;
+        };
+        Relationships: [];
+      };
       notification_settings: {
         Row: {
           discreet_mode: boolean;
@@ -609,8 +633,16 @@ export type Database = {
           checkin_streak: number;
           clean_streaks: number;
           current_streak: number;
+          highest_level: number;
           last_checkin_date: string | null;
           last_clean_date: string | null;
+          level: number;
+          level_before_save: number | null;
+          level_open: number | null;
+          level_open_highest: number | null;
+          level_open_progress_days: number | null;
+          level_open_until: string | null;
+          level_progress_days: number;
           longest_streak: number;
           total_checkins: number;
           total_clean_days: number;
@@ -621,8 +653,16 @@ export type Database = {
           checkin_streak?: number;
           clean_streaks?: number;
           current_streak?: number;
+          highest_level?: number;
           last_checkin_date?: string | null;
           last_clean_date?: string | null;
+          level?: number;
+          level_before_save?: number | null;
+          level_open?: number | null;
+          level_open_highest?: number | null;
+          level_open_progress_days?: number | null;
+          level_open_until?: string | null;
+          level_progress_days?: number;
           longest_streak?: number;
           total_checkins?: number;
           total_clean_days?: number;
@@ -633,8 +673,16 @@ export type Database = {
           checkin_streak?: number;
           clean_streaks?: number;
           current_streak?: number;
+          highest_level?: number;
           last_checkin_date?: string | null;
           last_clean_date?: string | null;
+          level?: number;
+          level_before_save?: number | null;
+          level_open?: number | null;
+          level_open_highest?: number | null;
+          level_open_progress_days?: number | null;
+          level_open_until?: string | null;
+          level_progress_days?: number;
           longest_streak?: number;
           total_checkins?: number;
           total_clean_days?: number;
@@ -665,6 +713,7 @@ export type Database = {
           checked_in_today: boolean | null;
           current_streak: number | null;
           group_id: string | null;
+          level: number | null;
           mood: number | null;
           outcome: string | null;
           triggers: string[] | null;
@@ -690,6 +739,7 @@ export type Database = {
           handle: string | null;
           id: string | null;
           joined_at: string | null;
+          level: number | null;
           testimony: string | null;
         };
         Relationships: [];
@@ -809,6 +859,7 @@ export type Database = {
         }[];
       };
       my_checkin_overview: { Args: Record<PropertyKey, never>; Returns: Json };
+      my_level: { Args: Record<PropertyKey, never>; Returns: Json };
       my_sessions: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -851,6 +902,18 @@ export type Database = {
           p_mood?: number;
           p_note_encrypted?: string;
           p_outcome: string;
+          p_triggers?: string[];
+          p_urge_level?: number;
+        };
+        Returns: string;
+      };
+      submit_offline_checkin: {
+        Args: {
+          p_local_date: string;
+          p_mood?: number;
+          p_note_encrypted?: string;
+          p_outcome: string;
+          p_recorded_at: string;
           p_triggers?: string[];
           p_urge_level?: number;
         };

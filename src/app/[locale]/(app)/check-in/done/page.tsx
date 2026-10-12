@@ -15,6 +15,7 @@ import {
   ReflectionForm,
   StreakStats,
 } from "@/features/checkins";
+import { getMyLevel, levelChangeAfterSave, LevelChangeNotice, type LevelOverview } from "@/features/gamification";
 import { Link, redirect } from "@/i18n/navigation";
 
 // A neutral tab title for both answers: never anything about a slip (§2.3).
@@ -34,7 +35,12 @@ type Checkin = NonNullable<Awaited<ReturnType<typeof getCheckinFor>>>;
  * comes from the saved check-in, never from the URL.
  */
 export default async function Page({ searchParams }: { searchParams: SearchParams }) {
-  const [{ userId }, overview, query] = await Promise.all([requireAccount(), getCheckinOverview(), searchParams]);
+  const [{ userId }, overview, query, level] = await Promise.all([
+    requireAccount(),
+    getCheckinOverview(),
+    searchParams,
+    getMyLevel(),
+  ]);
   const date = query.date && /^\d{4}-\d{2}-\d{2}$/.test(query.date) ? query.date : overview.today;
   const checkin = await getCheckinFor(userId, date);
   if (!checkin) {
@@ -43,14 +49,14 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
   }
 
   return checkin.outcome === "slipped" ? (
-    <NewMercies overview={overview} checkin={checkin} date={date} query={query} />
+    <NewMercies overview={overview} checkin={checkin} date={date} query={query} level={level} />
   ) : (
-    <Done overview={overview} date={date} />
+    <Done overview={overview} date={date} level={level} />
   );
 }
 
 /** After a clean day: a quiet thank-you, the streak ring and a verse. */
-async function Done({ overview, date }: { overview: Overview; date: string }) {
+async function Done({ overview, date, level }: { overview: Overview; date: string; level: LevelOverview }) {
   const [t, tForm, format] = await Promise.all([
     getTranslations("checkins.done"),
     getTranslations("checkins.form"),
@@ -71,6 +77,7 @@ async function Done({ overview, date }: { overview: Overview; date: string }) {
         </p>
         <p className="page-lede">{t("lede")}</p>
       </header>
+      <LevelChangeNotice change={levelChangeAfterSave(level)} />
       <StreakStats overview={overview} />
       <figure className="verse">
         <blockquote>
@@ -100,11 +107,13 @@ async function NewMercies({
   checkin,
   date,
   query,
+  level,
 }: {
   overview: Overview;
   checkin: Checkin;
   date: string;
   query: { saved?: string; error?: string };
+  level: LevelOverview;
 }) {
   const t = await getTranslations("checkins.mercies");
   const canReflect = overview.openDates.includes(date);
@@ -127,6 +136,8 @@ async function NewMercies({
       </header>
 
       <KeptMessage overview={overview} reason="slip" />
+      {/* One quiet line, never a celebration or an alarm (§7.6). */}
+      <LevelChangeNotice change={levelChangeAfterSave(level)} />
       <CheckinErrorBanner error={isCheckinErrorKey(query.error) ? query.error : null} />
       {canReflect ? <ReflectionForm existing={checkin} saved={query.saved === "1"} /> : null}
       <PrayerCard />

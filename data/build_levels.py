@@ -1,4 +1,5 @@
-"""Builds the level table: tier names, level labels and streak days for levels 0-1000."""
+"""Builds the level table (tier names, level labels and days for levels 0-1002) and holds the
+reference level engine, `replay`, that the Postgres level engine must match (D-063)."""
 import csv, json
 
 VARIANTS = ["", "Lite", "Pro", "Max", "Ultra", "Ultra Pro Max"]
@@ -210,7 +211,16 @@ def days_to_next(level: int) -> int:
 
 
 def replay(days):
-    """Reference level engine. `days` is a date-ordered list of 'clean', 'slipped' or None (no check-in).
+    """Reference level engine (CLAUDE.md §7.6, D-063). `days` lists every day from the day the
+    account started, in date order. Each entry is:
+      'clean'   - a check-in: stayed free. +1 progress; a full bar moves up one level.
+      'slipped' - a check-in: slipped. RELAPSE_LEVEL_PENALTY levels off (never below 0), bar empties.
+      None      - no check-in, and the day's window has closed: a missed day. Costs exactly what a
+                  slip costs (owner, 2026-10-10). It is still shown as "No check-in", never a slip.
+      'paused'  - no check-in while the account was closing for deletion: costs nothing (owner,
+                  2026-10-10), so someone who keeps their account isn't charged for those days.
+    Days before the account started are never passed in. A day whose window is still open
+    (today, or yesterday before 12:00) isn't passed in either until it is answered or closes.
     Returns (level, level_progress_days, highest_level)."""
     level = progress = highest = 0
     for outcome in days:
@@ -219,10 +229,12 @@ def replay(days):
             if progress >= days_to_next(level):
                 level, progress = level + 1, 0
                 highest = max(highest, level)
-        elif outcome == "slipped":
+        elif outcome == "paused":
+            continue
+        elif outcome in ("slipped", None):
             level, progress = max(0, level - RELAPSE_LEVEL_PENALTY), 0
-        else:  # missed day: streak ends, progress empties, no level loss
-            progress = 0
+        else:
+            raise ValueError(outcome)
     return level, progress, highest
 
 
@@ -232,10 +244,21 @@ def self_test():
     assert replay(["clean"] * 9900)[0] == 1000
     assert all(replay(["clean"] * days_for_level(l))[0] == l for l in range(0, MAX_LEVEL + 1))
     lvl25 = ["clean"] * days_for_level(25)
+    lvl40 = ["clean"] * days_for_level(40)
+    # Relapse rule
     assert replay(lvl25 + ["slipped"]) == (15, 0, 25)
     assert replay(["clean"] * days_for_level(7) + ["slipped"])[0] == 0
     assert replay(["slipped"]) == (0, 0, 0)
+    assert replay(["clean"] * 3 + ["slipped"]) == (0, 0, 0)
+    # Missed-day rule: a missed day costs exactly what a slip costs
+    assert replay(lvl25 + [None]) == replay(lvl25 + ["slipped"]) == (15, 0, 25)
+    assert replay(lvl40 + [None] * 3) == (10, 0, 40)
+    assert replay(lvl25 + [None] * 7)[0] == 0  # a week costs 70 levels
     assert replay(["clean"] * 3 + [None] + ["clean"] * 2) == (0, 2, 0)
+    assert replay([None, None, "clean"]) == (0, 1, 0)
+    assert replay(lvl25 + [None] + ["clean"] * 4) == (15, 4, 25)
+    # Paused days (account closing) cost nothing and keep the bar
+    assert replay(lvl25 + ["clean"] * 3 + ["paused"] * 14 + ["clean"]) == (25, 4, 25)
     print("self-test passed")
 
 
