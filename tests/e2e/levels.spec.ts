@@ -48,7 +48,8 @@ test.describe("Levels", () => {
     const card = page.getByRole("region", { name: "Clay" });
     await expect(card).toContainText("Level 0 · Beginning");
     await expect(card).toContainText("Everyone starts as Clay.");
-    await expect(card.getByRole("link", { name: "Save a picture of your level" })).toHaveCount(0);
+    // Clay has a share card too (owner, 2026-10-12, D-073).
+    await expect(card.getByRole("link", { name: "Save a picture of your level" })).toBeVisible();
 
     // 24 free days of history, then today: 25 days, Level 5, a new era.
     await seedCleanRun(me.userId, 24);

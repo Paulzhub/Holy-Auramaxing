@@ -1524,6 +1524,94 @@
     "shareCard": {
       "levelAndEra": "Level {level} · {era}",
       "footer": "Holy Auramaxing"
+    },
+    "sharePreviewAlt": "The picture you can save: {label}, its era and verse reference, and the app’s name"
+  },
+  "badges": {
+    "xpTitle": "Your XP",
+    "xp": "{xp, number} XP",
+    "xpHow": "Every check-in earns 10 XP, whether you stayed free or slipped: an honest answer counts the same. Checking in on days in a row adds a little more.",
+    "title": "Badges",
+    "none": "Your first badge comes with your first free day.",
+    "kept": "Badges are yours to keep.",
+    "new": "New",
+    "earnedOn": "Earned {date}",
+    "verseReference": "{reference} (WEB)",
+    "nextTitle": "Still ahead",
+    "memberBadges": "Badges",
+    "items": {
+      "free_1": {
+        "name": "First Step",
+        "description": "Your first free day."
+      },
+      "free_3": {
+        "name": "Third Day",
+        "description": "Three free days in a row."
+      },
+      "free_7": {
+        "name": "Sabbath Rest",
+        "description": "A whole week of free days in a row."
+      },
+      "free_14": {
+        "name": "Two Weeks Standing",
+        "description": "Fourteen free days in a row."
+      },
+      "free_21": {
+        "name": "Rooted",
+        "description": "Twenty-one free days in a row."
+      },
+      "free_30": {
+        "name": "Month of Mercies",
+        "description": "Thirty free days in a row."
+      },
+      "free_40": {
+        "name": "Forty Days",
+        "description": "Forty free days in a row."
+      },
+      "free_60": {
+        "name": "Steadfast",
+        "description": "Sixty free days in a row."
+      },
+      "free_90": {
+        "name": "Set Free",
+        "description": "Ninety free days in a row."
+      },
+      "free_180": {
+        "name": "Wings Like Eagles",
+        "description": "Half a year of free days in a row."
+      },
+      "free_365": {
+        "name": "Crowned Year",
+        "description": "A whole year of free days in a row."
+      },
+      "checkin_7": {
+        "name": "Faithful in Little",
+        "description": "Checked in seven days in a row."
+      },
+      "checkin_30": {
+        "name": "Morning by Morning",
+        "description": "Checked in thirty days in a row."
+      },
+      "checkin_100": {
+        "name": "Daily Bread",
+        "description": "Checked in a hundred days in a row."
+      },
+      "faithful_finisher": {
+        "name": "Faithful Finisher",
+        "description": "Stayed with your group to the last day of a challenge."
+      },
+      "encourager": {
+        "name": "Encourager",
+        "description": "Built others up in your group."
+      },
+      "prayer_warrior": {
+        "name": "Prayer Warrior",
+        "description": "Prayed for others in your group."
+      },
+      "first_testimony": {
+        "name": "First Testimony",
+        "description": "Shared your story with your group for the first time."
+      }
     }
   }
 }

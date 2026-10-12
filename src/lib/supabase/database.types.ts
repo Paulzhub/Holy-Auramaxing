@@ -33,6 +33,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      badges: {
+        Row: {
+          icon: string;
+          kind: string;
+          reference: string;
+          slug: string;
+          sort: number;
+          threshold: number | null;
+          verse_text: string;
+        };
+        Insert: {
+          icon: string;
+          kind: string;
+          reference: string;
+          slug: string;
+          sort: number;
+          threshold?: number | null;
+          verse_text: string;
+        };
+        Update: {
+          icon?: string;
+          kind?: string;
+          reference?: string;
+          slug?: string;
+          sort?: number;
+          threshold?: number | null;
+          verse_text?: string;
+        };
+        Relationships: [];
+      };
       checkins: {
         Row: {
           created_at: string;
@@ -257,6 +287,7 @@ export type Database = {
           group_id: string;
           updated_at: string;
           user_id: string;
+          xp_in_group: number;
         };
         Insert: {
           checkins_in_challenge?: number;
@@ -264,6 +295,7 @@ export type Database = {
           group_id: string;
           updated_at?: string;
           user_id: string;
+          xp_in_group?: number;
         };
         Update: {
           checkins_in_challenge?: number;
@@ -271,6 +303,7 @@ export type Database = {
           group_id?: string;
           updated_at?: string;
           user_id?: string;
+          xp_in_group?: number;
         };
         Relationships: [
           {
@@ -628,6 +661,46 @@ export type Database = {
         };
         Relationships: [];
       };
+      user_badges: {
+        Row: {
+          badge: string;
+          earned_at: string;
+          user_id: string;
+        };
+        Insert: {
+          badge: string;
+          earned_at?: string;
+          user_id: string;
+        };
+        Update: {
+          badge?: string;
+          earned_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_fkey";
+            columns: ["badge"];
+            isOneToOne: false;
+            referencedRelation: "badges";
+            referencedColumns: ["slug"];
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       user_stats: {
         Row: {
           checkin_streak: number;
@@ -648,6 +721,7 @@ export type Database = {
           total_clean_days: number;
           updated_at: string;
           user_id: string;
+          xp: number;
         };
         Insert: {
           checkin_streak?: number;
@@ -668,6 +742,7 @@ export type Database = {
           total_clean_days?: number;
           updated_at?: string;
           user_id: string;
+          xp?: number;
         };
         Update: {
           checkin_streak?: number;
@@ -688,6 +763,7 @@ export type Database = {
           total_clean_days?: number;
           updated_at?: string;
           user_id?: string;
+          xp?: number;
         };
         Relationships: [
           {
@@ -701,6 +777,88 @@ export type Database = {
             foreignKeyName: "user_stats_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      xp_config: {
+        Row: {
+          cap: number | null;
+          description: string;
+          key: string;
+          points: number;
+        };
+        Insert: {
+          cap?: number | null;
+          description: string;
+          key: string;
+          points: number;
+        };
+        Update: {
+          cap?: number | null;
+          description?: string;
+          key?: string;
+          points?: number;
+        };
+        Relationships: [];
+      };
+      xp_ledger: {
+        Row: {
+          created_at: string;
+          group_id: string | null;
+          id: string;
+          kind: string;
+          local_date: string;
+          points: number;
+          reason: string;
+          revision: number;
+          source_key: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          group_id?: string | null;
+          id?: string;
+          kind?: string;
+          local_date: string;
+          points: number;
+          reason: string;
+          revision: number;
+          source_key: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          group_id?: string | null;
+          id?: string;
+          kind?: string;
+          local_date?: string;
+          points?: number;
+          reason?: string;
+          revision?: number;
+          source_key?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "xp_ledger_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "xp_ledger_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "xp_ledger_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
@@ -733,6 +891,7 @@ export type Database = {
       profile_cards: {
         Row: {
           avatar_path: string | null;
+          badges: string[] | null;
           bio: string | null;
           display_name: string | null;
           favourite_verse: string | null;

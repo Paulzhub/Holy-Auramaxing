@@ -1,4 +1,5 @@
 import { Mountain, Sparkles } from "lucide-react";
+import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 
 import { ProgressRing } from "@/components/ui/progress-ring";
@@ -14,7 +15,19 @@ import type { LevelOverview } from "../server/queries";
  */
 
 /** The level card: name, era, verse and "3 of 10 days to …". */
-export async function LevelCard({ level, headingLevel = "h2" }: { level: LevelOverview; headingLevel?: "h2" | "h3" }) {
+export async function LevelCard({
+  level,
+  headingLevel = "h2",
+  sharePreview = false,
+  children,
+}: {
+  level: LevelOverview;
+  headingLevel?: "h2" | "h3";
+  /** Show a small picture of the share card above its link (Progress only, D-073). */
+  sharePreview?: boolean;
+  /** Extra lines under the progress (Home puts the XP total here). */
+  children?: ReactNode;
+}) {
   const t = await getTranslations("levels");
   const Heading = headingLevel;
   const dropped = level.missedSinceLast > 0 && level.level < level.storedLevel;
@@ -42,6 +55,7 @@ export async function LevelCard({ level, headingLevel = "h2" }: { level: LevelOv
       <p className="level-card__progress">
         {t("progress", { done: level.progressDays, total: level.daysToNext, next: level.nextLabel })}
       </p>
+      {children}
       {dropped ? <p className="level-card__quiet">{t("down", { label: level.label })}</p> : null}
       {level.level === 0 && !dropped ? <p className="level-card__quiet">{t("clay")}</p> : null}
       <figure className="verse level-card__verse">
@@ -51,12 +65,28 @@ export async function LevelCard({ level, headingLevel = "h2" }: { level: LevelOv
         <figcaption>{t("verseReference", { reference: level.reference })}</figcaption>
       </figure>
       {canShareLevel(level) ? (
-        <p>
-          {/* A plain link: the picture downloads, no JavaScript needed. */}
-          <a className="text-link" href="/api/share/level" download="level.png">
-            {t("share")}
-          </a>
-        </p>
+        <div className="level-card__share">
+          {sharePreview ? (
+            // A plain image of the card itself (lazy, sized up front so nothing shifts).
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className="level-card__preview"
+              src="/api/share/level"
+              alt={t("sharePreviewAlt", { label: level.label })}
+              width={160}
+              height={160}
+              loading="lazy"
+              decoding="async"
+              data-testid="share-preview"
+            />
+          ) : null}
+          <p>
+            {/* A plain link: the picture downloads, no JavaScript needed. */}
+            <a className="text-link" href="/api/share/level" download="level.png">
+              {t("share")}
+            </a>
+          </p>
+        </div>
       ) : null}
     </section>
   );

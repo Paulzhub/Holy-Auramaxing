@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { exportAuthData, getAccount } from "@/features/auth";
 import { exportCheckinsData } from "@/features/checkins";
+import { exportGamificationData } from "@/features/gamification";
 import { exportGroupsData } from "@/features/groups";
 import { exportProfileData } from "@/features/profile";
 import { buildExportArchive, exportFileName } from "@/lib/data-export";
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
       exportProfileData(userId),
       exportGroupsData(userId),
       exportCheckinsData(userId),
+      exportGamificationData(userId),
     ]);
     const archive = buildExportArchive({ generatedAt, parts, readmeIntro: t("readme") });
     await audit("account.exported", userId);

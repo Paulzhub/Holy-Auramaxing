@@ -19,11 +19,12 @@ export function shareCardText(level: CardLevel, t: Translate) {
 }
 
 /**
- * Whether a level can go on a share card: above Level 0, and nothing on the
- * card gives the topic away. A few level names do (for example "Temptation
- * Dodger", levels 61–66), so those levels get no share card (§15: the more
- * private option).
+ * Whether a level can go on a share card: any level, Level 0 ("Clay")
+ * included (owner, 2026-10-12, D-073), as long as nothing on the card gives
+ * the topic away. A few level names do (for example "Temptation Dodger",
+ * levels 61–66), so those levels get no share card (§15: the more private
+ * option).
  */
-export function canShareLevel(level: Pick<CardLevel, "level" | "label" | "era" | "reference">): boolean {
-  return level.level > 0 && [level.label, level.era, level.reference].every(isDiscreet);
+export function canShareLevel(level: Pick<CardLevel, "label" | "era" | "reference">): boolean {
+  return [level.label, level.era, level.reference].every(isDiscreet);
 }

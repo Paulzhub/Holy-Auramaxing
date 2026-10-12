@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { Avatar } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button-variants";
+import { MemberBadges } from "@/features/gamification";
 import { avatarUrl } from "@/features/profile";
 import { Link } from "@/i18n/navigation";
 
@@ -421,6 +422,7 @@ export async function MemberList({ ctx, members }: { ctx: GroupContext; members:
           {m.role !== "member" ? <span className="group-badge group-badge--role">{t(`roles.${m.role}`)}</span> : null}
         </span>
         {extra ? <span className="text-muted">{extra}</span> : null}
+        {m.status === "active" ? <MemberBadges slugs={m.badges} /> : null}
       </div>
     </>
   );

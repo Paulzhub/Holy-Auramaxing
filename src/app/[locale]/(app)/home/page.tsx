@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/shell/app-shell";
 import { getCheckinOverview, KeptMessage, StreakStats, TodayCard } from "@/features/checkins";
-import { getMyLevel, LevelCard } from "@/features/gamification";
+import { requireAccount } from "@/features/auth";
+import { getMyLevel, getMyXpAndBadges, LevelCard, XpLine } from "@/features/gamification";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
@@ -12,7 +13,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Today: the check-in, the streaks, and (after a streak ends) what was kept. */
 export default async function Page() {
-  const [t, overview, level] = await Promise.all([getTranslations("pages.home"), getCheckinOverview(), getMyLevel()]);
+  const { userId } = await requireAccount();
+  const [t, overview, level, xp] = await Promise.all([
+    getTranslations("pages.home"),
+    getCheckinOverview(),
+    getMyLevel(),
+    getMyXpAndBadges(userId),
+  ]);
   const slippedToday = overview.answered[overview.today] === "slipped";
   return (
     <>
@@ -20,7 +27,9 @@ export default async function Page() {
       <div className="stack">
         <TodayCard overview={overview} />
         {overview.totalCheckins > 0 ? <StreakStats overview={overview} /> : null}
-        <LevelCard level={level} />
+        <LevelCard level={level}>
+          <XpLine xp={xp.xp} />
+        </LevelCard>
         {overview.currentStreak === 0 ? (
           <KeptMessage overview={overview} reason={slippedToday ? "slip" : "paused"} />
         ) : null}

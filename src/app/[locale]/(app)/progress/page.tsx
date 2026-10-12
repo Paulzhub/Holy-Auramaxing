@@ -20,7 +20,7 @@ import {
   type ChartRange,
   type SeriesPoint,
 } from "@/features/checkins";
-import { getMyLevel, LevelCard } from "@/features/gamification";
+import { getMyLevel, getMyXpAndBadges, LevelCard, XpBadgesCard } from "@/features/gamification";
 import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -49,8 +49,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * read goes through RLS as them.
  */
 export default async function Page({ searchParams }: { searchParams: SearchParams }) {
-  const [{ userId }, overview, query, t, tTrig, tForm, format, locale, level] = await Promise.all([
-    requireAccount(),
+  const { userId } = await requireAccount();
+  const [overview, query, t, tTrig, tForm, format, locale, level, xp] = await Promise.all([
     getCheckinOverview(),
     searchParams,
     getTranslations("checkins.progress"),
@@ -59,6 +59,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
     getFormatter(),
     getLocale(),
     getMyLevel(),
+    getMyXpAndBadges(userId),
   ]);
 
   // Which month: ?month=YYYY-MM, no later than this month and at most two years back.
@@ -110,7 +111,8 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
       <PageHeader title={t("title")} lede={t("lede")} />
       <div className="stack progress-page">
         <StreakStats overview={overview} />
-        <LevelCard level={level} />
+        <LevelCard level={level} sharePreview />
+        <XpBadgesCard data={xp} />
         {overview.currentStreak === 0 ? (
           <KeptMessage
             overview={overview}

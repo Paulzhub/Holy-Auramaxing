@@ -22,12 +22,12 @@ export async function exportCheckinsData(userId: string): Promise<ExportPart> {
     supabase
       .from("user_stats")
       .select(
-        "current_streak, longest_streak, total_clean_days, total_checkins, checkin_streak, clean_streaks, last_checkin_date, last_clean_date, level, level_progress_days, highest_level, updated_at",
+        "current_streak, longest_streak, total_clean_days, total_checkins, checkin_streak, clean_streaks, last_checkin_date, last_clean_date, level, level_progress_days, highest_level, xp, updated_at",
       )
       .eq("user_id", userId),
     supabase
       .from("group_member_stats")
-      .select("group_id, clean_days_in_challenge, checkins_in_challenge, updated_at")
+      .select("group_id, clean_days_in_challenge, checkins_in_challenge, xp_in_group, updated_at")
       .eq("user_id", userId),
   ]);
   for (const result of [checkins, stats, groupStats]) {
@@ -61,16 +61,17 @@ export async function exportCheckinsData(userId: string): Promise<ExportPart> {
       {
         name: "day_counts",
         description:
-          "Your running day counts, totals and level, as last calculated. The current count and level are as of your last check-in.",
+          "Your running day counts, totals, level and XP, as last calculated. The current count and level are as of your last check-in.",
         rows: (stats.data ?? []).map((s) => ({ ...s })),
       },
       {
         name: "group_challenge_counts",
-        description: "Your free days and check-ins inside each group's challenge.",
+        description: "Your free days, check-ins and XP inside each group's challenge.",
         rows: (groupStats.data ?? []).map((g) => ({
           group: nameOf.get(g.group_id) ?? g.group_id,
           clean_days_in_challenge: g.clean_days_in_challenge,
           checkins_in_challenge: g.checkins_in_challenge,
+          xp_in_group: g.xp_in_group,
           updated_at: g.updated_at,
         })),
       },
