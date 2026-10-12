@@ -8,7 +8,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(18);
+select plan(20);
 
 create function pg_temp.make_user(id uuid, email text) returns void language plpgsql as $$
 declare token text := 'token-' || replace(id::text, '-', '');
@@ -76,6 +76,17 @@ values ('00000000-0000-7000-8000-000000000b01', pg_temp.gb(), current_date, 'cha
 insert into public.group_goals (group_id, period, target) values (pg_temp.gb(), 'month', 100);
 select private.refresh_leaderboard(pg_temp.gb());
 
+-- Phase 6a: a post, a comment, a reaction and a report in group B.
+select pg_temp.as_user('00000000-0000-7000-8000-000000000b02');
+select set_config('test.postb', public.create_post(pg_temp.gb(), 'prayer_request', 'Group B only.')::text, true);
+select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
+select set_config('test.commentb', public.create_comment(current_setting('test.postb')::uuid, 'B''s comment.')::text, true);
+select public.set_reaction('post', current_setting('test.postb')::uuid, 'pray', true);
+select pg_temp.as_user('00000000-0000-7000-8000-000000000b04');
+select set_config('test.reportb', public.report_content(pg_temp.gb(), 'post', current_setting('test.postb')::uuid,
+                                                        'spam')::text, true);
+select pg_temp.as_postgres();
+
 -- The tables to check: groups, plus everything in public with a group_id.
 create temp table iso_tables as
 select 'groups'::text as tbl, 'id'::text as col
@@ -91,6 +102,8 @@ select ok((select count(*) from iso_tables where tbl in ('group_checkins_today',
 select ok(exists (select 1 from iso_tables where tbl = 'xp_ledger'), 'Phase 5b''s XP ledger is among them');
 select ok((select count(*) from iso_tables where tbl in ('leaderboard_entries', 'group_goals')) = 2,
   'Phase 5c''s stored boards and goals are among them');
+select ok((select count(*) from iso_tables where tbl in ('posts', 'comments', 'reactions', 'reports')) = 4,
+  'Phase 6a''s wall, reactions and reports are among them');
 
 -- Counts, as the current role, the rows of group `gid` in every table.
 create function pg_temp.visible_rows(gid uuid)
@@ -110,7 +123,7 @@ select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
 select ok((select bool_and(n > 0) from pg_temp.visible_rows(pg_temp.gb())
             where tbl in ('groups', 'group_members', 'group_invites', 'group_covenant_proposals',
                           'group_covenant_agreements', 'group_checkins_today', 'group_member_stats', 'xp_ledger',
-                          'leaderboard_entries', 'group_goals')),
+                          'leaderboard_entries', 'group_goals', 'posts', 'comments', 'reactions', 'reports')),
   'B''s owner sees B''s rows in every group table (the check below is meaningful)');
 
 -- ---------------------------------------------------------------- reading
@@ -161,7 +174,22 @@ insert into iso_calls values
   ('group_together', $$ select public.group_together(pg_temp.gb()) $$),
   ('set_group_goal', $$ select public.set_group_goal(pg_temp.gb(), 'month', 500) $$),
   ('end_group_goal', $$ select public.end_group_goal(pg_temp.gb()) $$),
-  ('group_invite_people', $$ select * from public.group_invite_people(current_setting('test.ib')::uuid) $$);
+  ('group_invite_people', $$ select * from public.group_invite_people(current_setting('test.ib')::uuid) $$),
+  -- Phase 6a: the wall, reactions and reports.
+  ('create_post', $$ select public.create_post(pg_temp.gb(), 'encouragement', 'Hello B') $$),
+  ('edit_post', $$ select public.edit_post(current_setting('test.postb')::uuid, 'Changed') $$),
+  ('delete_post', $$ select public.delete_post(current_setting('test.postb')::uuid) $$),
+  ('pin_post', $$ select public.pin_post(current_setting('test.postb')::uuid, true) $$),
+  ('create_comment', $$ select public.create_comment(current_setting('test.postb')::uuid, 'Hi') $$),
+  ('edit_comment', $$ select public.edit_comment(current_setting('test.commentb')::uuid, 'Changed') $$),
+  ('delete_comment', $$ select public.delete_comment(current_setting('test.commentb')::uuid) $$),
+  ('set_reaction', $$ select public.set_reaction('post', current_setting('test.postb')::uuid, 'heart', true) $$),
+  ('report_content', $$ select public.report_content(pg_temp.gb(), 'post', current_setting('test.postb')::uuid, 'spam') $$),
+  ('group_reports', $$ select * from public.group_reports(pg_temp.gb()) $$),
+  ('resolve_report', $$ select public.resolve_report(current_setting('test.reportb')::uuid, 'dismissed') $$),
+  ('group_wall', $$ select * from public.group_wall(pg_temp.gb()) $$),
+  ('wall_post', $$ select * from public.wall_post(current_setting('test.postb')::uuid) $$),
+  ('post_comments', $$ select * from public.post_comments(current_setting('test.postb')::uuid) $$);
 grant select on iso_calls to authenticated;
 
 create function pg_temp.refused(p_sql text) returns boolean language plpgsql as $$
@@ -189,15 +217,22 @@ select is((select count(*) from public.group_members where group_id = pg_temp.gb
 select is((select closed_at from public.group_covenant_proposals where id = current_setting('test.pb')::uuid),
   null::timestamptz, 'B''s covenant change is untouched');
 select is((select target from public.group_goals where group_id = pg_temp.gb()), 100, 'B''s goal is untouched');
+select ok((select p.body = 'Group B only.' and p.deleted_at is null and not p.pinned
+             and (select count(*) from public.comments c where c.post_id = p.id and c.deleted_at is null) = 1
+             and (select count(*) from public.reactions r where r.target_id = p.id) = 1
+             and (select status from public.reports where id = current_setting('test.reportb')::uuid) = 'open'
+             from public.posts p where p.id = current_setting('test.postb')::uuid),
+  'B''s wall, comments, reactions and reports are untouched');
 
 -- Every function that takes a group or a group-scoped id is in the list
 -- above (or is a known exception that takes an invite hash instead).
 select set_eq(
   $$ select p.proname::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public'
-        and p.proargnames && array['p_group', 'p_proposal', 'p_invite']::text[] $$,
+        and p.proargnames && array['p_group', 'p_proposal', 'p_invite', 'p_post', 'p_comment', 'p_target',
+                                   'p_report']::text[] $$,
   $$ select fn from iso_calls $$,
-  'Every public function taking a group, proposal or invite id is covered by the isolation test');
+  'Every public function taking a group, proposal, invite, post, comment, target or report id is covered by the isolation test');
 
 select * from finish();
 rollback;

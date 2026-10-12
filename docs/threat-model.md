@@ -1,6 +1,6 @@
 # Threat model (STRIDE)
 
-Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 5c (leaderboards, the group goal, the Together total and invite details), 2026-10-12.
+Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 6a (the encouragement wall, reactions, report and block, the automatic filter), 2026-10-12.
 
 ## Scope
 
@@ -206,6 +206,21 @@ A review of what people near the user could see, and of data we hold but don't n
 | **D**enial of service      | Goal changes flooding the queue (each one refreshes the whole group)        | `private.throttle` (`group_goal`, 30 an hour) on top of `lock_group`'s shared limit and the app's `groupManageByUser`; a whole-group refresh of 5,000 members is one ~3-second job                                                                                        |
 | **D**enial of service      | A crafted `?after=` asking for a huge page                                  | The app caps it (10,000, multiples of 50) and the function caps `limit` at 100; reads stay a single group's rows (`leaderboard_entries` keyed by group)                                                                                                                   |
 
+## Phase 6a additions
+
+| STRIDE                     | Threat                                                               | Mitigation                                                                                                                                                                                                                                                                                     |
+| -------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T**ampering / **E**      | Stored XSS through a post, comment or report note                    | Plain text only: rendered as React text with `white-space: pre-wrap`, never `dangerouslySetInnerHTML`, no markdown, links never made clickable (D-081); the nonce CSP as a second line; tested with `<script>` and `onerror` in e2e (`wall.spec.ts`) and a source scan in Vitest               |
+| **I**nformation disclosure | Reading another group's wall, comments, reactions or reports         | RLS by active membership on every new table; every function takes a group, post, comment, target or report id and answers `*_not_found` (42501) outside the caller's groups; the `022` meta-test now covers those argument names; e2e `group-isolation`                                        |
+| **I**nformation disclosure | A blocked person still seeing the blocker                            | One rule, both ways (`util.blocked_between`, D-078): profile cards, the wall, comments, reaction counts, the Today panel, member lists and leaderboard names; functions refuse to comment, react or report across a block; pgTAP `080`, e2e                                                    |
+| **S**poofing / harassment  | Retaliation against whoever reported                                 | `reports.reporter_id` and `resolved_by` have no column grant; `group_reports` never returns them; a reporter can only see their own reports (D-079)                                                                                                                                            |
+| **T**ampering              | An admin dismissing reports about themselves                         | Reports about the reader are left out of `group_reports` and `resolve_report` refuses them; the platform queue (Phase 12) handles a reported owner                                                                                                                                             |
+| **T**ampering              | Editing or deleting a post to hide it from moderators                | A report keeps its own copy of the text (`snapshot`), cleared when the report is resolved (D-079)                                                                                                                                                                                              |
+| **E**levation of privilege | A member removing others' posts or pinning; reacting as someone else | No write grants; functions check the author or the caller's role in that group; admin removals and pins are audited (`post.removed`, `comment.removed`, `post.pinned`, `report.resolved`)                                                                                                      |
+| **D**enial of service      | Floods of posts, comments, reactions, reports or blocks              | `private.throttle` in every write function (posts 25/h, comments 75/h, reactions 250/h, reports 25/day, blocks 40/day), a little above the app's own limits (D-051); encouragement XP once per target and at most 10 a day                                                                     |
+| **I**nformation disclosure | Slurs or links to explicit sites posted to a group                   | Database-side filter on every post and comment (D-080), after folding case, compatibility forms, accents, invisible characters and look-alike digits, with letter repeats and spelled-out letters; explicit domains, their subdomains, explicit top-level domains and marked links are refused |
+| **R**epudiation            | "I didn't remove that"                                               | Audit rows for admin removals, pins and resolutions (ids only, never the text)                                                                                                                                                                                                                 |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -220,7 +235,7 @@ A review of what people near the user could see, and of data we hold but don't n
 - Back up `APP_ENCRYPTION_KEY` securely: without it, encrypted text can't be read (D-025).
 - Per-network limits trust one header (D-052): on Vercel leave `TRUSTED_IP_HEADER` unset; behind Cloudflare's proxy set it to `cf-connecting-ip`. Anywhere else, check which header the platform overwrites before launch.
 - Turn on Turnstile in the Supabase dashboard before launch: the per-address password lock-out (5 wrong tries) lives in the app, so someone calling Supabase Auth directly meets only Supabase's per-IP limit and the captcha (D-018).
-- Phase 6's posts, comments, reactions and nudges must call `private.throttle()` too (D-051).
+- Phase 6b's nudges and partner requests must call `private.throttle()` too (posts, comments, reactions, reports and blocks do since 6a; D-051).
 - Sign Google Cloud's data processing terms and name Google as a processor before launch; avatars are screened by Cloud Vision (D-026).
 - Rejected photos are deleted immediately. Phase 11's written CSAM procedure must decide whether flagged images are preserved for reporting (NCMEC, cybercrime.gov.in) instead.
 - Avatar screening runs in `after()` until Phase 7's job queue exists; a photo left pending is retried when its owner opens their profile (D-026).
@@ -229,10 +244,9 @@ A review of what people near the user could see, and of data we hold but don't n
 - Passkeys are a Supabase beta; set the production relying party (domain) in the dashboard, and keep `PASSKEYS_ENABLED` as the kill switch (D-029).
 - Supabase's native MFA recovery codes are experimental and off locally; ours replace them for now (D-028).
 - Two-step sign-in is optional; Phase 11 must require it for platform admins.
-- Phase 5c decides whether and how the group's "Together" total is shown without revealing a quiet member's slip (D-044). Group stats moved to the job queue in 5b (D-045, D-070).
 - Watch `jobs_dead` and the queue's depth once hosted (Phase 12's monitoring); a growing backlog means the 10-second worker needs a bigger batch or a second schedule (D-070).
 - Phase 6 replaces `util.are_partners()` (partners see mood and triggers in `group_checkins_today`) and adds asking for prayer to the slip page (D-046).
-- Phases 5 and 6 must add posts, comments, reactions, nudges and partnerships to `private.anonymise_group_contributions()` and to the data export (D-040).
+- Phase 6b must add nudges and partnerships to `private.anonymise_group_contributions()` and to the data export (posts, comments, reactions, blocks and reports are in since 6a; D-040).
 - Invite codes are 50 bits; the attempt limits are what protect them. With Upstash configured, the limits are shared across servers; without it, they are per process (D-019, D-037).
 - The QR decode check (jsQR at three sizes) runs by hand, not in CI (D-037).
 - Until there is hosting with `CRON_SECRET`, photos of erased accounts wait in the private bucket (nothing can serve them); run `npm run accounts:purge` locally (D-033).
@@ -240,3 +254,6 @@ A review of what people near the user could see, and of data we hold but don't n
 - Owner, before launch (privacy review 1): a domain without "xxx" or the topic; the Google OAuth consent screen named "Holy Auramaxing"; keep `.env.local` out of OneDrive.
 - Phase 7 must add every notification, push and digest template to `src/test/discretion.test.ts`; Phase 9's manifest uses "Holy Auramaxing" and `start_url` `/home`; Phase 12's Sentry scrubs query strings and request bodies (D-055).
 - The app lock (Phase 10) is the main protection when someone else holds the unlocked phone; until then Home and Progress are one tap away.
+- A reported group owner (or a report about the only admin) has nobody to review it until the platform queue arrives in Phase 12 (D-079).
+- The automatic filter is a short, curated list (D-080); it will miss new spellings. Reports and admin removal are the backstop; revisit the list with real reports.
+- Post text matching self-harm language should gently show crisis resources on the device (§7.9, Phase 8).

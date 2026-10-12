@@ -60,6 +60,16 @@ export const rateLimitRules = {
   invitePreviewByIp: { limit: 60, windowSeconds: 60 },
   /** Saving check-ins, edits and slip reflections (one a day is normal; edits are allowed in the window). */
   checkinSaveByUser: { limit: 30, windowSeconds: 60 * 60 },
+  /** Wall posts: new ones, edits, deletes and pins (D-077; the database allows 25). */
+  wallPostByUser: { limit: 20, windowSeconds: 60 * 60 },
+  /** Comments: new ones, edits and deletes (the database allows 75). */
+  wallCommentByUser: { limit: 60, windowSeconds: 60 * 60 },
+  /** Reactions, given or taken back (the database allows 250). */
+  reactionByUser: { limit: 200, windowSeconds: 60 * 60 },
+  /** Reports to a group's admins (the database allows 25 a day). */
+  reportByUser: { limit: 20, windowSeconds: 24 * 60 * 60 },
+  /** Blocking and unblocking (the database allows 40 a day). */
+  blockByUser: { limit: 30, windowSeconds: 24 * 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;
