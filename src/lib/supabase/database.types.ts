@@ -1494,6 +1494,7 @@ export type Database = {
       group_checkins_today: {
         Row: {
           checked_in_today: boolean | null;
+          checkin_id: string | null;
           current_streak: number | null;
           group_id: string | null;
           level: number | null;
@@ -1606,6 +1607,14 @@ export type Database = {
       edit_post: { Args: { p_body: string; p_post: string }; Returns: undefined };
       end_group_goal: { Args: { p_group: string }; Returns: undefined };
       end_partnership: { Args: { p_partnership: string }; Returns: undefined };
+      group_checkin_reactions: {
+        Args: { p_group: string };
+        Returns: {
+          checkin_id: string;
+          my_reactions: string[];
+          reactions: Json;
+        }[];
+      };
       group_invite_details: {
         Args: { p_code_hash?: string; p_token_hash: string };
         Returns: {
@@ -1645,6 +1654,7 @@ export type Database = {
           score: number;
         }[];
       };
+      group_live_topic: { Args: { p_group: string }; Returns: string };
       group_nudge_targets: {
         Args: { p_group: string };
         Returns: {
@@ -1776,6 +1786,10 @@ export type Database = {
           member_count: number;
           status: string;
         }[];
+      };
+      react_to_checkin: {
+        Args: { p_checkin: string; p_group: string; p_kind: string; p_on: boolean };
+        Returns: undefined;
       };
       record_session_device: {
         Args: { p_device_hash: string; p_label: string; p_session_id: string; p_user_id: string };

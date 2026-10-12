@@ -140,3 +140,24 @@ describe("rendering", () => {
     expect(forms).not.toMatch(/dangerouslySetInnerHTML/);
   });
 });
+
+describe("live updates (D-086)", () => {
+  const live = readFileSync(join(__dirname, "components/live-group.tsx"), "utf8");
+
+  it("loads the Realtime client only after the page is idle (not in the first load)", () => {
+    expect(live).toContain('await import("@supabase/realtime-js")');
+    expect(live).not.toMatch(/^import .*realtime-js/m);
+  });
+
+  it("has a kill switch and never asks for a session token", () => {
+    expect(live).toContain('process.env.NEXT_PUBLIC_REALTIME_ENABLED === "false"');
+    expect(live).not.toMatch(/accessToken|getSession|auth\./);
+  });
+
+  it("pings carry only what changed", () => {
+    const sixC = readFileSync(join(root, "supabase/migrations/20261019000100_social_live_updates.sql"), "utf8");
+    const sends = [...sixC.matchAll(/realtime\.send\(([^;]*?)\);/gs)].map((m) => m[1] ?? "");
+    expect(sends.length).toBe(1);
+    expect(sends[0]).toContain("jsonb_build_object('what', p_what)");
+  });
+});

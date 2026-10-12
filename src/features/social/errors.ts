@@ -10,6 +10,7 @@ const fromDatabase: Record<string, SocialErrorKey> = {
   group_not_found: "notFound",
   post_not_found: "postNotFound",
   comment_not_found: "postNotFound",
+  checkin_not_found: "postNotFound",
   member_not_found: "memberNotFound",
   report_not_found: "notFound",
   group_forbidden: "forbidden",

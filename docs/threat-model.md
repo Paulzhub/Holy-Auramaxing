@@ -1,6 +1,6 @@
 # Threat model (STRIDE)
 
-Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 6b (nudges, partners, asking for prayer, milestone cards), 2026-10-12.
+Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 6c (live updates, reactions on check-ins), 2026-10-13.
 
 ## Scope
 
@@ -231,6 +231,15 @@ A review of what people near the user could see, and of data we hold but don't n
 | **S**poofing / tampering   | Making someone your partner without their consent; exceeding the limit    | Only the person asked can accept; the limit (two active per person per group) is checked with the group row locked; requests lapse after 14 days                                                    |
 | **I**nformation disclosure | A milestone card revealing a quiet member's streak                        | Cards are posted only where the member shares their streak or more, and shown only while that's still true and their cards are on (`util.milestone_visible`, in RLS and the wall) (D-085)           |
 | **I**nformation disclosure | The slip page's prayer request giving away what happened                  | Neutral default words; the address stays `/check-in/done` for both answers with a neutral `?prayer=` result (D-055, D-084)                                                                          |
+
+## Phase 6c additions
+
+| STRIDE                     | Threat                                                  | Mitigation                                                                                                                                                                                                  |
+| -------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | Listening to a group's live channel                     | Pings carry only "wall" or "today", never ids, names or words; the channel name is an HMAC (key only in the database) of the group and the UTC day, given to active members only, and changes daily (D-086) |
+| **I**nformation disclosure | A session token exposed to page scripts to use Realtime | Not needed: public broadcast channels with the publishable key; the page refetches through the server as the person, so RLS decides everything shown                                                        |
+| **T**ampering / DoS        | Someone who learned a channel name sending fake pings   | A ping only makes members' pages ask the server again; refreshes are debounced and wait while someone types; names expire daily; the kill switch turns live updates off                                     |
+| **I**nformation disclosure | Reactions on check-ins revealing an answer              | Only the check-in's id is exposed, and only for members who checked in today (already visible to every member); counts leave out blocked people and closing accounts (D-087)                                |
 
 ## Headers sent on every response
 

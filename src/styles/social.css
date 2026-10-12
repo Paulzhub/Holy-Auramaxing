@@ -327,3 +327,29 @@
     border-inline-start: 4px solid var(--color-accent);
   }
 }
+
+/* ---------- live updates and reactions on check-ins (6c) ---------- */
+@layer components {
+  .live-group__notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin: 0 0 var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+  }
+
+  .group-today__tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .checkin-reactions .ui-reaction {
+    min-inline-size: 2.75rem;
+  }
+}

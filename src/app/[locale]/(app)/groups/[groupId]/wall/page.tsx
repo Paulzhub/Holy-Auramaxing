@@ -4,8 +4,9 @@ import { getTranslations } from "next-intl/server";
 
 import { requireAccount } from "@/features/auth";
 import { GroupHeader, requireGroup } from "@/features/groups";
-import { getWall, parseWallQuery, SocialNotice, WallFilters, WallList } from "@/features/social";
+import { getLiveTopic, getWall, parseWallQuery, SocialNotice, WallFilters, WallList } from "@/features/social";
 import { PostComposer } from "@/features/social/ui";
+import { LiveGroup } from "@/features/social/ui-live";
 import { clientMessages } from "@/i18n/client-messages";
 
 // Tab titles never carry a group's name (§2.3, D-035).
@@ -28,10 +29,12 @@ export default async function Page({ params, searchParams }: { params: Params; s
   const timeZone = (await requireAccount()).profile.timezone;
   const query = await searchParams;
   const { filter, before } = parseWallQuery(query);
-  const [t, page, messages] = await Promise.all([
+  const [t, tLive, page, messages, topic] = await Promise.all([
     getTranslations("social.wall"),
+    getTranslations("social.live"),
     getWall(groupId, filter, before),
     clientMessages(["social"]),
+    getLiveTopic(groupId),
   ]);
   const archived = Boolean(ctx.group.archivedAt);
   const viewer = { groupId, userId: ctx.userId, isAdmin: ctx.isAdmin, archived, timeZone };
@@ -40,6 +43,9 @@ export default async function Page({ params, searchParams }: { params: Params; s
     <>
       <GroupHeader ctx={ctx} current="wall" />
       <SocialNotice notice={query.notice} error={query.error} />
+      {topic ? (
+        <LiveGroup topic={topic} mode="wall" labels={{ newPosts: tLive("newPosts"), show: tLive("show") }} />
+      ) : null}
       <div className="stack">
         <p className="page-lede">{t("lede")}</p>
         {archived ? (

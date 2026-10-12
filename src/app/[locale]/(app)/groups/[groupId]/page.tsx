@@ -15,6 +15,9 @@ import {
   requireGroup,
 } from "@/features/groups";
 import {
+  CheckinReactions,
+  getCheckinReactions,
+  getLiveTopic,
   getMyNudges,
   getNudgeTargets,
   getWall,
@@ -24,6 +27,7 @@ import {
   SocialNotice,
   WallHomeCard,
 } from "@/features/social";
+import { LiveGroup } from "@/features/social/ui-live";
 
 // Tab titles never carry a group's name, which could give away what the app is for (§2.3).
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,24 +42,29 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
  * A group's home (CLAUDE.md §7.4). Today's check-ins (Phase 4) at each
  * member's share level, the top of the leaderboard and the Together total
  * with the group goal (Phase 5c), the wall's newest posts (Phase 6a), and
- * nudges: a button on each member's row and the ones I received (Phase 6b).
+ * nudges: a button on each member's row and the ones I received (Phase 6b),
+ * reactions on today's check-ins and live updates (Phase 6c).
  */
 export default async function Page({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
   const { groupId } = await params;
   const ctx = await requireGroup(groupId);
   const timeZone = (await requireAccount()).profile.timezone;
   const archived = Boolean(ctx.group.archivedAt);
-  const [t, proposal, query, today, board, together, wall, targets, nudges] = await Promise.all([
-    getTranslations("groups"),
-    getOpenProposal(ctx),
-    searchParams,
-    getGroupToday(groupId, ctx.userId),
-    getLeaderboard(groupId, "xp", "all", 0, PREVIEW_SIZE),
-    getTogether(groupId),
-    getWall(groupId, "all", null, SOCIAL_LIMITS.homePreview),
-    archived ? Promise.resolve(new Map<string, boolean>()) : getNudgeTargets(groupId),
-    getMyNudges(groupId),
-  ]);
+  const [t, proposal, query, today, board, together, wall, targets, nudges, checkinReactions, topic, tLive] =
+    await Promise.all([
+      getTranslations("groups"),
+      getOpenProposal(ctx),
+      searchParams,
+      getGroupToday(groupId, ctx.userId),
+      getLeaderboard(groupId, "xp", "all", 0, PREVIEW_SIZE),
+      getTogether(groupId),
+      getWall(groupId, "all", null, SOCIAL_LIMITS.homePreview),
+      archived ? Promise.resolve(new Map<string, boolean>()) : getNudgeTargets(groupId),
+      getMyNudges(groupId),
+      getCheckinReactions(groupId),
+      getLiveTopic(groupId),
+      getTranslations("social.live"),
+    ]);
   const { group } = ctx;
 
   return (
@@ -63,6 +72,9 @@ export default async function Page({ params, searchParams }: { params: Params; s
       <GroupHeader ctx={ctx} current="home" />
       <GroupNotice notice={query.notice} error={query.error} />
       <SocialNotice notice={query.notice} error={query.error} />
+      {topic ? (
+        <LiveGroup topic={topic} mode="home" labels={{ newPosts: tLive("newPosts"), show: tLive("show") }} />
+      ) : null}
       <div className="stack">
         {group.archivedAt ? (
           <p className="auth-banner" role="status">
@@ -77,17 +89,27 @@ export default async function Page({ params, searchParams }: { params: Params; s
           today={
             <GroupToday
               members={today}
-              rowTools={(m) =>
-                targets.has(m.userId) ? (
-                  <NudgeControl
-                    groupId={groupId}
-                    userId={m.userId}
-                    name={m.name}
-                    sentToday={targets.get(m.userId) ?? false}
-                    from="home"
-                  />
-                ) : null
-              }
+              rowTools={(m) => (
+                <>
+                  {m.checkinId && !archived ? (
+                    <CheckinReactions
+                      groupId={groupId}
+                      checkinId={m.checkinId}
+                      name={m.name}
+                      reactions={checkinReactions.get(m.checkinId) ?? []}
+                    />
+                  ) : null}
+                  {targets.has(m.userId) ? (
+                    <NudgeControl
+                      groupId={groupId}
+                      userId={m.userId}
+                      name={m.name}
+                      sentToday={targets.get(m.userId) ?? false}
+                      from="home"
+                    />
+                  ) : null}
+                </>
+              )}
             />
           }
           leaderboard={<LeaderboardPreview groupId={groupId} page={board} />}

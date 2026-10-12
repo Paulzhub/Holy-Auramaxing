@@ -1,11 +1,13 @@
 /**
  * social module — the encouragement wall, reactions, report and block
  * (CLAUDE.md §7.7, §7.11), Phase 6a; nudges, partners, asking for prayer
- * and milestone cards, Phase 6b.
+ * and milestone cards, Phase 6b; live updates and reactions on check-ins,
+ * Phase 6c.
  *
  * Public API, in two entry points (other modules may import only these):
- *   "@/features/social"     server code and server components (this file)
- *   "@/features/social/ui"  the post and comment forms (client)
+ *   "@/features/social"          server code and server components (this file)
+ *   "@/features/social/ui"       the post and comment forms (client)
+ *   "@/features/social/ui-live"  live updates on a group's pages (client)
  */
 export {
   NUDGE_KINDS,
@@ -30,13 +32,16 @@ export {
   type WallPost,
 } from "./server/queries";
 export {
+  getCheckinReactions,
   getGroupNudgesMuted,
+  getLiveTopic,
   getMyActivePartners,
   getMyNudges,
   getMyPartnerships,
   getNudgeTargets,
   getSocialSettings,
   type ActivePartner,
+  type CheckinReaction,
   type Partnership,
   type ReceivedNudge,
   type SocialSettings,
@@ -46,6 +51,7 @@ export { exportSocialData } from "./server/export";
 // Server components: no JavaScript reaches the browser for these.
 export {
   BlockedList,
+  CheckinReactions,
   CommentList,
   MemberSafetyTools,
   ModerationList,

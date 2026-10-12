@@ -8,7 +8,7 @@ import { redirect } from "@/i18n/navigation";
 import { consume, type RateLimitRule } from "@/lib/security/rate-limit";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-import { NUDGE_KINDS, SOCIAL_LIMITS } from "../constants";
+import { NUDGE_KINDS, REACTION_KINDS, SOCIAL_LIMITS } from "../constants";
 import { socialErrorKey } from "../errors";
 import { postBodySchema, uuidSchema } from "../schemas";
 
@@ -183,4 +183,25 @@ export async function askPartnerToPrayAction(formData: FormData): Promise<void> 
   const { error } = await ctx.rpc("send_nudge", { p_group: groupId, p_to: userId, p_kind: "pray_for_me" });
   refresh();
   return go(donePage(formData, `prayer=${error ? socialErrorKey(error) : "askedPartner"}`));
+}
+
+// ---------------------------------------------------------------- reactions on check-ins (D-087)
+
+/** A reaction button on a member's row in Today: value "<kind>:1" to add, "<kind>:0" to take back. */
+export async function reactCheckinAction(groupId: string, formData: FormData): Promise<void> {
+  const checkinId = String(formData.get("checkinId") ?? "");
+  const [kind = "", on] = String(formData.get("reaction") ?? "").split(":");
+  if (!ids(groupId, checkinId) || !(REACTION_KINDS as readonly string[]).includes(kind)) {
+    return go(`/groups/${groupId}?error=invalidInput`);
+  }
+  const ctx = await signedIn("reactionByUser");
+  if (!ctx) return go(`/groups/${groupId}?error=rateLimited`);
+  const { error } = await ctx.rpc("react_to_checkin", {
+    p_group: groupId,
+    p_checkin: checkinId,
+    p_kind: kind,
+    p_on: on === "1",
+  });
+  refresh();
+  if (error) return go(`/groups/${groupId}?error=${socialErrorKey(error)}`);
 }

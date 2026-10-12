@@ -1,6 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-import type { NudgeKind } from "../constants";
+import { REACTION_KINDS, type NudgeKind, type ReactionKind } from "../constants";
 
 /**
  * Nudges and partners, as the signed-in person may see them (CLAUDE.md §7.7,
@@ -150,4 +150,35 @@ export async function getGroupNudgesMuted(groupId: string, userId: string): Prom
     .eq("user_id", userId)
     .maybeSingle();
   return data?.nudges_muted ?? false;
+}
+
+/** Today's live-update channel name for this group (members only, D-086); null if it can't be had. */
+export async function getLiveTopic(groupId: string): Promise<string | null> {
+  if (process.env.NEXT_PUBLIC_REALTIME_ENABLED === "false") return null;
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("group_live_topic", { p_group: groupId });
+  return error ? null : (data as string);
+}
+
+export interface CheckinReaction {
+  kind: ReactionKind;
+  count: number;
+  mine: boolean;
+}
+
+/** Reactions on today's check-ins in a group: check-in id → the five reactions (D-087). */
+export async function getCheckinReactions(groupId: string): Promise<Map<string, CheckinReaction[]>> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("group_checkin_reactions", { p_group: groupId });
+  if (error) throw new Error(`checkin reactions: ${error.message}`);
+  return new Map(
+    (data ?? []).map((r) => {
+      const counts = (r.reactions ?? {}) as Record<string, number>;
+      const mine = new Set(r.my_reactions ?? []);
+      return [
+        r.checkin_id,
+        REACTION_KINDS.map((kind) => ({ kind, count: Number(counts[kind] ?? 0), mine: mine.has(kind) })),
+      ];
+    }),
+  );
 }
