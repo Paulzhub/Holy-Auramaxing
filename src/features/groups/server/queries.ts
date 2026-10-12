@@ -236,6 +236,8 @@ export interface MemberCard {
   status: MemberStatus;
   joinedAt: string | null;
   requestedAt: string;
+  /** Up to six badges, newest first; null unless they share their streak or more with the viewer (D-072). */
+  badges: string[] | null;
 }
 
 /**
@@ -255,7 +257,7 @@ export async function getGroupMembers(groupId: string): Promise<MemberCard[]> {
   if (!rows?.length) return [];
   const { data: cards } = await supabase
     .from("profile_cards")
-    .select("id, handle, display_name, avatar_path")
+    .select("id, handle, display_name, avatar_path, badges")
     .in(
       "id",
       rows.map((r) => r.user_id),
@@ -275,6 +277,7 @@ export async function getGroupMembers(groupId: string): Promise<MemberCard[]> {
         status: r.status as MemberStatus,
         joinedAt: r.joined_at,
         requestedAt: r.requested_at,
+        badges: card.badges ?? null,
       },
     ];
   });

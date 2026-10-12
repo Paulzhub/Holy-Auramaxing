@@ -8,7 +8,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(15);
+select plan(16);
 
 create function pg_temp.make_user(id uuid, email text) returns void language plpgsql as $$
 declare token text := 'token-' || replace(id::text, '-', '');
@@ -67,6 +67,10 @@ select public.agree_to_covenant_change((select id from public.group_covenant_pro
 select pg_temp.as_postgres();
 select set_config('test.pb', (select id::text from public.group_covenant_proposals where group_id = pg_temp.gb()), true);
 select set_config('test.ib', (select id::text from public.group_invites where group_id = pg_temp.gb()), true);
+-- Phase 5b: XP that belongs to group B (finishing its challenge).
+insert into public.xp_ledger (user_id, group_id, local_date, reason, points, source_key, revision)
+values ('00000000-0000-7000-8000-000000000b01', pg_temp.gb(), current_date, 'challenge_finished', 100,
+        'challenge_finished:test-b', 1);
 
 -- The tables to check: groups, plus everything in public with a group_id.
 create temp table iso_tables as
@@ -80,6 +84,7 @@ grant select on iso_tables to authenticated;
 select ok((select count(*) from iso_tables) >= 5, 'At least the five group tables are checked');
 select ok((select count(*) from iso_tables where tbl in ('group_checkins_today', 'group_member_stats')) = 2,
   'Phase 4''s share-level view and challenge stats are among them');
+select ok(exists (select 1 from iso_tables where tbl = 'xp_ledger'), 'Phase 5b''s XP ledger is among them');
 
 -- Counts, as the current role, the rows of group `gid` in every table.
 create function pg_temp.visible_rows(gid uuid)
@@ -98,7 +103,7 @@ $$;
 select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
 select ok((select bool_and(n > 0) from pg_temp.visible_rows(pg_temp.gb())
             where tbl in ('groups', 'group_members', 'group_invites', 'group_covenant_proposals',
-                          'group_covenant_agreements', 'group_checkins_today', 'group_member_stats')),
+                          'group_covenant_agreements', 'group_checkins_today', 'group_member_stats', 'xp_ledger')),
   'B''s owner sees B''s rows in every group table (the check below is meaningful)');
 
 -- ---------------------------------------------------------------- reading

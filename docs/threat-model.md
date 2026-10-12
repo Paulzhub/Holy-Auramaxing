@@ -1,6 +1,6 @@
 # Threat model (STRIDE)
 
-Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 3 (groups, invites, multi-tenancy), 2026-10-07.
+Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 5b (XP, badges and the job queue), 2026-10-12.
 
 ## Scope
 
@@ -177,6 +177,21 @@ A review of what people near the user could see, and of data we hold but don't n
 | **I**nformation disclosure | A share card giving the topic away                                                | Name, era, reference and app name only; levels whose name contains a giveaway word have no card; checked by the shared word list (D-065)                                                                     |
 | **S**poofing / CSRF        | Another site posting offline check-ins for a signed-in person                     | `POST /api/checkins/sync` checks Origin and Sec-Fetch-Site like Server Actions (`src/lib/security/same-origin.ts`)                                                                                           |
 
+## Phase 5b additions
+
+| STRIDE                     | Threat                                                                   | Mitigation                                                                                                                                                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T**ampering              | Granting yourself XP or badges through the Data API                      | No write grants on `xp_ledger`, `user_badges` or `xp_config`; only queue jobs write them, as the database (D-071, D-072); pgTAP `060`, `061`                                                                                 |
+| **T**ampering              | Putting jobs on the queue, or reading it, as a signed-in person          | `pgmq` schema, tables and functions revoked from `anon` and `authenticated` (and not exposed by the Data API); `private.enqueue` and the worker can't be called by them (D-070); pgTAP `062`                                 |
+| **T**ampering              | A job running twice (retry, replay, overlapping workers) paying XP twice | Each award has a source key and revision, unique together; a job writes only the difference between what a source should be worth and what was paid; one worker at a time plus a per-person lock (D-070, D-071); pgTAP `060` |
+| **T**ampering              | Rewriting XP history                                                     | The ledger is append-only (a trigger refuses updates and deletes while the account exists); corrections are reversal rows; changing `xp_config` applies to days settled from then on (D-071)                                 |
+| **T**ampering              | Farming encouragement XP (Phase 6)                                       | +1 per event key, at most 10 a local day, enforced in the job under the per-person lock; Phase 6's public functions call `private.throttle()` (D-051, D-071)                                                                 |
+| **I**nformation disclosure | XP revealing a quiet member's slip (Consistency board)                   | An honest slip earns exactly what a free day earns (D-069); pgTAP `060`                                                                                                                                                      |
+| **I**nformation disclosure | Free-day badges hinting at streaks to a group                            | Groups see badges only where the member shares streak or full, like the level (`profile_cards.badges`, D-072); `user_badges` is owner-only; badge names are checked against the giveaway-word list                           |
+| **I**nformation disclosure | Job payloads or dead letters keeping personal data                       | Payloads hold ids and dates only (never answers or notes); finished jobs are deleted, not archived; dead letters are kept 30 days; erasing an account removes its queued jobs and dead letters (D-070); pgTAP `062`          |
+| **D**enial of service      | A bad job blocking the queue, or a backlog overrunning the worker        | Each job runs in its own sub-transaction; five failures move it to `jobs_dead`; each run stops after about 8 seconds and leaves the rest for the next (D-070)                                                                |
+| **I**nformation disclosure | The share card at Level 0                                                | Same card and checks as every level ("Clay", its era, Isaiah 64:8 and the app's name); levels 61–66 still have none (D-073)                                                                                                  |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -200,7 +215,8 @@ A review of what people near the user could see, and of data we hold but don't n
 - Passkeys are a Supabase beta; set the production relying party (domain) in the dashboard, and keep `PASSKEYS_ENABLED` as the kill switch (D-029).
 - Supabase's native MFA recovery codes are experimental and off locally; ours replace them for now (D-028).
 - Two-step sign-in is optional; Phase 11 must require it for platform admins.
-- Phase 5 moves group stats recalculation to the job queue, and decides whether and how the group's "Together" total is shown without revealing a quiet member's slip (D-044, D-045).
+- Phase 5c decides whether and how the group's "Together" total is shown without revealing a quiet member's slip (D-044). Group stats moved to the job queue in 5b (D-045, D-070).
+- Watch `jobs_dead` and the queue's depth once hosted (Phase 12's monitoring); a growing backlog means the 10-second worker needs a bigger batch or a second schedule (D-070).
 - Phase 6 replaces `util.are_partners()` (partners see mood and triggers in `group_checkins_today`) and adds asking for prayer to the slip page (D-046).
 - Phases 5 and 6 must add posts, comments, reactions, nudges and partnerships to `private.anonymise_group_contributions()` and to the data export (D-040).
 - Invite codes are 50 bits; the attempt limits are what protect them. With Upstash configured, the limits are shared across servers; without it, they are per process (D-019, D-037).

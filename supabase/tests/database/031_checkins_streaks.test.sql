@@ -112,12 +112,15 @@ set local role postgres;
 -- b joined on the 8th (IST): the 6th and 7th were before joining.
 insert into public.group_members (group_id, user_id, role, status, share_level, covenant_accepted_at, joined_at)
 values (current_setting('test.grp')::uuid, :b, 'member', 'active', 'full', now(), '2026-10-08 03:00+00');
+-- Group stats are counted by the queue's worker (D-070).
+select private.run_jobs(500, true);
 select results_eq($$ select clean_days_in_challenge, checkins_in_challenge from public.group_member_stats
                       where user_id = '00000000-0000-7000-8000-000000003102' $$,
   $$ values (2, 2) $$, 'Joining counts check-ins from the day they joined (8th, 9th), not before');
 -- The owner moves the start later: the counts follow.
 update public.groups set start_date = '2026-10-09', end_date = date '2026-10-09' + 29
  where id = current_setting('test.grp')::uuid;
+select private.run_jobs(500, true);
 select results_eq($$ select clean_days_in_challenge, checkins_in_challenge from public.group_member_stats
                       where user_id = '00000000-0000-7000-8000-000000003102' $$,
   $$ values (1, 1) $$, 'Moving the challenge''s start recalculates');

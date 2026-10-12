@@ -156,20 +156,26 @@ describe("share card (§2.3)", () => {
   it("every level that can be shared is discreet, and the rest have no card", () => {
     const shareable = csv.filter((r) => {
       const tier = levelsJson.tiers[Math.min(r.level === 0 ? 0 : Math.floor((r.level - 1) / 6) + 1, 167)];
-      return canShareLevel({ level: r.level, label: r.label, era: tier?.era ?? "", reference: tier?.reference ?? "" });
+      return canShareLevel({ label: r.label, era: tier?.era ?? "", reference: tier?.reference ?? "" });
     });
     for (const r of shareable) {
-      const tier = levelsJson.tiers[Math.floor((r.level - 1) / 6) + 1];
+      const tier = levelsJson.tiers[r.level === 0 ? 0 : Math.floor((r.level - 1) / 6) + 1];
       const card = shareCardText(
         { level: r.level, label: r.label, era: tier?.era ?? "", reference: tier?.reference ?? "" },
         t,
       );
       expect(Object.values(card).every(isDiscreet), r.label).toBe(true);
     }
-    expect(canShareLevel({ level: 0, label: "Clay", era: "Beginning", reference: "Isaiah 64:8" })).toBe(false);
-    expect(canShareLevel({ level: 61, label: "Temptation Dodger", era: "Genesis", reference: "Genesis 39:12" })).toBe(
-      false,
-    );
+    // Level 0 has a card too (owner, 2026-10-12, D-073); 61–66 still don't.
+    expect(canShareLevel({ label: "Clay", era: "Beginning", reference: "Isaiah 64:8" })).toBe(true);
+    expect(
+      Object.values(shareCardText({ level: 0, label: "Clay", era: "Beginning", reference: "Isaiah 64:8" }, t)).every(
+        isDiscreet,
+      ),
+    ).toBe(true);
+    expect(canShareLevel({ label: "Temptation Dodger", era: "Genesis", reference: "Genesis 39:12" })).toBe(false);
+    expect(shareable.some((r) => r.level === 0)).toBe(true);
+    expect(shareable.filter((r) => r.level >= 61 && r.level <= 66)).toEqual([]);
     expect(shareable.length).toBeGreaterThan(990);
   });
 });

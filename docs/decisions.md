@@ -445,6 +445,7 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - `group_member_stats` counts a member's clean days and check-ins from the later of the challenge's start and the day they joined (their own time zone), up to the challenge's end. Rows come and go with active membership (a trigger and a foreign key). Moving the challenge's dates recalculates the group.
 - The table is **owner-only**: the counts could reveal a slip. Groups will see them only through Phase 5's share-level leaderboards.
 - **Departure from §5 ("stats updates go through a job queue"), owner approved:** there is no queue until Phase 5. A save recalculates the person's own stats and their rows in at most 30 groups inside the same transaction, which takes a few milliseconds. Phase 5 moves group stats to the pgmq job with XP and leaderboards.
+- **Closed in Phase 5b (D-070):** group stats are now recalculated by the queue's worker, a few seconds after the save.
 
 ## D-046 · Phase 4 · The slip page, and "look at everything you kept"
 
@@ -606,7 +607,7 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - `public.level_tiers` (tiers 0–167) is seeded from `data/levels.json` plus `data/level_verses.json`: the World English Bible text of each tier's verse, taken from the `world-english-bible` npm package 1.0.1 (ebible.org's text) and spot-checked against ebible.org and the verses grace review 1 checked. A quotation mark opened before or closed after the verse is left off.
 - `util.level_info()` / `util.level_label()`: past Level 1002 the last name continues with a number ("Well Done 2", "Well Done 2 Lite"…).
 - **Level card** (Home, Progress): name, "Level 5 · Genesis", "0 of 5 days to …" (a progress ring), the verse. **After a check-in:** a level-up or a new era gets a small CSS-only light (transform and opacity, once; none under reduced motion or forced colours, so canvas-confetti isn't needed); a drop gets one quiet line: "You're now Clay. Your longest streak and total free days are still yours." The same line shows on Home while missed days have lowered the level. Nobody else is told.
-- **Share card** (`/api/share/level`, a PNG from `next/og`, private and never cached): the level's name, era, verse reference and the app's name, no verse text (a few name the struggle) and nothing about days. Levels whose name gives the topic away (for now only "Temptation Dodger", levels 61–66, which contains "temptation") get no share card; the list of giveaway words is shared with `discretion.test.ts` (`src/lib/discretion.ts`).
+- **Share card** (`/api/share/level`, a PNG from `next/og`, private and never cached): the level's name, era, verse reference and the app's name, no verse text (a few name the struggle) and nothing about days. Levels whose name gives the topic away (for now only "Temptation Dodger", levels 61–66, which contains "temptation") get no share card (since 5b, Level 0 has one too: D-073); the list of giveaway words is shared with `discretion.test.ts` (`src/lib/discretion.ts`).
 - **Groups:** `group_checkins_today.level` and `profile_cards.level` show the live level only where the member shares their streak or more (`util.can_see_level`: a group the viewer shares where the owner is at streak or full). pgTAP `050`, e2e `levels.spec.ts`.
 
 ## D-066 · Phase 5a · Days while an account is closing are paused
@@ -629,3 +630,38 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 ## D-069 · Phase 5 · No extra XP for a clean day
 
 - **Owner (2026-10-10), from the Phase 5 plan:** the spec's "+5 XP for a clean day" is dropped. It made "I stayed free" earn more than an honest "I slipped" (against §2.2), and on the Consistency board it would show a checkin_only member's slip. XP for check-ins is the same +10 for either answer, plus the check-in streak bonus. Free days still count on the Level, Current streak and days-this-challenge boards. Built in Phase 5b.
+
+## D-070 · Phase 5b · The job queue: pgmq and a pg_cron worker
+
+- **Decision (owner approved the plan, 2026-10-12):** slow and fan-out work goes through Supabase Queues (§5): a `jobs` queue and a `jobs_dead` dead-letter queue (the `pgmq` extension, in Supabase's Postgres image; no new npm package). `private.enqueue(type, payload)` adds a job; `private.run_jobs()` runs them, scheduled by pg_cron **every 10 seconds** (`jobs-worker`).
+- **Job types:** `user_settle` (one person's check-in XP from a date, badges, XP total and group stats), `group_stats` (a group, or one membership), `challenge_finished`, `encouragement` (Phase 6) and `devotional` (Phase 8). An hourly `challenge-endings-hourly` run queues each finished challenge once (`private.challenge_finish_runs`).
+- **What queues them:** triggers, so every path is covered: a new check-in, or a changed answer (`checkins`); joining or being approved, and the owner moving the challenge's dates (group stats). The save itself still replays the person's streaks and level inline (they show on the next page), and no longer touches group stats (D-045 closed).
+- **Safety:** every job is idempotent (D-071), runs in its own sub-transaction (a failure undoes only that job), and takes a per-person advisory lock; only one worker runs at a time. A failed job comes back after 60 seconds; on the fifth failure it moves to `jobs_dead` with its error code. A run stops after about 8 seconds and leaves the rest for the next.
+- **Privacy:** payloads hold ids and dates only. Finished jobs are deleted (not archived). Dead letters are removed after 30 days, and erasing an account removes its jobs and dead letters. The `pgmq` schema is revoked from `anon` and `authenticated`.
+- **Delay:** XP, badges and group stats appear within about 10 seconds of a check-in, not on the "done" page itself. Nothing reads group stats yet but the export; 5c's leaderboards will.
+- **Tests:** pgTAP `062_platform_job_queue` (19), `031` runs the worker for group stats.
+
+## D-071 · Phase 5b · XP: an append-only ledger with source keys and reversals
+
+- **Values** (`public.xp_config`, readable by signed-in people, changed with a migration): any check-in **+10**, free or slipped (§2.2, D-069); the check-in streak bonus **+2 per day of the streak from day 1, up to +20** (owner, 2026-10-12: day 1 +2, day 10 and after +20); encouragement **+1, at most 10 a local day** (Phase 6); devotional **+5** (Phase 8); finishing a challenge **+100**.
+- **Ledger:** `public.xp_ledger` (user, optional group, the local day it's for, reason, award or reversal, points, `source_key`, `revision`), unique on (`source_key`, `revision`). Owner-only reads; no write grants; a trigger refuses updates and deletes while the account exists (a deleted group's id is cleared; erasure removes the rows).
+- **Settling:** a job works out what each source should be worth now and compares it with what the ledger has paid. Equal: it writes nothing, so a replay never pays twice. Different: a reversal row cancels the old amount and a new award follows. Changing "stayed free" to "slipped" changes nothing. A late offline check-in that joins two runs of check-ins re-settles that day and every later one, so their bonuses grow through reversals. Days before the changed one are left alone, so a new `xp_config` value applies from then on and history isn't rewritten.
+- **Finishing a challenge:** once the challenge's last day is over in the group's time zone, every member active then (joined by that day, account not closing) gets +100 for that group and Faithful Finisher, once (`challenge_finished:<group>:<user>`).
+- **Totals:** `user_stats.xp` (everything) and `group_member_stats.xp_in_group` (the group's own rows plus check-in XP for days inside the member's challenge window), both kept by the jobs, for 5c's Consistency board and its "this week" view (the ledger keeps the local day).
+- **Throttling:** 5b adds no public write function: XP and badges are written only by jobs. Phase 6's reaction, nudge and comment functions queue encouragement and call `private.throttle()` themselves (D-051).
+- **Export:** an `xp` section (day, reason, entry, points, group) and the totals in `day_counts` and `group_challenge_counts`; the bonus is called `days_in_a_row_bonus` there.
+- **Tests:** pgTAP `060_gamification_xp` (33): a slip earns the same as a free day; the bonus curve; replaying four times writes nothing; reversal rows on a late check-in; the daily cap; config applies forward; append-only and owner-only; erasure.
+
+## D-072 · Phase 5b · Badges: awarded once, kept; groups see them at streak or full
+
+- `public.badges` (18, keyed by slug, with a Lucide icon name, a verse reference and its World English Bible text from `data/badge_verses.json`, fetched like D-065); names and one-line descriptions are in `messages/en.json` (`badges.items`). Free days in a row 1, 3, 7, 14, 21, 30, 40, 60, 90, 180, 365 (First Step, Third Day, Sabbath Rest, Two Weeks Standing, Rooted, Month of Mercies, Forty Days, Steadfast, Set Free, Wings Like Eagles, Crowned Year); check-ins in a row 7, 30, 100 (Faithful in Little, Morning by Morning, Daily Bread); Faithful Finisher; and, seeded for Phase 6, Encourager, Prayer Warrior and First Testimony.
+- `public.user_badges` (user, badge, earned when). Days-in-a-row badges are worked out by the job from the check-ins themselves (the longest run), inserted with `on conflict do nothing`, and never removed: a trigger refuses updates and deletes while the account exists, so a later edit that shortens the run keeps them.
+- **Who sees them (owner, 2026-10-12):** the person on Progress (each badge with its verse, the date, "New" for three days, and the next free-day and check-in badges ahead). A group sees a member's six most recent badges (icons and names, no verse) on its Members page, through `profile_cards.badges`, **only where the member shares their streak or full there** (`util.can_see_level`), because a free-day badge hints at a streak. `user_badges` itself stays owner-only.
+- A "New" marker for three days replaces the planned `seen_at` column, so viewing Progress writes nothing.
+- **Tests:** pgTAP `061_gamification_badges` (23), Vitest `badges.test.ts` (database, messages and app agree; verses match; names pass the giveaway-word check; no failure words), e2e `xp-badges.spec.ts`.
+
+## D-073 · Phase 5b · The level share card from Level 0, with a preview on Progress
+
+- **Owner (2026-10-12):** the share card was hard to find, and Level 0 had none. Now every level can be shared, Clay included, except where the name gives the topic away (levels 61–66, D-065); `canShareLevel` no longer looks at the number.
+- **Preview (owner chose "Progress only"):** on Progress, the level card shows a small picture of the card itself (160 px, `loading="lazy"`, sized up front so nothing shifts, with alt text) above "Save a picture of your level". Home keeps just the link, so Home doesn't draw the picture on every visit.
+- Tests: Vitest `levels.test.ts`, e2e `levels.spec.ts` (the link at Level 0) and `xp-badges.spec.ts` (the preview loads).
