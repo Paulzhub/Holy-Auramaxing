@@ -1,6 +1,6 @@
 # Threat model (STRIDE)
 
-Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 5b (XP, badges and the job queue), 2026-10-12.
+Living document, updated every phase (CLAUDE.md §10). **Last updated:** Phase 5c (leaderboards, the group goal, the Together total and invite details), 2026-10-12.
 
 ## Scope
 
@@ -191,6 +191,20 @@ A review of what people near the user could see, and of data we hold but don't n
 | **I**nformation disclosure | Job payloads or dead letters keeping personal data                       | Payloads hold ids and dates only (never answers or notes); finished jobs are deleted, not archived; dead letters are kept 30 days; erasing an account removes its queued jobs and dead letters (D-070); pgTAP `062`          |
 | **D**enial of service      | A bad job blocking the queue, or a backlog overrunning the worker        | Each job runs in its own sub-transaction; five failures move it to `jobs_dead`; each run stops after about 8 seconds and leaves the rest for the next (D-070)                                                                |
 | **I**nformation disclosure | The share card at Level 0                                                | Same card and checks as every level ("Clay", its era, Isaiah 64:8 and the app's name); levels 61–66 still have none (D-073)                                                                                                  |
+
+## Phase 5c additions
+
+| STRIDE                     | Threat                                                                      | Mitigation                                                                                                                                                                                                                                                                |
+| -------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | Reading another group's boards, totals, goal or invite details              | `group_leaderboard`, `group_together`, `set_group_goal`, `end_group_goal` and `group_invite_people` refuse anyone who isn't an active member (admin, for invites) of that group with `group_not_found` (42501); RLS on the new tables; pgTAP `022`, e2e `group-isolation` |
+| **I**nformation disclosure | A leaderboard showing a quiet member's slip                                 | checkin_only members appear only on Consistency XP (a slip earns the same XP, D-069) and Encourager, never on Level, Current streak or Free days; decided at read time from today's share level (D-074); pgTAP `070`, e2e                                                 |
+| **I**nformation disclosure | The "Together" total or goal showing a quiet member's slip in a small group | Only members at streak or full are counted, so a checkin_only answer never moves either number (D-075); pgTAP `071`, e2e                                                                                                                                                  |
+| **I**nformation disclosure | Learning who a hidden member is                                             | A hidden member's row carries no id, name or photo for anyone else (their own row only); hiding applies only while the covenant allows it (D-074); pgTAP `070`, e2e                                                                                                       |
+| **I**nformation disclosure | Reading stored board rows directly                                          | `leaderboard_entries`: owner-only RLS (your own rows); everyone else's go through the functions above                                                                                                                                                                     |
+| **I**nformation disclosure | Opening another group's invite through your own group's URL                 | The page reads the invite by id and group; anything else is a 404, like an unknown id (D-076); e2e                                                                                                                                                                        |
+| **T**ampering              | Setting another group's goal, or a member setting their own group's         | No write grants on `group_goals`; only `set_group_goal`/`end_group_goal`, which check the caller is an owner or admin of that group (`lock_group`); audited                                                                                                               |
+| **D**enial of service      | Goal changes flooding the queue (each one refreshes the whole group)        | `private.throttle` (`group_goal`, 30 an hour) on top of `lock_group`'s shared limit and the app's `groupManageByUser`; a whole-group refresh of 5,000 members is one ~3-second job                                                                                        |
+| **D**enial of service      | A crafted `?after=` asking for a huge page                                  | The app caps it (10,000, multiples of 50) and the function caps `limit` at 100; reads stay a single group's rows (`leaderboard_entries` keyed by group)                                                                                                                   |
 
 ## Headers sent on every response
 

@@ -309,14 +309,89 @@ export async function getGroupInvites(groupId: string, now = new Date()): Promis
     maxUses: i.max_uses,
     useCount: i.use_count,
     revokedAt: i.revoked_at,
-    state: i.revoked_at
-      ? "revoked"
-      : new Date(i.expires_at) <= now
-        ? "expired"
-        : i.max_uses !== null && i.use_count >= i.max_uses
-          ? "used_up"
-          : "active",
+    state: inviteState(i, now),
   }));
+}
+
+function inviteState(
+  i: { revoked_at: string | null; expires_at: string; max_uses: number | null; use_count: number },
+  now: Date,
+): InviteSummary["state"] {
+  return i.revoked_at
+    ? "revoked"
+    : new Date(i.expires_at) <= now
+      ? "expired"
+      : i.max_uses !== null && i.use_count >= i.max_uses
+        ? "used_up"
+        : "active";
+}
+
+export interface InvitePerson {
+  userId: string;
+  name: string;
+  avatarPath: string | null;
+  status: "active" | "pending";
+  since: string;
+}
+
+export interface InviteDetail extends InviteSummary {
+  /** Who made it; null when they're no longer someone the viewer can see (left, or closing their account). */
+  createdBy: { userId: string; name: string } | null;
+  people: InvitePerson[];
+}
+
+/**
+ * One invite, for the group's admins (D-076). The invite must belong to this
+ * group: another group's invite id is "not found", like an unknown one. The
+ * link and code can't be shown again (only hashes are kept, D-037).
+ */
+export async function getInviteDetail(
+  groupId: string,
+  inviteId: string,
+  now = new Date(),
+): Promise<InviteDetail | null> {
+  if (!uuidSchema.safeParse(inviteId).success) return null;
+  const supabase = await createSupabaseServerClient();
+  const { data: i } = await supabase
+    .from("group_invites")
+    .select("id, created_by, created_at, expires_at, max_uses, use_count, revoked_at")
+    .eq("id", inviteId)
+    .eq("group_id", groupId)
+    .maybeSingle();
+  if (!i) return null;
+  const { data: used, error } = await supabase.rpc("group_invite_people", { p_invite: inviteId });
+  if (error) return null;
+  const people = (used ?? []) as { member_id: string; member_status: string; since: string }[];
+  const ids = [...new Set([...people.map((p) => p.member_id), ...(i.created_by ? [i.created_by] : [])])];
+  const { data: cards } = ids.length
+    ? await supabase.from("profile_cards").select("id, handle, display_name, avatar_path").in("id", ids)
+    : { data: [] };
+  const byId = new Map((cards ?? []).map((c) => [c.id, c]));
+  const maker = i.created_by ? byId.get(i.created_by) : undefined;
+  return {
+    id: i.id,
+    createdAt: i.created_at,
+    expiresAt: i.expires_at,
+    maxUses: i.max_uses,
+    useCount: i.use_count,
+    revokedAt: i.revoked_at,
+    state: inviteState(i, now),
+    createdBy: maker?.id ? { userId: maker.id, name: maker.display_name || maker.handle || "" } : null,
+    people: people.flatMap((p) => {
+      const card = byId.get(p.member_id);
+      // No card: hidden from this viewer by their own privacy settings, or gone.
+      if (!card?.id) return [];
+      return [
+        {
+          userId: p.member_id,
+          name: card.display_name || card.handle || "",
+          avatarPath: card.avatar_path ?? null,
+          status: p.member_status === "pending" ? ("pending" as const) : ("active" as const),
+          since: p.since,
+        },
+      ];
+    }),
+  };
 }
 
 export interface OpenProposal {

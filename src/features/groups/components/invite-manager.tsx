@@ -7,6 +7,7 @@ import { useFormStatus } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
+import { Link } from "@/i18n/navigation";
 
 import { INVITE_LIMITS } from "../constants";
 import { idleGroupFormState, type CreatedInvite, type InviteFormState } from "../form-state";
@@ -251,7 +252,16 @@ export function InviteManager({
             {invites.map((invite) => (
               <li key={invite.id} className="group-row">
                 <div className="group-row__main">
-                  <span className="group-row__title">{t(`invites.status.${invite.state}`)}</span>
+                  <Link
+                    href={`/groups/${groupId}/invites/${invite.id}`}
+                    className="group-row__title"
+                    aria-label={t("invites.detailsFor", {
+                      status: t(`invites.status.${invite.state}`),
+                      created: date(invite.createdAt),
+                    })}
+                  >
+                    {t(`invites.status.${invite.state}`)}
+                  </Link>
                   <span className="text-muted">
                     {t("invites.created", { date: date(invite.createdAt) })}
                     {" · "}
@@ -297,6 +307,57 @@ export function InviteManager({
           </ul>
         )}
       </section>
+    </div>
+  );
+}
+
+/**
+ * "Replace with a new one" and "Stop" on an invite's own page (D-076). A
+ * replacement's link and code are shown here, once, like a new invite.
+ */
+export function InviteDetailActions({
+  groupId,
+  inviteId,
+  working,
+}: {
+  groupId: string;
+  inviteId: string;
+  /** False once the invite is stopped, expired or used up: no buttons, but a replacement made here still shows. */
+  working: boolean;
+}) {
+  const t = useTranslations("groups");
+  const [replaced, replace] = useActionState(
+    replaceInviteAction.bind(null, groupId),
+    idleGroupFormState as InviteFormState,
+  );
+  // The page refreshes after a replacement (this invite is now stopped); the new link stays on screen.
+  if (replaced.invite) return <CreatedPanel invite={replaced.invite} />;
+  if (!working) return null;
+  return (
+    <div className="stack">
+      {replaced.status === "error" && replaced.formError ? (
+        <p className="ui-error-text" role="alert">
+          {t(`errors.${replaced.formError}`)}
+        </p>
+      ) : null}
+      <p className="text-muted">{t("inviteDetail.secretNote")}</p>
+      <div className="group-row__actions">
+        <form action={replace}>
+          <input type="hidden" name="inviteId" value={inviteId} />
+          <ReplaceButton />
+        </form>
+        <details className="group-confirm">
+          <summary className={buttonVariants({ variant: "ghost", size: "sm" })}>{t("invites.revoke")}</summary>
+          <form action={revokeInviteAction.bind(null, groupId)} className="group-confirm__body">
+            <p>{t("invites.confirmRevoke")}</p>
+            <input type="hidden" name="inviteId" value={inviteId} />
+            <input type="hidden" name="from" value="detail" />
+            <Button type="submit" variant="secondary" size="sm">
+              {t("invites.revoke")}
+            </Button>
+          </form>
+        </details>
+      </div>
     </div>
   );
 }

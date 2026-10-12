@@ -8,7 +8,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(16);
+select plan(18);
 
 create function pg_temp.make_user(id uuid, email text) returns void language plpgsql as $$
 declare token text := 'token-' || replace(id::text, '-', '');
@@ -72,6 +72,10 @@ insert into public.xp_ledger (user_id, group_id, local_date, reason, points, sou
 values ('00000000-0000-7000-8000-000000000b01', pg_temp.gb(), current_date, 'challenge_finished', 100,
         'challenge_finished:test-b', 1);
 
+-- Phase 5c: a goal and stored leaderboard rows in group B.
+insert into public.group_goals (group_id, period, target) values (pg_temp.gb(), 'month', 100);
+select private.refresh_leaderboard(pg_temp.gb());
+
 -- The tables to check: groups, plus everything in public with a group_id.
 create temp table iso_tables as
 select 'groups'::text as tbl, 'id'::text as col
@@ -85,6 +89,8 @@ select ok((select count(*) from iso_tables) >= 5, 'At least the five group table
 select ok((select count(*) from iso_tables where tbl in ('group_checkins_today', 'group_member_stats')) = 2,
   'Phase 4''s share-level view and challenge stats are among them');
 select ok(exists (select 1 from iso_tables where tbl = 'xp_ledger'), 'Phase 5b''s XP ledger is among them');
+select ok((select count(*) from iso_tables where tbl in ('leaderboard_entries', 'group_goals')) = 2,
+  'Phase 5c''s stored boards and goals are among them');
 
 -- Counts, as the current role, the rows of group `gid` in every table.
 create function pg_temp.visible_rows(gid uuid)
@@ -103,7 +109,8 @@ $$;
 select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
 select ok((select bool_and(n > 0) from pg_temp.visible_rows(pg_temp.gb())
             where tbl in ('groups', 'group_members', 'group_invites', 'group_covenant_proposals',
-                          'group_covenant_agreements', 'group_checkins_today', 'group_member_stats', 'xp_ledger')),
+                          'group_covenant_agreements', 'group_checkins_today', 'group_member_stats', 'xp_ledger',
+                          'leaderboard_entries', 'group_goals')),
   'B''s owner sees B''s rows in every group table (the check below is meaningful)');
 
 -- ---------------------------------------------------------------- reading
@@ -148,7 +155,13 @@ insert into iso_calls values
   ('set_group_picture_pending', $$ select public.set_group_picture_pending(pg_temp.gb(), pg_temp.gb()::text || '/aaaaaaaaaaaaaaaaaaaaaa') $$),
   ('remove_group_picture', $$ select public.remove_group_picture(pg_temp.gb()) $$),
   ('create_group_invite', $$ select public.create_group_invite(pg_temp.gb(), repeat('5', 64), repeat('6', 64), 7, null) $$),
-  ('revoke_group_invite', $$ select public.revoke_group_invite(current_setting('test.ib')::uuid) $$);
+  ('revoke_group_invite', $$ select public.revoke_group_invite(current_setting('test.ib')::uuid) $$),
+  -- Phase 5c: boards, the Together total, the goal and invite details.
+  ('group_leaderboard', $$ select * from public.group_leaderboard(pg_temp.gb()) $$),
+  ('group_together', $$ select public.group_together(pg_temp.gb()) $$),
+  ('set_group_goal', $$ select public.set_group_goal(pg_temp.gb(), 'month', 500) $$),
+  ('end_group_goal', $$ select public.end_group_goal(pg_temp.gb()) $$),
+  ('group_invite_people', $$ select * from public.group_invite_people(current_setting('test.ib')::uuid) $$);
 grant select on iso_calls to authenticated;
 
 create function pg_temp.refused(p_sql text) returns boolean language plpgsql as $$
@@ -175,6 +188,7 @@ select is((select count(*) from public.group_members where group_id = pg_temp.gb
   'B''s memberships are untouched');
 select is((select closed_at from public.group_covenant_proposals where id = current_setting('test.pb')::uuid),
   null::timestamptz, 'B''s covenant change is untouched');
+select is((select target from public.group_goals where group_id = pg_temp.gb()), 100, 'B''s goal is untouched');
 
 -- Every function that takes a group or a group-scoped id is in the list
 -- above (or is a known exception that takes an invite hash instead).
