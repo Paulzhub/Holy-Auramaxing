@@ -8,9 +8,9 @@
 //
 // Reads CRON_SECRET from .env.local and never prints it. For the hosted
 // project, call public.notify_configure() once with the site's own URL (README).
-import { spawnSync } from "node:child_process";
-
 import nextEnv from "@next/env";
+
+import { localQuery } from "./local-sql.mjs";
 
 nextEnv.loadEnvConfig(process.cwd());
 
@@ -25,13 +25,13 @@ if (secret.length < 32 || !/^[A-Za-z0-9_-]+$/.test(secret)) {
   process.exit(1);
 }
 const url = `http://host.docker.internal:${port}/api/notify/deliver`;
-const run = spawnSync(
-  "npx",
-  ["supabase", "db", "query", "--local", `select public.notify_configure('${url}', '${secret}')`],
-  { encoding: "utf8", shell: process.platform === "win32" },
-);
-if (run.status !== 0) {
+try {
+  localQuery(`select public.notify_configure('${url}', '${secret}')`);
+} catch (error) {
+  // The CLI's message, with the secret masked, so the cause is visible.
+  const detail = String(error instanceof Error ? error.message : error).replaceAll(secret, "***");
   console.error("Couldn't configure the notification sender. Is Supabase running (npx supabase start)?");
+  console.error(detail);
   process.exit(1);
 }
 console.log(`Notification sender: ${url}`);

@@ -11,30 +11,17 @@
 // Local only: it writes through `supabase db query --local`, and seeds with
 // psql inside the local database's Docker container.
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { readFileSync } from "node:fs";
+
+import { localQuery } from "./local-sql.mjs";
 
 const BASE = process.env.BENCH_URL ?? "http://localhost:3100";
 const GROUP = "00000000-0000-7000-8000-0000000b7000";
 const REQUESTS = Number(process.env.BENCH_REQUESTS ?? 240);
 const CONCURRENCY = Number(process.env.BENCH_CONCURRENCY ?? 8);
 
-// One statement each (the CLI's rule); long ones go through a file.
-function sql(text) {
-  const dir = text.length > 2000 || text.trimStart().startsWith("-") ? mkdtempSync(join(tmpdir(), "bench-")) : null;
-  if (dir) writeFileSync(join(dir, "q.sql"), text);
-  const target = dir ? ["-f", join(dir, "q.sql")] : [text];
-  const run = spawnSync("npx", ["supabase", "db", "query", "--local", ...target, "--output-format", "json"], {
-    encoding: "utf8",
-    shell: process.platform === "win32",
-    maxBuffer: 64 * 1024 * 1024,
-  });
-  if (dir) rmSync(dir, { recursive: true, force: true });
-  if (run.status !== 0) throw new Error(run.stderr || run.stdout);
-  const out = run.stdout;
-  return out.includes("{") ? (JSON.parse(out.slice(out.indexOf("{"))).rows ?? []) : [];
-}
+// One statement each (the CLI's rule), through a file (scripts/local-sql.mjs).
+const sql = localQuery;
 
 const state = JSON.parse(readFileSync("tests/e2e/.auth/member.json", "utf8"));
 const cookie = state.cookies.map((c) => `${c.name}=${c.value}`).join("; ");

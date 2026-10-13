@@ -8,7 +8,7 @@
 //
 // With the app running and the sender configured (Phase 7c), "ready" push and
 // email go out within a few seconds. Local only: it uses `supabase db query --local`.
-import { spawnSync } from "node:child_process";
+import { localQuery } from "./local-sql.mjs";
 
 const TYPES = [
   "daily_reminder",
@@ -70,16 +70,12 @@ if (!email || !/^[^@\s'"]+@[^@\s'"]+$/.test(email) || (only && !TYPES.includes(o
 }
 
 function query(sql) {
-  const run = spawnSync("npx", ["supabase", "db", "query", "--local", "--output-format", "json", sql], {
-    encoding: "utf8",
-    shell: process.platform === "win32",
-  });
-  if (run.status !== 0) {
-    console.error(run.stderr || run.stdout);
+  try {
+    return localQuery(sql);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
     process.exit(1);
   }
-  const text = run.stdout;
-  return JSON.parse(text.slice(text.indexOf("{"))).rows ?? [];
 }
 
 const [me] = query(`
