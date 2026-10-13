@@ -2022,6 +2022,28 @@ export type Database = {
           unread: number;
         }[];
       };
+      notify_claim: {
+        Args: { p_limit?: number };
+        Returns: {
+          actor_name: string;
+          bundle_count: number;
+          channel: string;
+          data: Json;
+          delivery_id: string;
+          devices: Json;
+          discreet: boolean;
+          email: string;
+          group_id: string;
+          sound: boolean;
+          type: string;
+          unread: number;
+          user_id: string;
+          vibrate: boolean;
+        }[];
+      };
+      notify_configure: { Args: { p_secret: string; p_url: string }; Returns: undefined };
+      notify_finish: { Args: { p_results: Json }; Returns: number };
+      notify_unsubscribe: { Args: { p_type: string; p_user: string }; Returns: boolean };
       pin_post: { Args: { p_pinned: boolean; p_post: string }; Returns: undefined };
       post_comments: {
         Args: { p_post: string };
@@ -2055,6 +2077,7 @@ export type Database = {
       recovery_codes_remaining: { Args: Record<PropertyKey, never>; Returns: number };
       remove_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };
       remove_group_picture: { Args: { p_group: string }; Returns: string[] };
+      remove_push_subscription: { Args: { p_endpoint?: string; p_id?: string }; Returns: number };
       replace_recovery_codes: { Args: { p_hashes: string[] }; Returns: number };
       report_content: {
         Args: { p_group: string; p_note?: string; p_reason: string; p_target: string; p_target_type: string };
@@ -2069,6 +2092,10 @@ export type Database = {
       run_account_purge: { Args: Record<PropertyKey, never>; Returns: number };
       save_checkin_reflection: {
         Args: { p_local_date: string; p_note_encrypted?: string; p_triggers?: string[] };
+        Returns: undefined;
+      };
+      save_push_subscription: {
+        Args: { p_auth: string; p_endpoint: string; p_label: string; p_p256dh: string };
         Returns: undefined;
       };
       send_nudge: { Args: { p_group: string; p_kind: string; p_to: string }; Returns: string };

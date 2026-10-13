@@ -8,6 +8,9 @@ import { globalErrorMessages } from "../app/global-error-messages";
 import { exportFileName } from "../lib/data-export";
 import { SENSITIVE_WORDS } from "../lib/discretion";
 import { parseFrom } from "../lib/email/sender";
+import { renderNotificationEmail } from "../emails/notification";
+import { NOTIFICATION_TYPE_LIST } from "../features/notifications/constants";
+import { buildDigestPush, buildPush, emailWords, outboundLine } from "../features/notifications/outbound";
 
 /**
  * Discretion (CLAUDE.md §2.3; privacy review 1, D-055). Everything someone
@@ -110,6 +113,131 @@ describe("discretion: what people see outside the app", () => {
       expect(source, file).not.toMatch(/app\.name/);
       expect(source, file).toMatch(/app\.tabName/);
     }
+  });
+});
+
+describe("discretion: push notifications and notification emails (§7.8, D-092)", () => {
+  // Every type, with every code it can carry, and a group whose name gives the
+  // topic away: no push or email may ever show it.
+  const GROUP_NAME = "NoFap Brothers: purity streak";
+  const variants: Array<[string, Record<string, unknown>]> = NOTIFICATION_TYPE_LIST.flatMap((type) => {
+    const shapes: Record<string, unknown>[] =
+      type === "reaction"
+        ? [{ target: "post", kind: "heart" }, { target: "comment" }, { target: "checkin" }]
+        : type === "comment"
+          ? [{ reply: false }, { reply: true }]
+          : type === "challenge"
+            ? [{ phase: "start" }, { phase: "end" }]
+            : type === "partner_request"
+              ? [{ what: "requested" }, { what: "accepted" }, { what: "ended" }]
+              : type === "security"
+                ? [{ what: "new_login" }, { what: "password_changed" }]
+                : type === "milestone" || type === "badge_earned"
+                  ? [{ badge: "free_90" }]
+                  : type === "level_up"
+                    ? [{ level: 64 }]
+                    : type === "nudge"
+                      ? [{ kind: "pray_for_me" }]
+                      : [{}];
+    return shapes.map((data): [string, Record<string, unknown>] => [type, { ...data, groupName: GROUP_NAME }]);
+  });
+  const lines = variants.flatMap(([type, data]) =>
+    [true, false].flatMap((discreet) =>
+      [null, "Sam"].map((actorName): [string, string] => [
+        `${type} ${JSON.stringify(data)} discreet=${discreet} actor=${actorName}`,
+        outboundLine({
+          type: type as (typeof NOTIFICATION_TYPE_LIST)[number],
+          data,
+          discreet,
+          actorName,
+          groupId: "0199a000-0000-7000-8000-000000000001",
+        }),
+      ]),
+    ),
+  );
+
+  it("every push line, in both modes, says nothing about the topic", () => {
+    expect(lines.length).toBeGreaterThan(80);
+    expectDiscreet(lines);
+    expectDiscreet(strings(en.notifications.push, "notifications.push"));
+    expectDiscreet(strings(en.notifications.email, "notifications.email"));
+    expectDiscreet(strings(en.notifications.unsubscribe, "notifications.unsubscribe"));
+    expectDiscreet(strings(en.notifications.device, "notifications.device"));
+  });
+
+  it("never a group's name, a level or a badge, nor any count of days", () => {
+    for (const [where, text] of lines) {
+      expect(text, where).not.toContain("NoFap");
+      expect(text, where).not.toMatch(/\d/);
+      expect(text, where).not.toMatch(/Set Free|Level/);
+    }
+  });
+
+  it("with discreet mode on (the default), never a name either", () => {
+    for (const [where, text] of lines.filter(([w]) => w.includes("discreet=true"))) {
+      expect(text, where).not.toContain("Sam");
+    }
+  });
+
+  it("the push itself: the neutral title and a path inside the app", () => {
+    const push = buildPush({
+      id: "0199a000-0000-7000-8000-000000000009",
+      type: "partner_sos",
+      data: {},
+      discreet: true,
+      actorName: "Sam",
+      groupId: "0199a000-0000-7000-8000-000000000001",
+      unread: 3,
+    });
+    expect(push.title).toBe(en.app.tabName);
+    expect(push.url).toMatch(/^\/groups\/[0-9a-f-]{36}\/partner$/);
+    expectDiscreet([
+      ["push", JSON.stringify(push)],
+      ["digest", JSON.stringify(buildDigestPush({ id: "x", count: 4 }))],
+    ]);
+  });
+
+  it("every notification email: neutral subject, discreet body, one-click unsubscribe words", async () => {
+    const subjects = new Set<string>();
+    for (const [type, data] of variants) {
+      for (const discreet of [true, false]) {
+        const words = emailWords({
+          type: type as (typeof NOTIFICATION_TYPE_LIST)[number],
+          data,
+          discreet,
+          actorName: "Sam",
+          groupId: null,
+        });
+        subjects.add(words.subject);
+        const email = await renderNotificationEmail(words, {
+          open: "https://example.test/alerts",
+          unsubscribe: "https://example.test/unsubscribe?u=x",
+          settings: "https://example.test/settings/notifications",
+        });
+        expectDiscreet([
+          [`${type} subject`, email.subject],
+          [`${type} html`, email.html.replace(/<[^>]+>/g, " ")],
+          [`${type} text`, email.text],
+        ]);
+        expect(email.html).not.toContain("NoFap");
+      }
+    }
+    // Subjects never say who or what: one neutral line, or the security one.
+    expect([...subjects].sort()).toEqual(
+      [en.notifications.email.subjectSecurity, en.notifications.email.subject].sort(),
+    );
+    const digest = await renderNotificationEmail(emailWords({ digest: 5 }), {
+      open: "https://example.test/alerts",
+      unsubscribe: "https://example.test/unsubscribe",
+      settings: "https://example.test/settings/notifications",
+    });
+    expectDiscreet([["digest", digest.subject + digest.text]]);
+  });
+
+  it("the service worker and the install name", () => {
+    const sw = read("public/sw.js");
+    expectDiscreet([["sw.js", sw]]);
+    expect(read("src/app/manifest.ts")).toMatch(/name: en\.app\.tabName/);
   });
 });
 

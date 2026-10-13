@@ -26,3 +26,22 @@ export function parseCursor(before: unknown, id: unknown): { at: string; id: str
   }
   return { at, id: key };
 }
+
+/** A browser's PushSubscription.toJSON(), as the subscribe route receives it. */
+export const pushSubscriptionSchema = z.object({
+  endpoint: z
+    .string()
+    .max(1000)
+    .regex(/^https:\/\/[^\s]+$/),
+  keys: z.object({
+    p256dh: z.string().regex(/^[A-Za-z0-9_-]{20,200}={0,2}$/),
+    auth: z.string().regex(/^[A-Za-z0-9_-]{8,100}={0,2}$/),
+  }),
+});
+
+export const pushEndpointSchema = z.object({
+  endpoint: z
+    .string()
+    .max(1000)
+    .regex(/^https:\/\/[^\s]+$/),
+});

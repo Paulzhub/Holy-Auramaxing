@@ -20,6 +20,7 @@ import { notificationText } from "../text";
 type Params = string | string[] | undefined;
 const first = (v: Params) => (Array.isArray(v) ? v[0] : v);
 const NOTICES = ["read", "allRead"] as const;
+const SETTINGS_NOTICES = ["saved", "snoozed", "awake", "deviceRemoved"] as const;
 const ERRORS = ["rateLimited", "failed"] as const;
 
 /** A known ?notice= or ?error= value; anything else is ignored. */
@@ -37,7 +38,7 @@ export async function NotificationNotice({
   const e = first(error);
   const errors: readonly string[] =
     scope === "centre" ? ERRORS : ["invalidInput", "rateLimited", "failed", "notification_locked"];
-  const notices: readonly string[] = scope === "centre" ? NOTICES : ["saved", "snoozed", "awake"];
+  const notices: readonly string[] = scope === "centre" ? NOTICES : SETTINGS_NOTICES;
   if (e && errors.includes(e)) {
     return (
       <p className="auth-banner auth-banner--error" role="alert">

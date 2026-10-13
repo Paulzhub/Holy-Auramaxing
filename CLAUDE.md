@@ -36,7 +36,7 @@ We build in phases. For each phase: plan first and list the files you will touch
 - **Backend:** Supabase — Postgres, Auth, Storage, Realtime, Edge Functions, Queues (pgmq) and Cron. Row-level security (RLS) on every table.
 - **Validation:** Zod at every server boundary; generated database types.
 - **Motion and 3D:** GSAP with ScrollTrigger and SplitText (free for commercial use since v3.13), Lenis smooth scroll, three.js via React Three Fiber and drei, custom GLSL shaders, Motion for small UI transitions, canvas-confetti for celebrations, the View Transitions API where supported.
-- **PWA:** service worker (Serwist or hand-written), Web App Manifest, Web Push with VAPID keys, Badging API.
+- **PWA:** service worker (Serwist or hand-written), Web App Manifest, Web Push with VAPID keys (the `web-push` package, server-only, owner 2026-10-13), Badging API.
 - **Email:** Resend or Amazon SES with React Email templates.
 - **i18n:** next-intl; all copy in message files from day one.
 - **Security tooling:** Upstash rate limiting, Cloudflare Turnstile on auth forms, Cloudflare in front for DNS, WAF and DDoS protection.
@@ -261,6 +261,7 @@ Theme (light, dark, system), language, time zone, reminder time, notifications, 
 - Service worker: precache the app shell; network-first for data with a stale fallback; cache-first for static assets; an offline page; offline check-ins queued in IndexedDB with the local date and time they were made, and synced exactly once by Background Sync (or on next open). The server accepts them for the day they were made, within `OFFLINE_SYNC_MAX_DAYS` (§7.5), even after the normal window has closed. A "new version available" refresh prompt.
 - Install UX: a custom prompt after the first check-in; an iOS sheet showing Share, then Add to Home Screen.
 - Web Push with VAPID keys; app-icon badges for unread counts; Web Share for invite links; QR codes for invites.
+- **Already in place since Phase 7 (D-092):** a push-only service worker (`public/sw.js`: show a push, open the app, set the app-icon badge, re-save a replaced subscription; it caches nothing) and a minimal manifest (`src/app/manifest.ts`, the neutral name, `standalone`, any/maskable/monochrome icons) with an Apple touch icon. Phase 10 builds caching, the offline page, the offline queue, shortcuts and screenshots on top of them.
 - Keep the code ready for later Trusted Web Activity (Google Play) and Capacitor (App Store) wrappers.
 
 ## 14. Performance and scalability

@@ -29,6 +29,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     description: tApp("description"),
     applicationName: tabName,
     formatDetection: { telephone: false, email: false, address: false },
+    // Installing to the Home Screen (needed for push on iPhone, D-092) shows the same neutral name.
+    manifest: "/manifest.webmanifest",
+    appleWebApp: { capable: true, title: tabName, statusBarStyle: "default" },
+    icons: { apple: "/icons/apple-touch-icon.png" },
   };
 }
 

@@ -11,6 +11,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import { NOTIFICATION_CHANNELS, NOTIFICATION_TYPE_LIST, SNOOZE_CHOICES, isLockedType } from "../constants";
 import { deliverySettingsSchema, uuidSchema } from "../schemas";
+import { applyUnsubscribe } from "./deliver";
+import { verifyUnsubscribe } from "./unsubscribe";
 
 /**
  * Notification centre and settings writes (CLAUDE.md §7.8, D-089, D-090).
@@ -154,4 +156,29 @@ export async function saveGroupMutesAction(formData: FormData): Promise<void> {
   }
   refresh();
   return go(`${SETTINGS}?notice=saved#groups`);
+}
+
+// ---------------------------------------------------------------- email links
+
+/** "Stop these emails" from the confirmation page: the signed link decides, no session needed. */
+export async function unsubscribeAction(formData: FormData): Promise<void> {
+  const link = verifyUnsubscribe({
+    u: String(formData.get("u") ?? ""),
+    t: String(formData.get("t") ?? ""),
+    s: String(formData.get("s") ?? ""),
+  });
+  if (!link || !(await applyUnsubscribe(link.userId, link.kind))) return go("/unsubscribe?status=invalid");
+  return go("/unsubscribe?status=done");
+}
+
+/** Remove one of my devices from the settings page (push stops there). */
+export async function removeDeviceAction(formData: FormData): Promise<void> {
+  const id = String(formData.get("id") ?? "");
+  if (!uuidSchema.safeParse(id).success) return go(`${SETTINGS}?error=invalidInput#devices`);
+  const ctx = await signedIn("notificationSettingsByUser");
+  if (!ctx) return go(`${SETTINGS}?error=rateLimited#devices`);
+  const { error } = await ctx.supabase.rpc("remove_push_subscription", { p_id: id });
+  if (error) devLog("notifications", error);
+  refresh();
+  return go(error ? `${SETTINGS}?error=failed#devices` : `${SETTINGS}?notice=deviceRemoved#devices`);
 }

@@ -3,7 +3,13 @@ import { getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/shell/app-shell";
 import { requireAccount } from "@/features/auth";
-import { getNotificationSettings, NotificationNotice, NotificationSettingsPanel } from "@/features/notifications";
+import {
+  DevicesSection,
+  getNotificationSettings,
+  getPushDevices,
+  NotificationNotice,
+  NotificationSettingsPanel,
+} from "@/features/notifications";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
@@ -19,12 +25,16 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
     searchParams,
     getTranslations("notifications.settings"),
   ]);
-  const settings = await getNotificationSettings(userId);
+  const [settings, devices] = await Promise.all([getNotificationSettings(userId), getPushDevices()]);
   return (
     <>
       <PageHeader title={t("title")} lede={t("lede")} />
       <NotificationNotice notice={query.notice} error={query.error} scope="settings" />
-      <NotificationSettingsPanel settings={settings} timeZone={profile.timezone} />
+      <NotificationSettingsPanel
+        settings={settings}
+        timeZone={profile.timezone}
+        devices={<DevicesSection devices={devices} timeZone={profile.timezone} />}
+      />
     </>
   );
 }

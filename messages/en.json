@@ -42,7 +42,8 @@
     "groupModeration": "Moderation",
     "blocked": "Blocked people",
     "groupPartner": "Partner",
-    "notificationSettings": "Notifications"
+    "notificationSettings": "Notifications",
+    "unsubscribe": "Emails"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -2105,14 +2106,101 @@
       "notices": {
         "saved": "Saved.",
         "snoozed": "Snoozed.",
-        "awake": "Snooze is off."
+        "awake": "Snooze is off.",
+        "deviceRemoved": "Device removed."
       },
       "errors": {
         "invalidInput": "Something in the form isn't right. Please check it and try again.",
         "rateLimited": "That's a lot of changes at once. Please wait a moment and try again.",
         "failed": "That didn't save. Please try again.",
         "notification_locked": "Security alerts can't be turned off."
+      },
+      "devicesTitle": "This device",
+      "devicesLede": "Push shows notifications on this phone or computer, even when the app is closed."
+    },
+    "push": {
+      "title": "Holy Auramaxing",
+      "discreet": {
+        "people": "You have a new message from your group",
+        "group": "There’s something new in your group",
+        "daily_reminder": "A gentle reminder for today",
+        "streak_at_risk": "There’s still time today",
+        "weekly_recap": "Your week in review is ready",
+        "partner_missed": "Someone in your group could use a kind word",
+        "partner_sos": "Someone in your group is asking for prayer right now",
+        "progress": "Something new is waiting for you",
+        "leading": "Your group has something for you to look at",
+        "security_new_login": "Your account was signed in on a new device",
+        "security_password_changed": "Your password was changed",
+        "digest": "{count, plural, one {You have # new update} other {You have # new updates}}"
+      },
+      "named": {
+        "nudge": "{actor} sent you encouragement",
+        "reaction": "{actor} reacted to your {target, select, comment {comment} checkin {check-in} other {post}}",
+        "comment": "{actor} commented on your post",
+        "reply": "{actor} replied in a conversation you’re part of",
+        "prayed_for_you": "{actor} prayed for your request",
+        "prayer_request": "{actor} shared a prayer request",
+        "announcement": "{actor} posted an announcement",
+        "milestone": "{actor} reached a milestone",
+        "challenge_start": "Your group’s challenge starts today",
+        "challenge_end": "Your group’s challenge is complete",
+        "covenant": "{actor} suggested a covenant change",
+        "partner_requested": "{actor} asked you to be accountability partners",
+        "partner_accepted": "{actor} is now your accountability partner",
+        "partner_ended": "Your partnership with {actor} has come to a close",
+        "partner_missed": "{actor} could use a kind word from you",
+        "partner_sos": "{actor} is asking for your prayer right now",
+        "level_up": "You reached a new level",
+        "badge_earned": "You earned a new badge",
+        "join_request": "{actor} asked to join your group",
+        "member_joined": "{actor} joined your group",
+        "report": "A report is waiting for a look"
       }
+    },
+    "email": {
+      "subject": "You have a new update",
+      "subjectDigest": "{count, plural, one {You have # new update} other {You have # new updates}}",
+      "subjectSecurity": "A security alert for your account",
+      "preview": "Open the app to see it.",
+      "heading": "Something new for you",
+      "open": "Open Holy Auramaxing",
+      "why": "You get this email because you turned on email for “{type}”.",
+      "whyDigest": "You get this email because you chose to bundle your updates.",
+      "unsubscribe": "Stop these emails",
+      "settings": "Change what reaches you"
+    },
+    "unsubscribe": {
+      "title": "Stop these emails?",
+      "lede": "You won’t get emails for “{type}” any more. Everything still shows in the app.",
+      "ledeDigest": "You won’t get digest emails any more. Everything still shows in the app.",
+      "confirm": "Stop these emails",
+      "done": "Done. You won’t get these emails any more.",
+      "invalid": "This link isn’t valid any more. You can change what reaches you in the app’s settings.",
+      "settings": "Notification settings"
+    },
+    "device": {
+      "explainerTitle": "Hear from your group on this device?",
+      "explainerBody": "Turn on notifications for your daily reminder, nudges and prayer, even when the app is closed. They never say what the app is for, and you choose what comes through in Settings.",
+      "turnOn": "Turn on notifications",
+      "notNow": "Not now",
+      "on": "Notifications are on for this device.",
+      "turnOff": "Turn off on this device",
+      "off": "Notifications are off for this device.",
+      "blocked": "Notifications are blocked for this site. You can allow them in your browser’s site settings.",
+      "unsupported": "This browser can’t show notifications.",
+      "iosTitle": "On iPhone or iPad, add the app to your Home Screen first",
+      "iosStep1": "In Safari, tap the Share button.",
+      "iosStep2": "Choose “Add to Home Screen”, then Add.",
+      "iosStep3": "Open the app from your Home Screen and turn notifications on here.",
+      "working": "One moment…",
+      "failed": "That didn’t work. Please try again.",
+      "listTitle": "Your devices",
+      "unknownDevice": "A device",
+      "added": "Added {date}",
+      "remove": "Remove",
+      "removeFor": "Remove {device}",
+      "none": "No devices yet."
     }
   }
 }

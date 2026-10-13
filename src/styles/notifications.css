@@ -171,3 +171,21 @@
     }
   }
 }
+
+@layer components {
+  .push-steps {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    padding-inline-start: 1.25rem;
+  }
+
+  .push-explainer__icon {
+    display: inline-block;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin-inline-end: var(--space-2);
+    vertical-align: -0.2em;
+    color: var(--color-accent-ink);
+  }
+}

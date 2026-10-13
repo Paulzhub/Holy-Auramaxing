@@ -10,6 +10,11 @@ const publicEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1).optional(),
   /** Cloudflare Turnstile site key. When unset, auth forms render without the widget (local development). */
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1).optional(),
+  /** Web Push: the VAPID public key (base64url). When unset, push is off and the app hides it (D-092). */
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{80,100}$/)
+    .optional(),
 });
 
 export type PublicEnv = z.infer<typeof publicEnvSchema>;
@@ -20,6 +25,7 @@ export function readPublicEnv(): PublicEnv {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || undefined,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || undefined,
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || undefined,
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || undefined,
   });
 }
 
@@ -55,6 +61,16 @@ const serverEnvSchema = z.object({
   SMTP_PASSWORD: z.string().min(1).max(1024).optional(),
   /** Bearer token for /api/cron/* (Vercel Cron sends it). Unset = those routes return 404 (D-033). */
   CRON_SECRET: z.string().min(1).max(256).optional(),
+  /** Web Push: the VAPID private key (base64url, server-only; D-092). */
+  VAPID_PRIVATE_KEY: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{40,50}$/)
+    .optional(),
+  /** Web Push: who to contact about this sender, "mailto:…" or "https://…". */
+  VAPID_SUBJECT: z
+    .string()
+    .regex(/^(mailto:\S+@\S+|https:\/\/\S+)$/)
+    .optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -79,6 +95,8 @@ export function readServerEnv(): ServerEnv {
     SMTP_USER: process.env.SMTP_USER || undefined,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD || undefined,
     CRON_SECRET: process.env.CRON_SECRET || undefined,
+    VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY || undefined,
+    VAPID_SUBJECT: process.env.VAPID_SUBJECT || undefined,
   });
 }
 

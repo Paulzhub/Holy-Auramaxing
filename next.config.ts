@@ -30,6 +30,17 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders(process.env.NODE_ENV === "production"),
       },
+      {
+        // The service worker (push only for now, D-092; Phase 10 adds caching):
+        // always fetched fresh, so an update reaches every device, and locked
+        // down to its own origin.
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
+        ],
+      },
     ];
   },
 };

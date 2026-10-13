@@ -75,6 +75,9 @@ jobs:
             echo "PASSKEYS_ENABLED=true"
             echo "EMAIL_PROVIDER=mailpit"
             echo "CRON_SECRET=$(openssl rand -hex 32)"
+            # Phase 7c: a throwaway VAPID key pair for this run (Web Push).
+            node -e 'const k=require("web-push").generateVAPIDKeys();console.log("NEXT_PUBLIC_VAPID_PUBLIC_KEY="+k.publicKey);console.log("VAPID_PRIVATE_KEY="+k.privateKey)'
+            echo "VAPID_SUBJECT=mailto:ci@example.test"
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Playwright
@@ -119,6 +122,9 @@ jobs:
             echo "PASSKEYS_ENABLED=true"
             echo "EMAIL_PROVIDER=mailpit"
             echo "CRON_SECRET=$(openssl rand -hex 32)"
+            # Phase 7c: a throwaway VAPID key pair for this run (Web Push).
+            node -e 'const k=require("web-push").generateVAPIDKeys();console.log("NEXT_PUBLIC_VAPID_PUBLIC_KEY="+k.publicKey);console.log("VAPID_PRIVATE_KEY="+k.privateKey)'
+            echo "VAPID_SUBJECT=mailto:ci@example.test"
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Lighthouse CI
