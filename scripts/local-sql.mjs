@@ -29,10 +29,40 @@ export function localQuery(sql) {
       maxBuffer: 64 * 1024 * 1024,
     });
     if (run.error) throw run.error;
+    const result = firstJsonObject(run.stdout ?? "");
+    // The CLI reports failures as {"_tag": "Error", "error": {message, suggestion}}.
+    if (result?._tag === "Error") {
+      const { message, suggestion } = result.error ?? {};
+      throw new Error([message, suggestion].filter(Boolean).join(" ") || "the Supabase CLI reported an error");
+    }
     if (run.status !== 0) throw new Error((run.stderr || run.stdout || "").trim() || `exit code ${run.status}`);
-    const out = run.stdout;
-    return out.includes("{") ? (JSON.parse(out.slice(out.indexOf("{"))).rows ?? []) : [];
+    return result?.rows ?? [];
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+}
+
+/**
+ * The first complete JSON object in the CLI's output. Anything around it is
+ * ignored: on Windows the CLI can print more after the JSON (an update
+ * notice, for example), which made JSON.parse fail ("Unexpected non-whitespace
+ * character after JSON", 2026-10-13). Braces inside strings are skipped.
+ */
+export function firstJsonObject(text) {
+  const start = text.indexOf("{");
+  if (start < 0) return null;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < text.length; i++) {
+    const c = text[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (c === "\\") escaped = true;
+      else if (c === '"') inString = false;
+    } else if (c === '"') inString = true;
+    else if (c === "{") depth++;
+    else if (c === "}" && --depth === 0) return JSON.parse(text.slice(start, i + 1));
+  }
+  throw new Error("The Supabase CLI's answer wasn't complete JSON.");
 }
