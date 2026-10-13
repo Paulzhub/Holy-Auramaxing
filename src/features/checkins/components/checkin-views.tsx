@@ -1,13 +1,4 @@
-import {
-  CircleCheck,
-  Footprints,
-  HeartHandshake,
-  Sparkles,
-  Sunrise,
-  Wind,
-  BookOpen,
-  MessageCircle,
-} from "lucide-react";
+import { CircleCheck, Footprints, Sparkles, Sunrise, Wind, BookOpen, MessageCircle } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
@@ -392,23 +383,6 @@ export async function NextStep({ date }: { date: string }) {
   );
 }
 
-export async function PrayerCard() {
-  const t = await getTranslations("checkins.mercies");
-  return (
-    <section className="ui-card" aria-labelledby="prayer-title">
-      <h2 id="prayer-title" className="ui-card__title">
-        <HeartHandshake aria-hidden="true" className="inline-icon" /> {t("prayerTitle")}
-      </h2>
-      <p>{t("prayerBody")}</p>
-      <div>
-        <Link href="/groups" className={buttonVariants({ variant: "secondary" })}>
-          {t("prayerGroups")}
-        </Link>
-      </div>
-    </section>
-  );
-}
-
 export async function ReflectionForm({ existing, saved }: { existing: CheckinDetails; saved: boolean }) {
   const [t, tForm, tTrig] = await Promise.all([
     getTranslations("checkins.mercies"),
@@ -484,7 +458,14 @@ export async function InsightList({ insights }: { insights: Insight[] }) {
 
 // ---------------------------------------------------------------- a group's today
 
-export async function GroupToday({ members }: { members: MemberToday[] }) {
+export async function GroupToday({
+  members,
+  rowTools,
+}: {
+  members: MemberToday[];
+  /** Extra controls for another member's row (a nudge, from the social module). */
+  rowTools?: (m: MemberToday) => ReactNode;
+}) {
   const t = await getTranslations("checkins.group");
   const done = members.filter((m) => m.checkedInToday).length;
   return (
@@ -522,6 +503,7 @@ export async function GroupToday({ members }: { members: MemberToday[] }) {
                       </span>
                     ) : null}
                   </span>
+                  {!m.isMe && rowTools ? <span className="group-today__tools">{rowTools(m)}</span> : null}
                 </li>
               );
             })}

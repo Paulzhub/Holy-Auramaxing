@@ -18,6 +18,12 @@ const fromDatabase: Record<string, SocialErrorKey> = {
   invalid_input: "invalidInput",
   content_blocked: "contentBlocked",
   pinned_full: "pinnedFull",
+  nudge_already_sent: "nudgeAlreadySent",
+  nudges_muted: "nudgesMuted",
+  partner_already: "partnerAlready",
+  partners_full: "partnersFull",
+  partner_request_closed: "partnerRequestClosed",
+  partnership_not_found: "partnershipNotFound",
   // The database's own limit (D-051), met only by calls that skip the app.
   rate_limited: "rateLimited",
 };

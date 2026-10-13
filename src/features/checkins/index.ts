@@ -31,7 +31,6 @@ export {
   InsightList,
   KeptMessage,
   NextStep,
-  PrayerCard,
   ReflectionForm,
   StreakStats,
   TodayCard,

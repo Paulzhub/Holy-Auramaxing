@@ -112,10 +112,9 @@ select is(pg_temp.row_of(:owner) ->> 'checked_in_today', 'false', 'Someone who h
 select pg_temp.as_user(:quiet);
 select is(pg_temp.row_of(:quiet) ->> 'outcome', 'slipped', 'You always see your own row in full');
 select pg_temp.as_postgres();
--- Partnerships arrive in Phase 6; stand in for one (rolled back with the test).
-create or replace function util.are_partners(viewer uuid, owner uuid) returns boolean language sql stable as $$
-  select viewer = '00000000-0000-7000-8000-000000003205' and owner = '00000000-0000-7000-8000-000000003202'
-$$;
+-- A real partnership in this group (Phase 6b, D-083), asked and accepted.
+insert into public.partnerships (group_id, user_a, user_b, status, accepted_at)
+values (pg_temp.g(), :viewer, :quiet, 'active', now());
 select pg_temp.as_user(:viewer);
 select is(pg_temp.row_of(:quiet) ->> 'mood', '2', 'A partner sees the mood, even at checkin_only');
 select is(pg_temp.row_of(:quiet) ->> 'urge_level', '4', '... the urge level');

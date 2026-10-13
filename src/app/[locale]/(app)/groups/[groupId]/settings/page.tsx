@@ -20,6 +20,7 @@ import {
   GroupPictureEditor,
   MembershipForm,
 } from "@/features/groups/ui-manage";
+import { getGroupNudgesMuted, GroupNudgeSettings, SocialNotice } from "@/features/social";
 import { clientMessages } from "@/i18n/client-messages";
 import { timezoneOptions } from "@/lib/timezones";
 
@@ -40,12 +41,13 @@ export default async function Page({ params, searchParams }: { params: Params; s
   const { groupId } = await params;
   const ctx = await requireGroup(groupId);
   const { group } = ctx;
-  const [t, query, messages, members, proposal] = await Promise.all([
+  const [t, query, messages, members, proposal, nudgesMuted] = await Promise.all([
     getTranslations("groups.settings"),
     searchParams,
     clientMessages(["groups"]),
     ctx.isOwner ? getGroupMembers(groupId) : Promise.resolve([]),
     ctx.isOwner ? getOpenProposal(ctx) : Promise.resolve(null),
+    getGroupNudgesMuted(groupId, ctx.userId),
   ]);
   const editable = !group.archivedAt;
 
@@ -53,6 +55,7 @@ export default async function Page({ params, searchParams }: { params: Params; s
     <>
       <GroupHeader ctx={ctx} current="settings" />
       <GroupNotice notice={query.notice} error={query.error} />
+      <SocialNotice notice={query.notice} error={query.error} />
       <p className="page-lede">{t("lede")}</p>
       <NextIntlClientProvider messages={messages}>
         <div className="stack">
@@ -62,6 +65,7 @@ export default async function Page({ params, searchParams }: { params: Params; s
             minShareLevel={group.minShareLevel}
             hidingAllowed={group.leaderboardHidingAllowed}
           />
+          <GroupNudgeSettings groupId={groupId} muted={nudgesMuted} />
           {ctx.isAdmin && editable ? (
             <>
               <GroupPictureEditor

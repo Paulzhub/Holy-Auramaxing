@@ -40,7 +40,8 @@
     "groupLeaderboard": "Leaderboard",
     "groupWall": "Wall",
     "groupModeration": "Moderation",
-    "blocked": "Blocked people"
+    "blocked": "Blocked people",
+    "groupPartner": "Partner"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -1057,7 +1058,8 @@
       "invites": "Invites",
       "settings": "Settings",
       "wall": "Wall",
-      "moderation": "Moderation"
+      "moderation": "Moderation",
+      "partner": "Partner"
     },
     "home": {
       "members": "{count, plural, one {# member} other {# members}}",
@@ -1431,7 +1433,7 @@
       "reflectionSave": "Save my reflection",
       "reflectionSaved": "Saved. Only you can read it.",
       "prayerTitle": "You don’t have to carry this alone",
-      "prayerBody": "When you’re ready, tell someone you trust and ask them to pray with you. You don’t have to explain everything. Soon you’ll be able to ask your group or your partner from right here.",
+      "prayerBody": "When you're ready, tell someone you trust and ask them to pray with you. You don't have to explain everything.",
       "prayerGroups": "Open your groups",
       "nextTitle": "One next step",
       "next": {
@@ -1857,7 +1859,15 @@
       "blocked": "Blocked. You won't see each other in your groups.",
       "unblocked": "Unblocked.",
       "reportActioned": "Report closed as dealt with.",
-      "reportDismissed": "Report dismissed."
+      "reportDismissed": "Report dismissed.",
+      "nudged": "Nudge sent.",
+      "partnerAsked": "Asked. They'll see your request on this page.",
+      "partnerAccepted": "You're partners now.",
+      "partnerDeclined": "Declined.",
+      "partnerWithdrawn": "Request withdrawn.",
+      "partnerEnded": "The partnership has ended.",
+      "alertsSaved": "Saved.",
+      "nudgeSettingsSaved": "Saved."
     },
     "errors": {
       "signedOut": "Please sign in again.",
@@ -1876,7 +1886,87 @@
       "noteTooLong": "Please keep the note to 500 characters.",
       "rateLimited": "That's a lot in a short time. Please wait a little and try again.",
       "saveFailed": "That didn't save. Please try again.",
-      "errorSummaryTitle": "Please check this"
+      "errorSummaryTitle": "Please check this",
+      "nudgeAlreadySent": "You've already nudged them today. Try again tomorrow.",
+      "nudgesMuted": "They aren't taking nudges right now.",
+      "partnerAlready": "You're already partners, or a request is waiting.",
+      "partnersFull": "That's the most partners for one group.",
+      "partnerRequestClosed": "That request isn't open any more.",
+      "partnershipNotFound": "We couldn't find that partnership."
+    },
+    "milestone": {
+      "reached": "{name} reached {badge}: {days, plural, one {# free day} other {# free days}} in a row.",
+      "you": "You reached {badge}: {days, plural, one {# free day} other {# free days}} in a row.",
+      "celebrate": "Celebrate with them."
+    },
+    "nudges": {
+      "open": "Nudge",
+      "openFor": "Nudge {name}",
+      "sentToday": "Nudged today",
+      "kinds": {
+        "praying": "Praying for you",
+        "check_in": "Check in today",
+        "got_this": "You've got this",
+        "call_me": "Call me if you need",
+        "pray_for_me": "Please pray for me"
+      },
+      "sendLabel": "Send “{kind}” to {name}",
+      "forYouTitle": "For you",
+      "forYouEmpty": "No nudges in the last few days.",
+      "from": "{name}: {kind}",
+      "someone": "Someone in your group",
+      "muteTitle": "Nudges",
+      "muteGroup": "Don't take nudges in this group",
+      "muteGroupHint": "Members won't see the nudge button for you here.",
+      "muteAll": "Don't take nudges in any group",
+      "milestoneCards": "Post a card to my groups when I reach a free-days milestone (from 7 days)",
+      "milestoneCardsHint": "Only in groups where you share at least your streak.",
+      "save": "Save nudge settings",
+      "settingsTitle": "Nudges and milestone cards",
+      "settingsBody": "Choose whether friends can nudge you, and whether your groups celebrate your milestones."
+    },
+    "partner": {
+      "title": "Accountability partners",
+      "lede": "A partner is someone in this group you trust to see your whole check-in: mood, urges and triggers, as well as the answer. Both of you have to agree, and either of you can end it at any time. Up to {max, number} partners in each group.",
+      "yours": "Your partners here",
+      "none": "You don't have a partner in this group yet.",
+      "requestsIn": "Asking you",
+      "requestsOut": "Waiting for an answer",
+      "ask": "Ask someone",
+      "askHint": "Choose someone in this group.",
+      "person": "Who?",
+      "askButton": "Ask to be partners",
+      "askFor": "Ask {name} to be partners",
+      "noOneToAsk": "There's nobody else here to ask right now.",
+      "full": "You have {max, number} partners or requests here already.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "withdraw": "Withdraw the request",
+      "end": "End the partnership",
+      "endQuestion": "End your partnership with {name}? They won't see your detail any more. They aren't told why.",
+      "endYes": "Yes, end it",
+      "since": "Partners since {date}",
+      "askedOn": "Asked {date}",
+      "alerts": "Let {name} know if I miss two days or press SOS",
+      "alertsHint": "Your own choice. These alerts arrive with notifications.",
+      "theyAllow": "{name} lets you know if they miss two days or press SOS.",
+      "theyDont": "{name} hasn't turned on alerts for you.",
+      "saveAlerts": "Save alert choice",
+      "membersLink": "Ask to be partners"
+    },
+    "prayer": {
+      "title": "You don't have to carry this alone",
+      "body": "When you're ready, ask your group or your partner to pray. You don't have to explain anything.",
+      "groupLabel": "Which group?",
+      "text": "Your request",
+      "textHint": "This goes on the group's wall as a prayer request. Change it as you like.",
+      "defaultText": "Please pray for me today.",
+      "askGroup": "Ask my group to pray",
+      "askPartner": "Ask {name} to pray",
+      "askedGroup": "Your prayer request is on your group's wall.",
+      "askedPartner": "Your partner has been asked to pray for you.",
+      "noGroups": "Join or start a group to ask friends to pray.",
+      "openGroups": "Open your groups"
     }
   }
 }

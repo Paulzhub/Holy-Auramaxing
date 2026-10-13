@@ -25,3 +25,10 @@ export const SOCIAL_LIMITS = {
   wallPageSize: 20,
   homePreview: 3,
 } as const;
+
+/** The four nudges anyone can send (§7.7); "pray for me" is sent from the slip page to a partner. */
+export const NUDGE_KINDS = ["praying", "check_in", "got_this", "call_me"] as const;
+export type NudgeKind = (typeof NUDGE_KINDS)[number] | "pray_for_me";
+
+/** Two active partners per person per group (owner, 2026-10-12, D-083). */
+export const PARTNERS_MAX = 2;
