@@ -100,26 +100,46 @@ section(
 // 8 first, because 7's direct run would empty the queue: can the database
 // itself reach the app? pg_net (inside the database's Docker container) asks
 // the app's health page at the stored address, then we read its answer.
-say("\n== 8. Can the database reach the app? (the database asks the app's health page itself)");
-try {
-  const [row] = localQuery(
-    `select net.http_get(replace((select decrypted_secret from vault.decrypted_secrets
-                                   where name = 'notify_deliver_url'), '/api/notify/deliver', '/api/health'),
-                         timeout_milliseconds => 5000) as c1`,
-  );
+say("\n== 8. Can the database reach THIS app? (the database asks the app itself, through pg_net)");
+// GET on the sender's address: this app answers 405 (it takes only POST);
+// an older copy of the app without the sender answers 404.
+async function fromDatabase(pathSql) {
+  const [row] = localQuery(`select net.http_get(${pathSql}, timeout_milliseconds => 5000) as c1`);
   const id = Number(row?.c1);
-  let answer = null;
-  for (let i = 0; i < 10 && !answer; i++) {
+  for (let i = 0; i < 10; i++) {
     await new Promise((r) => setTimeout(r, 1000));
-    [answer] = localQuery(
+    const [answer] = localQuery(
       `select status_code as c1, coalesce(left(error_msg, 200), '-') as c2 from net._http_response where id = ${id}`,
     );
+    if (answer) return answer;
   }
-  say(
-    answer
-      ? `  ${answer.c1 === 200 ? "yes" : "NO"}: HTTP ${answer.c1 ?? "-"} ${answer.c2 === "-" ? "" : answer.c2}`
-      : "  NO answer after 10 s (is pg_net running? the database may need a restart: npx supabase stop, then the launcher)",
-  );
+  return null;
+}
+const stored = "(select decrypted_secret from vault.decrypted_secrets where name = 'notify_deliver_url')";
+try {
+  const health = await fromDatabase(`replace(${stored}, '/api/notify/deliver', '/api/health')`);
+  const sender = await fromDatabase(stored);
+  let local = null;
+  try {
+    local = (await fetch(`http://localhost:${port}/api/notify/deliver`, { signal: AbortSignal.timeout(10_000) }))
+      .status;
+  } catch {
+    // Shown as "-" below.
+  }
+  const show = (a) => (a ? `HTTP ${a.c1 ?? "-"}${a.c2 && a.c2 !== "-" ? ` ${a.c2}` : ""}` : "no answer after 10 s");
+  say(`  health page, from the database: ${show(health)}`);
+  say(`  sender address, from the database: ${show(sender)}; from this computer: HTTP ${local ?? "-"}`);
+  if (sender?.c1 === 404 && local === 405) {
+    say("  => The database reaches a DIFFERENT, older copy of the app on this port (it has no sender).");
+    say(
+      "     Close every other window running the app (or end its node.exe in Task Manager), then restart the launcher.",
+    );
+  } else if (sender?.c1 === 405) {
+    say("  => yes, the database reaches this app.");
+  } else if (!health || health.c1 == null) {
+    say("  => The database can't reach the app at all (see the error). Allow Node.js through the Windows");
+    say("     firewall on private networks, then restart the launcher.");
+  }
 } catch (error) {
   say(`  couldn't test: ${error instanceof Error ? error.message : error}`);
 }

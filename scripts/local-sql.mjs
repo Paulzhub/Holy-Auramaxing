@@ -29,38 +29,44 @@ export function localQuery(sql) {
       maxBuffer: 64 * 1024 * 1024,
     });
     if (run.error) throw run.error;
-    const result = answerObject(run.stdout ?? "");
+    const answer = answerValue(run.stdout ?? "");
     // The CLI reports failures as {"_tag": "Error", "error": {message, suggestion}}.
-    if (result?._tag === "Error") {
-      const { message, suggestion } = result.error ?? {};
+    if (answer && !Array.isArray(answer) && answer._tag === "Error") {
+      const { message, suggestion } = answer.error ?? {};
       throw new Error([message, suggestion].filter(Boolean).join(" ") || "the Supabase CLI reported an error");
     }
     if (run.status !== 0) throw new Error((run.stderr || run.stdout || "").trim() || `exit code ${run.status}`);
-    if (!Array.isArray(result?.rows)) {
+    // Linux and macOS print {"rows": [...]}; Windows prints the rows as a bare list.
+    const rows = Array.isArray(answer) ? answer : answer?.rows;
+    if (!Array.isArray(rows)) {
       // Never pretend there were no rows: show what the CLI actually said.
       throw new Error(`Unexpected answer from the Supabase CLI: ${(run.stdout ?? "").slice(0, 400)}`);
     }
-    return result.rows;
+    return rows;
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 }
 
 /**
- * The CLI's answer among the JSON objects it prints. On Windows it prints
- * more than one (an update notice, for example), before or after the answer,
- * so we take the one holding "rows" or an error ("Unexpected non-whitespace
- * character after JSON", then empty results, 2026-10-13/14).
+ * The CLI's answer among the JSON values it prints. On Windows it prints
+ * more than one (an update notice, for example) and gives the rows as a bare
+ * list, so we take a list, or the object holding "rows" or an error
+ * (2026-10-13/14).
  */
-export function answerObject(text) {
-  const objects = jsonObjects(text);
+export function answerValue(text) {
+  const values = jsonValues(text);
   return (
-    objects.find((o) => o && typeof o === "object" && ("rows" in o || o._tag === "Error")) ?? objects.at(-1) ?? null
+    values.find((v) => v && !Array.isArray(v) && typeof v === "object" && v._tag === "Error") ??
+    values.find((v) => Array.isArray(v)) ??
+    values.find((v) => v && typeof v === "object" && "rows" in v) ??
+    values.at(-1) ??
+    null
   );
 }
 
-/** Every top-level JSON object in the text; braces inside strings are skipped. */
-export function jsonObjects(text) {
+/** Every top-level JSON object or list in the text; brackets inside strings are skipped. */
+export function jsonValues(text) {
   const found = [];
   let depth = 0;
   let start = -1;
@@ -73,13 +79,13 @@ export function jsonObjects(text) {
       else if (c === "\\") escaped = true;
       else if (c === '"') inString = false;
     } else if (depth > 0 && c === '"') inString = true;
-    else if (c === "{") {
+    else if (c === "{" || c === "[") {
       if (depth++ === 0) start = i;
-    } else if (c === "}" && depth > 0 && --depth === 0) {
+    } else if ((c === "}" || c === "]") && depth > 0 && --depth === 0) {
       try {
         found.push(JSON.parse(text.slice(start, i + 1)));
       } catch {
-        // Not JSON after all (a brace in a plain message); keep looking.
+        // Not JSON after all (brackets in a plain message); keep looking.
       }
     }
   }
