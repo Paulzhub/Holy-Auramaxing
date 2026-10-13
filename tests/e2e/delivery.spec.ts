@@ -15,6 +15,11 @@ import { admin, listEmails, mailpitUrl, waitForEmail } from "./support/supabase"
 
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 
+// The full Chromium, not Playwright's default headless shell: the shell
+// reports notifications as already denied, so a real browser's "not asked
+// yet" (and the explainer) never appears there.
+test.use({ channel: "chromium" });
+
 test.describe("Delivery", () => {
   test.use({ storageState: signedOut });
   test.describe.configure({ timeout: 150_000 });
@@ -36,6 +41,25 @@ test.describe("Delivery", () => {
     const { token } = await createInviteAs(owner, groupId);
     const friend = await newMember("dl-friend");
     await joinAs(friend, token, "full");
+
+    // Quiet hours (22:00–07:00 in the test accounts' Asia/Kolkata by default)
+    // would rightly hold the email back when CI runs in the evening, so the
+    // friend's are moved to an hour twelve hours from now.
+    const hour = Number(
+      new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", hourCycle: "h23" }).format(
+        new Date(),
+      ),
+    );
+    const at = (h: number) => `${String(h % 24).padStart(2, "0")}:00`;
+    const { error: quietError } = await friend.client.rpc("update_notification_settings", {
+      p_quiet_start: at(hour + 12),
+      p_quiet_end: at(hour + 13),
+      p_digest: "off",
+      p_discreet: true,
+      p_sound: true,
+      p_vibrate: true,
+    });
+    expect(quietError).toBeNull();
 
     // The friend chose email for announcements.
     const { error: prefError } = await friend.client.rpc("set_notification_preferences", {
