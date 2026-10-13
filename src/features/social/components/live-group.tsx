@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { buttonVariants } from "@/components/ui/button-variants";
+import { getRealtime, msUntilTopicRollover, realtimeEnabled, whenIdle } from "@/lib/realtime/client";
 
 /**
  * Live updates on a group's pages (CLAUDE.md §7.7, D-086). Listens on the
@@ -18,9 +19,10 @@ import { buttonVariants } from "@/components/ui/button-variants";
  *   load the new posts, announced politely, so nothing moves under a reader.
  *   On the group home it refreshes quietly like "today".
  *
- * The Realtime client is loaded after the page is idle, so it never counts
- * against the first-load budget, and NEXT_PUBLIC_REALTIME_ENABLED=false turns
- * it off (§14 kill switch). Messages arrive as props (no message bundle).
+ * The Realtime client is loaded after the page is idle and shared with the
+ * bell (one socket per tab, @/lib/realtime/client), so it never counts against
+ * the first-load budget; NEXT_PUBLIC_REALTIME_ENABLED=false turns it off (§14
+ * kill switch). Messages arrive as props (no message bundle).
  */
 export function LiveGroup({
   topic,
@@ -36,9 +38,7 @@ export function LiveGroup({
   const refreshWanted = useRef(false);
 
   useEffect(() => {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    if (process.env.NEXT_PUBLIC_REALTIME_ENABLED === "false" || !url || !key || !topic) return;
+    if (!realtimeEnabled() || !topic) return;
 
     let stopped = false;
     let cleanup: (() => void) | undefined;
@@ -72,14 +72,11 @@ export function LiveGroup({
     document.addEventListener("visibilitychange", onVisible);
 
     // The channel name changes at midnight UTC: refresh then to get the new one.
-    const now = new Date();
-    const midnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 5);
-    const rollover = setTimeout(() => router.refresh(), midnight - now.getTime());
+    const rollover = setTimeout(() => router.refresh(), msUntilTopicRollover());
 
     const start = async () => {
-      const { RealtimeClient } = await import("@supabase/realtime-js");
-      if (stopped) return;
-      const client = new RealtimeClient(`${url.replace(/^http/, "ws")}/realtime/v1`, { params: { apikey: key } });
+      const client = await getRealtime();
+      if (stopped || !client) return;
       const channel = client.channel(topic, { config: { broadcast: { self: false } } });
       channel
         .on("broadcast", { event: "changed" }, (message: { payload?: { what?: unknown } }) => {
@@ -88,19 +85,13 @@ export function LiveGroup({
           else if (what === "wall" || what === "today") wantRefresh();
         })
         .subscribe();
-      cleanup = () => {
-        void client.removeAllChannels();
-        client.disconnect();
-      };
+      cleanup = () => void client.removeChannel(channel);
     };
-    const idle = (cb: () => void) =>
-      typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(cb, { timeout: 4_000 })
-        : setTimeout(cb, 1_500);
-    idle(() => void start());
+    const cancelIdle = whenIdle(() => void start());
 
     return () => {
       stopped = true;
+      cancelIdle();
       clearTimeout(debounce);
       clearTimeout(rollover);
       document.removeEventListener("visibilitychange", onVisible);

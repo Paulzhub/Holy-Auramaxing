@@ -7,6 +7,7 @@ import { exportGamificationData } from "@/features/gamification";
 import { exportGroupsData } from "@/features/groups";
 import { exportProfileData } from "@/features/profile";
 import { exportSocialData } from "@/features/social";
+import { exportNotificationData } from "@/features/notifications";
 import { buildExportArchive, exportFileName } from "@/lib/data-export";
 import { siteOrigin } from "@/lib/env";
 import { consume } from "@/lib/security/rate-limit";
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
       exportCheckinsData(userId),
       exportGamificationData(userId),
       exportSocialData(),
+      exportNotificationData(),
     ]);
     const archive = buildExportArchive({ generatedAt, parts, readmeIntro: t("readme") });
     await audit("account.exported", userId);

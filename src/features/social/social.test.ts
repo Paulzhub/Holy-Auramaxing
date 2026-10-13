@@ -143,15 +143,19 @@ describe("rendering", () => {
 
 describe("live updates (D-086)", () => {
   const live = readFileSync(join(__dirname, "components/live-group.tsx"), "utf8");
+  // Shared with the bell since Phase 7b (one socket per tab).
+  const shared = readFileSync(join(root, "src/lib/realtime/client.ts"), "utf8");
+  const bell = readFileSync(join(root, "src/features/notifications/components/live-alerts.tsx"), "utf8");
 
   it("loads the Realtime client only after the page is idle (not in the first load)", () => {
-    expect(live).toContain('await import("@supabase/realtime-js")');
-    expect(live).not.toMatch(/^import .*realtime-js/m);
+    expect(shared).toContain('import("@supabase/realtime-js")');
+    for (const file of [live, bell, shared]) expect(file).not.toMatch(/^import [^t].*realtime-js/m);
+    for (const file of [live, bell]) expect(file).toContain("whenIdle(");
   });
 
   it("has a kill switch and never asks for a session token", () => {
-    expect(live).toContain('process.env.NEXT_PUBLIC_REALTIME_ENABLED === "false"');
-    expect(live).not.toMatch(/accessToken|getSession|auth\./);
+    expect(shared).toContain('process.env.NEXT_PUBLIC_REALTIME_ENABLED !== "false"');
+    for (const file of [live, bell, shared]) expect(file).not.toMatch(/accessToken|getSession|auth\./);
   });
 
   it("pings carry only what changed", () => {

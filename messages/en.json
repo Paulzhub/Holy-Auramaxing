@@ -41,7 +41,8 @@
     "groupWall": "Wall",
     "groupModeration": "Moderation",
     "blocked": "Blocked people",
-    "groupPartner": "Partner"
+    "groupPartner": "Partner",
+    "notificationSettings": "Notifications"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -54,7 +55,9 @@
     "checkIn": "Check in",
     "alerts": "Alerts",
     "me": "Me",
-    "settings": "Settings"
+    "settings": "Settings",
+    "unread": "{count, plural, one {# unread} other {# unread}}",
+    "unreadSuffix": ", {count, plural, one {# unread} other {# unread}}"
   },
   "theme": {
     "label": "Theme",
@@ -106,7 +109,7 @@
     },
     "alerts": {
       "title": "Alerts",
-      "lede": "Encouragement from your groups.",
+      "lede": "Encouragement, prayers and news from your groups.",
       "emptyTitle": "You’re all caught up",
       "emptyBody": "Prayers, nudges and replies from your groups will show up here."
     },
@@ -1974,6 +1977,142 @@
     "live": {
       "newPosts": "There's something new on the wall.",
       "show": "Show it"
+    }
+  },
+  "notifications": {
+    "someone": "Someone",
+    "yourGroup": "your group",
+    "inGroup": "In {group}",
+    "items": {
+      "nudge": "{actor} sent you “{kind}”",
+      "reaction": "{others, plural, =0 {{actor} reacted} one {{actor} and 1 other reacted} other {{actor} and # others reacted}} to your {target, select, comment {comment} checkin {check-in} other {post}}",
+      "comment": "{others, plural, =0 {{actor} commented} one {{actor} and 1 other commented} other {{actor} and # others commented}} on your post",
+      "reply": "{others, plural, =0 {{actor} replied} one {{actor} and 1 other replied} other {{actor} and # others replied}} in a conversation you’re part of",
+      "prayed_for_you": "{others, plural, =0 {{actor} prayed} one {{actor} and 1 other prayed} other {{actor} and # others prayed}} for your request",
+      "prayer_request": "{actor} shared a prayer request",
+      "announcement": "{actor} posted an announcement",
+      "milestone": "{actor} reached a milestone: {badge}",
+      "challenge_start": "Your group’s challenge starts today",
+      "challenge_end": "Your group’s challenge is complete. Well done, everyone.",
+      "covenant": "{actor} suggested a change to the covenant, and it needs your answer",
+      "partner_requested": "{actor} asked you to be accountability partners",
+      "partner_accepted": "{actor} said yes to being your accountability partner",
+      "partner_ended": "Your partnership with {actor} has come to a close",
+      "partner_missed": "{actor} hasn’t checked in for two days. A kind word could help.",
+      "partner_sos": "{actor} could use your prayer right now",
+      "level_up": "You reached Level {level}",
+      "badge_earned": "You earned a badge: {badge}",
+      "join_request": "{others, plural, =0 {{actor} asked} one {{actor} and 1 other asked} other {{actor} and # others asked}} to join",
+      "member_joined": "{actor} joined the group",
+      "report": "{count, plural, one {A report is waiting for a look} other {# reports are waiting for a look}}",
+      "security_new_login": "Your account was signed in on a new device. If that wasn’t you, change your password.",
+      "security_password_changed": "Your password was changed. If that wasn’t you, reset it now.",
+      "daily_reminder": "A quiet moment for today’s check-in",
+      "streak_at_risk": "There’s still time to check in today",
+      "weekly_recap": "Your week in review is ready"
+    },
+    "centre": {
+      "listLabel": "Your notifications",
+      "unreadLabel": "Unread",
+      "markRead": "Mark as read",
+      "markReadFor": "Mark as read: {item}",
+      "markAllRead": "Mark all as read",
+      "older": "Show older",
+      "settingsLink": "Notification settings",
+      "notices": {
+        "allRead": "All caught up.",
+        "read": "Marked as read."
+      },
+      "errors": {
+        "rateLimited": "That's a lot at once. Please wait a moment and try again.",
+        "failed": "That didn't work. Please try again."
+      }
+    },
+    "live": {
+      "newOne": "You have a new notification",
+      "newMany": "You have {count} new notifications",
+      "open": "Open Alerts"
+    },
+    "settings": {
+      "title": "Notifications",
+      "lede": "Choose what reaches you, and when. Everything always shows in Alerts inside the app.",
+      "cardBody": "What reaches you by push and email, quiet hours, a daily digest, snoozing, and muting a group.",
+      "cardLink": "Notification settings",
+      "channelsTitle": "What reaches you",
+      "channelsLede": "In the app, you always see everything. Push and email are up to you.",
+      "push": "Push",
+      "email": "Email",
+      "alwaysOn": "Always on, for your safety",
+      "nudgesNote": "To stop nudges altogether, use “Nudges” in Settings.",
+      "save": "Save",
+      "sections": {
+        "daily": "Your day",
+        "people": "From people",
+        "group": "In your groups",
+        "partner": "Your partners",
+        "progress": "Your progress",
+        "leading": "For owners and admins",
+        "security": "Your account"
+      },
+      "types": {
+        "daily_reminder": "Daily reminder",
+        "streak_at_risk": "Evening reminder if you haven’t checked in",
+        "weekly_recap": "Sunday recap",
+        "nudge": "Nudges",
+        "reaction": "Reactions",
+        "comment": "Comments and replies",
+        "prayed_for_you": "Someone prayed for your request",
+        "prayer_request": "New prayer requests",
+        "announcement": "Announcements",
+        "milestone": "Milestones in your groups",
+        "challenge": "A challenge starting or ending",
+        "covenant": "Covenant changes to answer",
+        "partner_request": "Partner requests",
+        "partner_missed": "A partner goes quiet for two days",
+        "partner_sos": "A partner asks for prayer right now",
+        "level_up": "Level up",
+        "badge_earned": "Badges",
+        "join_request": "Requests to join",
+        "member_joined": "Someone joins",
+        "report": "Reports to look at",
+        "security": "Security alerts (new sign-in, password changed)"
+      },
+      "timingTitle": "When they reach you",
+      "reminderTime": "Daily reminder time",
+      "reminderHint": "Leave it empty for no daily reminder.",
+      "quietStart": "Quiet hours start",
+      "quietEnd": "Quiet hours end",
+      "quietHint": "Nothing buzzes in quiet hours; it waits until they end. A partner asking for prayer and security alerts still come through.",
+      "digest": "Bundle updates",
+      "digestOff": "Send each one as it happens",
+      "digestDaily": "Once a day, at 7 pm",
+      "digestWeekly": "Once a week, on Sunday at 7 pm",
+      "digestHint": "Reminders, partner alerts and security alerts are never bundled.",
+      "discreet": "Discreet mode",
+      "discreetHint": "Push and email never say who or what, only that there’s something new. Recommended.",
+      "sound": "Sound",
+      "vibrate": "Vibration",
+      "snoozeTitle": "Snooze everything",
+      "snoozeLede": "Take a break from push and email. Alerts in the app keep coming in.",
+      "snoozeDay": "Snooze for a day",
+      "snoozeWeek": "Snooze for a week",
+      "snoozeOff": "Wake up now",
+      "snoozedUntil": "Snoozed until {when}.",
+      "groupsTitle": "Groups",
+      "groupsLede": "A muted group still shows in Alerts, but sends no push or email.",
+      "muteGroup": "Mute {group}",
+      "noGroups": "You’re not in any groups yet.",
+      "notices": {
+        "saved": "Saved.",
+        "snoozed": "Snoozed.",
+        "awake": "Snooze is off."
+      },
+      "errors": {
+        "invalidInput": "Something in the form isn't right. Please check it and try again.",
+        "rateLimited": "That's a lot of changes at once. Please wait a moment and try again.",
+        "failed": "That didn't save. Please try again.",
+        "notification_locked": "Security alerts can't be turned off."
+      }
     }
   }
 }

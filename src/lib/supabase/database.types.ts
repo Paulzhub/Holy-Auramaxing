@@ -487,6 +487,7 @@ export type Database = {
           invite_id: string | null;
           joined_at: string | null;
           leaderboard_hidden: boolean;
+          notifications_muted: boolean;
           nudges_muted: boolean;
           requested_at: string;
           role: string;
@@ -501,6 +502,7 @@ export type Database = {
           invite_id?: string | null;
           joined_at?: string | null;
           leaderboard_hidden?: boolean;
+          notifications_muted?: boolean;
           nudges_muted?: boolean;
           requested_at?: string;
           role?: string;
@@ -515,6 +517,7 @@ export type Database = {
           invite_id?: string | null;
           joined_at?: string | null;
           leaderboard_hidden?: boolean;
+          notifications_muted?: boolean;
           nudges_muted?: boolean;
           requested_at?: string;
           role?: string;
@@ -735,30 +738,91 @@ export type Database = {
         };
         Relationships: [];
       };
-      notification_settings: {
+      notification_preferences: {
         Row: {
-          discreet_mode: boolean;
-          quiet_hours_end: string;
-          quiet_hours_start: string;
-          reminder_time: string | null;
+          channel: string;
+          enabled: boolean;
+          type: string;
           updated_at: string;
           user_id: string;
         };
         Insert: {
-          discreet_mode?: boolean;
-          quiet_hours_end?: string;
-          quiet_hours_start?: string;
-          reminder_time?: string | null;
+          channel: string;
+          enabled: boolean;
+          type: string;
           updated_at?: string;
           user_id: string;
         };
         Update: {
+          channel?: string;
+          enabled?: boolean;
+          type?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_type_fkey";
+            columns: ["type"];
+            isOneToOne: false;
+            referencedRelation: "notification_types";
+            referencedColumns: ["type"];
+          },
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notification_settings: {
+        Row: {
+          digest: string;
+          discreet_mode: boolean;
+          last_digest_on: string | null;
+          quiet_hours_end: string;
+          quiet_hours_start: string;
+          reminder_time: string | null;
+          snooze_until: string | null;
+          sound: boolean;
+          updated_at: string;
+          user_id: string;
+          vibrate: boolean;
+        };
+        Insert: {
+          digest?: string;
           discreet_mode?: boolean;
+          last_digest_on?: string | null;
           quiet_hours_end?: string;
           quiet_hours_start?: string;
           reminder_time?: string | null;
+          snooze_until?: string | null;
+          sound?: boolean;
+          updated_at?: string;
+          user_id: string;
+          vibrate?: boolean;
+        };
+        Update: {
+          digest?: string;
+          discreet_mode?: boolean;
+          last_digest_on?: string | null;
+          quiet_hours_end?: string;
+          quiet_hours_start?: string;
+          reminder_time?: string | null;
+          snooze_until?: string | null;
+          sound?: boolean;
           updated_at?: string;
           user_id?: string;
+          vibrate?: boolean;
         };
         Relationships: [
           {
@@ -772,6 +836,127 @@ export type Database = {
             foreignKeyName: "notification_settings_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notification_types: {
+        Row: {
+          digestible: boolean;
+          email_default: boolean;
+          email_elsewhere: boolean;
+          locked: boolean;
+          push_default: boolean;
+          section: string;
+          sort: number;
+          type: string;
+          urgent: boolean;
+        };
+        Insert: {
+          digestible?: boolean;
+          email_default: boolean;
+          email_elsewhere?: boolean;
+          locked?: boolean;
+          push_default: boolean;
+          section: string;
+          sort: number;
+          type: string;
+          urgent?: boolean;
+        };
+        Update: {
+          digestible?: boolean;
+          email_default?: boolean;
+          email_elsewhere?: boolean;
+          locked?: boolean;
+          push_default?: boolean;
+          section?: string;
+          sort?: number;
+          type?: string;
+          urgent?: boolean;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          actor_id: string | null;
+          created_at: string;
+          data: NonNullable<Json>;
+          dedupe_key: string | null;
+          fold_count: number;
+          fold_key: string | null;
+          group_id: string | null;
+          id: string;
+          read_at: string | null;
+          type: string;
+          user_id: string;
+        };
+        Insert: {
+          actor_id?: string | null;
+          created_at?: string;
+          data?: NonNullable<Json>;
+          dedupe_key?: string | null;
+          fold_count?: number;
+          fold_key?: string | null;
+          group_id?: string | null;
+          id?: string;
+          read_at?: string | null;
+          type: string;
+          user_id: string;
+        };
+        Update: {
+          actor_id?: string | null;
+          created_at?: string;
+          data?: NonNullable<Json>;
+          dedupe_key?: string | null;
+          fold_count?: number;
+          fold_key?: string | null;
+          group_id?: string | null;
+          id?: string;
+          read_at?: string | null;
+          type?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_type_fkey";
+            columns: ["type"];
+            isOneToOne: false;
+            referencedRelation: "notification_types";
+            referencedColumns: ["type"];
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
@@ -1135,6 +1320,54 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [];
+      };
+      push_subscriptions: {
+        Row: {
+          auth: string;
+          created_at: string;
+          endpoint: string;
+          id: string;
+          last_used_at: string | null;
+          p256dh: string;
+          user_agent: string | null;
+          user_id: string;
+        };
+        Insert: {
+          auth: string;
+          created_at?: string;
+          endpoint: string;
+          id?: string;
+          last_used_at?: string | null;
+          p256dh: string;
+          user_agent?: string | null;
+          user_id: string;
+        };
+        Update: {
+          auth?: string;
+          created_at?: string;
+          endpoint?: string;
+          id?: string;
+          last_used_at?: string | null;
+          p256dh?: string;
+          user_agent?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       reactions: {
         Row: {
@@ -1711,6 +1944,7 @@ export type Database = {
         }[];
       };
       leave_group: { Args: { p_group: string }; Returns: undefined };
+      mark_notifications_read: { Args: { p_ids?: string[] }; Returns: number };
       mark_session_mfa_verified: { Args: { p_session_id: string; p_user_id: string }; Returns: boolean };
       my_audit_events: {
         Args: Record<PropertyKey, never>;
@@ -1731,6 +1965,22 @@ export type Database = {
       };
       my_checkin_overview: { Args: Record<PropertyKey, never>; Returns: Json };
       my_level: { Args: Record<PropertyKey, never>; Returns: Json };
+      my_live_topic: { Args: Record<PropertyKey, never>; Returns: string };
+      my_notifications: {
+        Args: { p_before_at?: string; p_before_id?: string; p_limit?: number };
+        Returns: {
+          actor_id: string;
+          created_at: string;
+          data: Json;
+          fold_count: number;
+          group_id: string;
+          group_name: string;
+          id: string;
+          read_at: string;
+          type: string;
+        }[];
+      };
+      my_notifications_export: { Args: Record<PropertyKey, never>; Returns: Json };
       my_nudges: {
         Args: { p_days?: number; p_group?: string };
         Returns: {
@@ -1765,6 +2015,13 @@ export type Database = {
         }[];
       };
       my_social_export: { Args: Record<PropertyKey, never>; Returns: Json };
+      my_unread_counts: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          group_id: string;
+          unread: number;
+        }[];
+      };
       pin_post: { Args: { p_pinned: boolean; p_post: string }; Returns: undefined };
       post_comments: {
         Args: { p_post: string };
@@ -1815,15 +2072,19 @@ export type Database = {
         Returns: undefined;
       };
       send_nudge: { Args: { p_group: string; p_kind: string; p_to: string }; Returns: string };
+      send_partner_sos: { Args: { p_group?: string }; Returns: undefined };
       set_group_goal: { Args: { p_group: string; p_period: string; p_target: number }; Returns: undefined };
       set_group_member_role: { Args: { p_group: string; p_role: string; p_user: string }; Returns: undefined };
+      set_group_notifications_muted: { Args: { p_group: string; p_muted: boolean }; Returns: undefined };
       set_group_nudges_muted: { Args: { p_group: string; p_muted: boolean }; Returns: undefined };
       set_group_picture_pending: { Args: { p_group: string; p_path: string }; Returns: string };
+      set_notification_preferences: { Args: { p_prefs: Json }; Returns: undefined };
       set_partner_alerts: { Args: { p_allow: boolean; p_partnership: string }; Returns: undefined };
       set_reaction: {
         Args: { p_kind: string; p_on: boolean; p_target: string; p_target_type: string };
         Returns: undefined;
       };
+      snooze_notifications: { Args: { p_for: string }; Returns: string };
       submit_checkin: {
         Args: {
           p_local_date: string;
@@ -1865,6 +2126,17 @@ export type Database = {
       update_group_details: { Args: { p_description: string; p_group: string; p_name: string }; Returns: undefined };
       update_my_group_membership: {
         Args: { p_group: string; p_leaderboard_hidden: boolean; p_share_level: string };
+        Returns: undefined;
+      };
+      update_notification_settings: {
+        Args: {
+          p_digest: string;
+          p_discreet: boolean;
+          p_quiet_end: string;
+          p_quiet_start: string;
+          p_sound: boolean;
+          p_vibrate: boolean;
+        };
         Returns: undefined;
       };
       use_recovery_code: { Args: { p_hash: string; p_user_id: string }; Returns: boolean };

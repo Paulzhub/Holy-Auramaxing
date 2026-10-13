@@ -4,18 +4,24 @@ import type { ReactNode } from "react";
 import { AppShell } from "@/components/shell/app-shell";
 import { getMyGroups } from "@/features/groups";
 import { GroupSwitcher } from "@/features/groups/ui";
+import { getAlertsTopic, getUnreadCounts } from "@/features/notifications";
+import { LiveAlerts } from "@/features/notifications/ui-live";
 import { getThemePreference } from "@/lib/server/theme";
 
 /**
  * The signed-in app's frame: sidebar on desktop, bottom navigation on mobile,
- * and the header with the group switcher (CLAUDE.md §8). Used by the (app)
+ * the header with the group switcher, and the bell's unread counts with
+ * their live updates (CLAUDE.md §7.8, §8). Used by the (app)
  * layout and, for signed-in people, by /join.
  */
 export async function AppFrame({ userId, children }: { userId: string; children: ReactNode }) {
-  const [theme, groups, t] = await Promise.all([
+  const [theme, groups, t, tLive, counts, topic] = await Promise.all([
     getThemePreference(),
     getMyGroups(userId),
     getTranslations("groups.switcher"),
+    getTranslations("notifications.live"),
+    getUnreadCounts(),
+    getAlertsTopic(),
   ]);
   const switcher = (
     <GroupSwitcher
@@ -26,7 +32,14 @@ export async function AppFrame({ userId, children }: { userId: string; children:
     />
   );
   return (
-    <AppShell theme={theme} switcher={switcher}>
+    <AppShell
+      theme={theme}
+      switcher={switcher}
+      alertCounts={counts}
+      live={
+        <LiveAlerts topic={topic} labels={{ newOne: tLive("newOne"), newMany: tLive("newMany", { count: "#" }) }} />
+      }
+    >
       {children}
     </AppShell>
   );

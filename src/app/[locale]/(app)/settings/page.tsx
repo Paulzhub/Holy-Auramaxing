@@ -6,6 +6,7 @@ import { ThemeSwitcher } from "@/components/shell/theme-switcher";
 import { Card, CardTitle } from "@/components/ui/card";
 import { getThemePreference } from "@/lib/server/theme";
 import { requireAccount, SignOutButton } from "@/features/auth";
+import { NotificationSettingsCard } from "@/features/notifications";
 import { getSocialSettings, SocialNotice, SocialSettingsCard } from "@/features/social";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
@@ -23,6 +24,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
   const t = await getTranslations("pages.settings");
   const tb = await getTranslations("social.block");
   const tn = await getTranslations("social.nudges");
+  const tNotify = await getTranslations("notifications.settings");
   const theme = await getThemePreference();
 
   return (
@@ -52,6 +54,12 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
                 {t("securityLink")}
               </Link>
             </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="grid gap-3">
+            <CardTitle as="h2">{tNotify("title")}</CardTitle>
+            <NotificationSettingsCard />
           </div>
         </Card>
         <Card>

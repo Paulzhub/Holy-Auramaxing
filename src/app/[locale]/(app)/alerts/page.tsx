@@ -1,24 +1,26 @@
-import { Bell } from "lucide-react";
 import type { Metadata } from "next";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/shell/app-shell";
-import { EmptyState } from "@/components/ui/empty-state";
+import { requireAccount } from "@/features/auth";
+import { getNotifications, NotificationCentre, NotificationNotice, parseCursor } from "@/features/notifications";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
   return { title: t("alerts") };
 }
 
-export default function Page() {
-  const t = useTranslations("pages.alerts");
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+/** The notification centre (CLAUDE.md §7.8, D-089): newest first, 30 at a time. */
+export default async function Page({ searchParams }: { searchParams: SearchParams }) {
+  const [{ profile }, query, t] = await Promise.all([requireAccount(), searchParams, getTranslations("pages.alerts")]);
+  const page = await getNotifications(parseCursor(query.before, query.id));
   return (
     <>
       <PageHeader title={t("title")} lede={t("lede")} />
-      <div className="stack">
-        <EmptyState icon={<Bell className="h-6 w-6" />} title={t("emptyTitle")} body={t("emptyBody")} />
-      </div>
+      <NotificationNotice notice={query.notice} error={query.error} />
+      <NotificationCentre page={page} timeZone={profile.timezone} />
     </>
   );
 }

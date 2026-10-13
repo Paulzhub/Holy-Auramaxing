@@ -74,6 +74,12 @@ export const rateLimitRules = {
   nudgeByUser: { limit: 50, windowSeconds: 60 * 60 },
   /** Asking, answering and ending partnerships, and alert choices (the database allows 25 a day). */
   partnerByUser: { limit: 20, windowSeconds: 24 * 60 * 60 },
+  /** Notification settings, snoozing and group mutes (the database allows 60 an hour). */
+  notificationSettingsByUser: { limit: 50, windowSeconds: 60 * 60 },
+  /** Marking notifications read, one or all (the database allows 240 an hour). */
+  notificationReadByUser: { limit: 200, windowSeconds: 60 * 60 },
+  /** The bell's unread count, fetched after each live ping. */
+  notificationCountByUser: { limit: 600, windowSeconds: 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;
