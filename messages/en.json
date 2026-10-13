@@ -1766,7 +1766,8 @@
       "add": "{reaction}, {count, plural, =0 {no reactions yet} one {# reaction} other {# reactions}}. Add yours.",
       "remove": "{reaction}, {count, plural, one {# reaction} other {# reactions}}, including yours. Take yours back.",
       "iPrayed": "I prayed",
-      "iPrayedDone": "You prayed"
+      "iPrayedDone": "You prayed",
+      "checkinLabel": "Reactions to {name}'s check-in"
     },
     "form": {
       "kind": "What kind of post?",
@@ -1967,6 +1968,10 @@
       "askedPartner": "Your partner has been asked to pray for you.",
       "noGroups": "Join or start a group to ask friends to pray.",
       "openGroups": "Open your groups"
+    },
+    "live": {
+      "newPosts": "There's something new on the wall.",
+      "show": "Show it"
     }
   }
 }

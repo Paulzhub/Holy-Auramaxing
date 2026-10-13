@@ -39,6 +39,7 @@ import {
   resolveReportAction,
   unblockAction,
 } from "../server/actions";
+import { reactCheckinAction } from "../server/accountability-actions";
 import type {
   Author,
   BlockedPerson,
@@ -793,5 +794,51 @@ export async function ModerationList({ viewer, reports }: { viewer: WallViewer; 
         );
       })}
     </ul>
+  );
+}
+
+/** The five reactions on a member's check-in in the Today panel (D-087). */
+export async function CheckinReactions({
+  groupId,
+  checkinId,
+  name,
+  reactions,
+}: {
+  groupId: string;
+  checkinId: string;
+  name: string;
+  reactions: ReactionCount[];
+}) {
+  const t = await getTranslations();
+  return (
+    <form action={reactCheckinAction.bind(null, groupId)} className="wall-reactions checkin-reactions">
+      <input type="hidden" name="checkinId" value={checkinId} />
+      <ul className="ui-reactions" aria-label={t("social.reactions.checkinLabel", { name })}>
+        {REACTION_KINDS.map((kind) => {
+          const r = reactions.find((x) => x.kind === kind) ?? { kind, count: 0, mine: false };
+          const Icon = icons[kind];
+          const label = t(`ui.reactions.kinds.${kind}`);
+          return (
+            <li key={kind}>
+              <button
+                type="submit"
+                name="reaction"
+                value={`${kind}:${r.mine ? 0 : 1}`}
+                className="ui-reaction"
+                aria-pressed={r.mine}
+              >
+                <Icon aria-hidden="true" />
+                <span aria-hidden="true">{r.count}</span>
+                <span className="visually-hidden">
+                  {r.mine
+                    ? t("social.reactions.remove", { reaction: label, count: r.count })
+                    : t("social.reactions.add", { reaction: label, count: r.count })}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </form>
   );
 }

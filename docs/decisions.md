@@ -753,3 +753,17 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - When the job awards a free-days badge **from 7 days up** (owner, 2026-10-12), a trigger posts a milestone card (a `posts` row of kind `milestone`, carrying the badge, no text) to each group where the member is active and shares their streak or more. One card per group, person and badge.
 - A card shows only while its member still shares their streak or more there and keeps cards on (`util.milestone_visible`, applied in RLS and the wall), because it hints at a streak, like a badge (D-072). **On by default; each person can turn them off** in Settings (`privacy_settings.milestone_cards`).
 - Everyone in the group can react to and comment on a card; its member can delete it but not edit it.
+
+## D-086 · Phase 6c · Live updates: content-free pings on a daily HMAC channel
+
+- **Owner (2026-10-12) chose the HMAC topic.** The browser never holds a session token (httpOnly cookies, D-020), so Supabase Realtime's private channels can't authorise it. Instead:
+  - The database broadcasts **pings that carry only what changed** (`{"what": "wall"}` or `{"what": "today"}`) with `realtime.send(…, private => false)`, from triggers on posts, comments, reactions, check-ins and memberships. A failed ping never fails the write.
+  - The channel is `group:` + 40 hex characters of HMAC-SHA256(group id and the UTC day) with a key in `private.realtime_keys` that never leaves the database. `group_live_topic(group)` gives today's name **to active members only**; it changes every day, so a former member's copy goes stale within a day.
+  - On a ping the page asks the server again (`router.refresh()`), so RLS, blocks and share levels decide everything shown. Someone who learned a name can only learn that "something changed" in that group that day, and can only cause harmless refreshes.
+- **Accessibility:** Today and reactions refresh quietly, waiting while the person is typing or has a menu open. On the wall, new posts appear only when the reader presses "Show it", announced in a polite live region, so nothing moves under a screen reader.
+- **Performance and kill switch:** the Realtime client (`@supabase/realtime-js`, now listed in package.json; it was already installed with supabase-js) is loaded after the page is idle, so it isn't part of the first load; `NEXT_PUBLIC_REALTIME_ENABLED=false` turns it off (§14). One channel per group page; Realtime runs in CI's e2e job now.
+- **Tests:** pgTAP `082_social_live` (17), e2e `live.spec.ts` (a second person's post and check-in reach an open page).
+
+## D-087 · Phase 6c · Reactions on check-ins
+
+- Members react to another member's check-in in the Today panel (the five reactions). `group_checkins_today` gains `checkin_id` (only when the member checked in today): it reveals nothing beyond "checked in today", which every member already sees. `react_to_checkin(group, checkin, kind, on)` checks the check-in belongs to another active member of that group, not blocked either way; `group_checkin_reactions(group)` gives counts and mine. +1 encouragement XP once per check-in. Reactions go when their check-in goes.

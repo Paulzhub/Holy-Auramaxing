@@ -206,7 +206,11 @@ insert into iso_calls values
   ('respond_partner', $$ select public.respond_partner(current_setting('test.partnerb')::uuid, true) $$),
   ('end_partnership', $$ select public.end_partnership(current_setting('test.partnerb')::uuid) $$),
   ('set_partner_alerts', $$ select public.set_partner_alerts(current_setting('test.partnerb')::uuid, true) $$),
-  ('my_partnerships', $$ select * from public.my_partnerships(pg_temp.gb()) $$);
+  ('my_partnerships', $$ select * from public.my_partnerships(pg_temp.gb()) $$),
+  -- Phase 6c: live updates and reactions on check-ins.
+  ('group_live_topic', $$ select public.group_live_topic(pg_temp.gb()) $$),
+  ('group_checkin_reactions', $$ select * from public.group_checkin_reactions(pg_temp.gb()) $$),
+  ('react_to_checkin', $$ select public.react_to_checkin(pg_temp.gb(), gen_random_uuid(), 'heart', true) $$);
 grant select on iso_calls to authenticated;
 
 create function pg_temp.refused(p_sql text) returns boolean language plpgsql as $$
