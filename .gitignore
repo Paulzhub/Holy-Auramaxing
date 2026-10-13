@@ -52,3 +52,6 @@ next-env.d.ts
 /supabase/.temp/
 /supabase/.branches/
 /tests/e2e/.auth/
+
+# npm run notify:doctor writes its report here
+notify-doctor.txt
