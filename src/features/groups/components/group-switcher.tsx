@@ -1,8 +1,10 @@
 "use client";
 
 import { ChevronDown, Plus, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 
+import { countLabel, useAlertCounts } from "@/components/shell/alert-counts";
 import { Avatar } from "@/components/ui/avatar";
 import { Link, usePathname } from "@/i18n/navigation";
 
@@ -27,9 +29,10 @@ export interface SwitcherLabels {
  * The group switcher in the header (CLAUDE.md §7.4). A native <details>
  * disclosure, so it works without JavaScript; with it, it closes on Escape,
  * on a click outside and after choosing a group. Labels come from the
- * server, so no extra messages ship on every page. Unread counts arrive
- * with notifications (Phase 7); until then a marker shows groups with a
- * covenant change waiting for this person's answer.
+ * server, so no extra messages ship on every page. Each group shows its
+ * unread notifications (Phase 7, live from the shell's counts), and a
+ * marker shows groups with a covenant change waiting for this person's
+ * answer.
  */
 export function GroupSwitcher({ groups, labels }: { groups: SwitcherGroup[]; labels: SwitcherLabels }) {
   const ref = useRef<HTMLDetailsElement>(null);
@@ -37,6 +40,10 @@ export function GroupSwitcher({ groups, labels }: { groups: SwitcherGroup[]; lab
   const currentId = /^\/groups\/([0-9a-f-]{36})/.exec(pathname)?.[1];
   const current = groups.find((g) => g.id === currentId);
   const anyWaiting = groups.some((g) => g.needsAnswer);
+  const { byGroup } = useAlertCounts();
+  const tNav = useTranslations("nav");
+  const groupUnread = groups.reduce((sum, g) => sum + (byGroup[g.id] ?? 0), 0);
+  const anyUnread = groupUnread > 0;
 
   useEffect(() => {
     if (ref.current) ref.current.open = false;
@@ -78,9 +85,11 @@ export function GroupSwitcher({ groups, labels }: { groups: SwitcherGroup[]; lab
             {labels.label}
           </span>
         )}
-        {anyWaiting ? (
+        {anyWaiting || anyUnread ? (
           <span className="needs-answer-dot">
-            <span className="visually-hidden">{labels.needsAnswer}</span>
+            <span className="visually-hidden">
+              {anyWaiting ? labels.needsAnswer : tNav("unread", { count: groupUnread })}
+            </span>
           </span>
         ) : null}
         <ChevronDown aria-hidden="true" className="group-switcher__chevron" />
@@ -98,6 +107,12 @@ export function GroupSwitcher({ groups, labels }: { groups: SwitcherGroup[]; lab
                   <Avatar name={g.name} src={g.pictureUrl} size="sm" shape="square" decorative />
                   <span>{g.name}</span>
                   {g.needsAnswer ? <span className="needs-answer">{labels.needsAnswer}</span> : null}
+                  {(byGroup[g.id] ?? 0) > 0 ? (
+                    <span className="unread-pill">
+                      <span aria-hidden="true">{countLabel(byGroup[g.id] ?? 0)}</span>
+                      <span className="visually-hidden">{tNav("unread", { count: byGroup[g.id] ?? 0 })}</span>
+                    </span>
+                  ) : null}
                 </Link>
               </li>
             ))}

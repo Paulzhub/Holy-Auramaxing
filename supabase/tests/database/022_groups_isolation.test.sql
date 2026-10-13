@@ -8,7 +8,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(21);
+select plan(22);
 
 create function pg_temp.make_user(id uuid, email text) returns void language plpgsql as $$
 declare token text := 'token-' || replace(id::text, '-', '');
@@ -91,6 +91,8 @@ select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
 select public.send_nudge(pg_temp.gb(), '00000000-0000-7000-8000-000000000b02', 'praying');
 select set_config('test.partnerb', public.request_partner(pg_temp.gb(), '00000000-0000-7000-8000-000000000b02')::text, true);
 select pg_temp.as_postgres();
+-- Phase 7b: the worker turns those events into notifications.
+select private.run_notify(1000, true);
 
 -- The tables to check: groups, plus everything in public with a group_id.
 create temp table iso_tables as
@@ -111,6 +113,7 @@ select ok((select count(*) from iso_tables where tbl in ('posts', 'comments', 'r
   'Phase 6a''s wall, reactions and reports are among them');
 select ok((select count(*) from iso_tables where tbl in ('nudges', 'partnerships')) = 2,
   'Phase 6b''s nudges and partnerships are among them');
+select ok(exists (select 1 from iso_tables where tbl = 'notifications'), 'Phase 7b''s notifications are among them');
 
 -- Counts, as the current role, the rows of group `gid` in every table.
 create function pg_temp.visible_rows(gid uuid)
@@ -130,7 +133,8 @@ select pg_temp.as_user('00000000-0000-7000-8000-000000000b01');
 select ok((select bool_and(n > 0) from pg_temp.visible_rows(pg_temp.gb())
             where tbl in ('groups', 'group_members', 'group_invites', 'group_covenant_proposals',
                           'group_covenant_agreements', 'group_checkins_today', 'group_member_stats', 'xp_ledger',
-                          'leaderboard_entries', 'group_goals', 'posts', 'comments', 'reactions', 'reports', 'nudges', 'partnerships')),
+                          'leaderboard_entries', 'group_goals', 'posts', 'comments', 'reactions', 'reports', 'nudges', 'partnerships',
+                          'notifications')),
   'B''s owner sees B''s rows in every group table (the check below is meaningful)');
 
 -- ---------------------------------------------------------------- reading
@@ -210,7 +214,10 @@ insert into iso_calls values
   -- Phase 6c: live updates and reactions on check-ins.
   ('group_live_topic', $$ select public.group_live_topic(pg_temp.gb()) $$),
   ('group_checkin_reactions', $$ select * from public.group_checkin_reactions(pg_temp.gb()) $$),
-  ('react_to_checkin', $$ select public.react_to_checkin(pg_temp.gb(), gen_random_uuid(), 'heart', true) $$);
+  ('react_to_checkin', $$ select public.react_to_checkin(pg_temp.gb(), gen_random_uuid(), 'heart', true) $$),
+  -- Phase 7b: notifications.
+  ('set_group_notifications_muted', $$ select public.set_group_notifications_muted(pg_temp.gb(), true) $$),
+  ('send_partner_sos', $$ select public.send_partner_sos(pg_temp.gb()) $$);
 grant select on iso_calls to authenticated;
 
 create function pg_temp.refused(p_sql text) returns boolean language plpgsql as $$

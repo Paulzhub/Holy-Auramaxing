@@ -22,6 +22,8 @@ export interface EmailMessage {
   subject: string;
   html: string;
   text: string;
+  /** Extra headers, e.g. one-click unsubscribe (RFC 8058) on notification emails. */
+  headers?: Record<string, string>;
 }
 
 export interface EmailSender {
@@ -57,6 +59,7 @@ class ResendSender implements EmailSender {
         subject: message.subject,
         html: message.html,
         text: message.text,
+        ...(message.headers ? { headers: message.headers } : {}),
       }),
       cache: "no-store",
       signal: AbortSignal.timeout(TIMEOUT_MS),
@@ -99,6 +102,7 @@ class SmtpSender implements EmailSender {
       subject: message.subject,
       html: message.html,
       text: message.text,
+      headers: message.headers,
     });
   }
 }
@@ -121,6 +125,7 @@ class MailpitSender implements EmailSender {
         Subject: message.subject,
         HTML: message.html,
         Text: message.text,
+        ...(message.headers ? { Headers: message.headers } : {}),
       }),
       cache: "no-store",
       signal: AbortSignal.timeout(TIMEOUT_MS),

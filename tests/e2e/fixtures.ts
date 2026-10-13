@@ -10,6 +10,7 @@ export const appRoutes = [
   "/alerts",
   "/me",
   "/settings",
+  "/settings/notifications",
   "/settings/security",
   "/settings/data",
   "/settings/data/delete",

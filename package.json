@@ -21,7 +21,11 @@
     "check": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build",
     "db:types": "supabase gen types typescript --local --schema public > src/lib/supabase/database.types.ts",
     "email:test": "node scripts/send-test-email.mjs",
-    "accounts:purge": "node scripts/accounts-purge.mjs"
+    "accounts:purge": "node scripts/accounts-purge.mjs",
+    "notify:fire": "node scripts/notify-fire.mjs",
+    "notify:configure": "node scripts/notify-configure.mjs",
+    "notify:doctor": "node scripts/notify-doctor.mjs",
+    "bench:notify": "node scripts/bench-notify.mjs"
   },
   "dependencies": {
     "@radix-ui/react-tabs": "^1.1.21",
@@ -40,6 +44,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sharp": "^0.35.5",
+    "web-push": "^3.6.7",
     "zod": "^4.6.5"
   },
   "devDependencies": {
@@ -56,6 +61,7 @@
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "eslint-plugin-jsx-a11y": "^6.10.2",

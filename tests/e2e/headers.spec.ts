@@ -12,12 +12,19 @@ test("pages send a nonce-based CSP that matches the page's scripts", async ({ pa
   expect(csp).toContain("frame-ancestors 'none'");
   expect(csp).toContain("object-src 'none'");
 
-  // Every inline/external script in the HTML carries this request's nonce.
-  const scriptNonces = await page
-    .locator("script")
-    .evaluateAll((els) => els.map((el) => (el as HTMLScriptElement).nonce));
-  expect(scriptNonces.length).toBeGreaterThan(0);
-  for (const n of scriptNonces) expect(n).toBe(nonce);
+  // Every script tag the server sends carries this request's nonce. (Read from
+  // the HTML itself: chunks the page loads later, such as the lazy Realtime
+  // client, are allowed by 'strict-dynamic' and have no nonce attribute.)
+  const html = await response!.text();
+  const tags = html.match(/<script\b[^>]*>/gi) ?? [];
+  expect(tags.length).toBeGreaterThan(0);
+  for (const tag of tags) expect(/\bnonce="([^"]*)"/i.exec(tag)?.[1], tag).toBe(nonce);
+
+  // Anything added after load comes from this app, never another origin.
+  const sources = await page
+    .locator("script[src]")
+    .evaluateAll((els) => els.map((el) => new URL((el as HTMLScriptElement).src).origin));
+  for (const origin of sources) expect(origin).toBe(new URL(page.url()).origin);
 });
 
 test("nonces differ between requests", async ({ request }) => {

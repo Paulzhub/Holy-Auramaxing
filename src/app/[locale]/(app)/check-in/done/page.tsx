@@ -16,6 +16,7 @@ import {
 } from "@/features/checkins";
 import { getMyLevel, levelChangeAfterSave, LevelChangeNotice, type LevelOverview } from "@/features/gamification";
 import { getMyGroups } from "@/features/groups";
+import { getPushDevices, PushExplainer } from "@/features/notifications";
 import { AskForPrayerCard, getMyActivePartners } from "@/features/social";
 import { Link, redirect } from "@/i18n/navigation";
 
@@ -58,10 +59,11 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
 
 /** After a clean day: a quiet thank-you, the streak ring and a verse. */
 async function Done({ overview, date, level }: { overview: Overview; date: string; level: LevelOverview }) {
-  const [t, tForm, format] = await Promise.all([
+  const [t, tForm, format, devices] = await Promise.all([
     getTranslations("checkins.done"),
     getTranslations("checkins.form"),
     getFormatter(),
+    getPushDevices(),
   ]);
   const when =
     date === overview.today
@@ -94,6 +96,8 @@ async function Done({ overview, date, level }: { overview: Overview; date: strin
           {tForm("progressLink")}
         </Link>
       </div>
+      {/* After a check-in, the explainer comes before any browser prompt (§7.8, D-092). */}
+      <PushExplainer hasDevice={devices.length > 0} />
     </div>
   );
 }
