@@ -1003,7 +1003,7 @@
     "covenantInfo": {
       "title": "The covenant",
       "minimum": "Everyone shares at least: {level}",
-      "hidingAllowed": "Members may hide from the leaderboard.",
+      "hidingAllowed": "Members may hide from the leaderboard. The owner and admins still see who they are.",
       "hidingNotAllowed": "Everyone appears on the leaderboard.",
       "explain": "This is what everyone in the group agrees to. You may share more than the minimum, never less."
     },
@@ -1048,6 +1048,7 @@
       "myShareLevel": "What you share",
       "shareLevel": "What you share with this group",
       "leaderboardHidden": "Hide me from this group's leaderboard",
+      "leaderboardHiddenHint": "Other members see your place, not your name. The group's owner and admins still see that it's you.",
       "confirmName": "Type the group's name to confirm"
     },
     "nav": {
@@ -1682,7 +1683,8 @@
     "showMore": "Show the next {count}",
     "backToTop": "Back to the top",
     "empty": "Nobody here yet.",
-    "hiddenNote": "You're hidden on this leaderboard: the group sees your place, not your name or photo.",
+    "hiddenNote": "You're hidden on this leaderboard: other members see your place, not your name or photo. The group's owner and admins can still see that it's you.",
+    "hiddenFromMembers": "Hidden from members",
     "shareNote": "Members who share only that they checked in appear on Consistency and Encourager.",
     "notOnBoard": "You share only that you checked in with this group, so you appear on Consistency and Encourager.",
     "encouragerSoon": "Encouragement arrives with the group wall. Until then, everyone starts here at 0.",

@@ -17,12 +17,24 @@ export interface LeaderboardRowProps {
   isMe?: boolean;
   /** Member opted out of leaderboards: name and photo are hidden. */
   hidden?: boolean;
+  /** A short tag after the name, e.g. "Hidden from members" for owners and admins (D-088). */
+  note?: string;
   href?: string;
   preview?: PreviewState;
 }
 
 /** One row of a group leaderboard. Render inside <ol className="ui-leaderboard">. */
-export function LeaderboardRow({ rank, name, value, avatarSrc, isMe, hidden, href, preview }: LeaderboardRowProps) {
+export function LeaderboardRow({
+  rank,
+  name,
+  value,
+  avatarSrc,
+  isMe,
+  hidden,
+  note,
+  href,
+  preview,
+}: LeaderboardRowProps) {
   const t = useTranslations("ui.leaderboard");
   const displayName = hidden ? t("hiddenMember") : name;
 
@@ -42,6 +54,7 @@ export function LeaderboardRow({ rank, name, value, avatarSrc, isMe, hidden, hre
       <span className="ui-lb-row__name">
         <span>{displayName}</span>
         {isMe ? <span className="ui-tag">{t("you")}</span> : null}
+        {note ? <span className="ui-tag">{note}</span> : null}
       </span>
       <span className="ui-lb-row__value">{value}</span>
     </>

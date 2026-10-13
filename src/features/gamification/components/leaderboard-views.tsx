@@ -27,18 +27,23 @@ async function Rows({ rows, board }: { rows: BoardRow[]; board: Board }) {
   const t = await getTranslations("leaderboard");
   return (
     <>
-      {rows.map((r) => (
-        <LeaderboardRow
-          key={`${r.place}`}
-          rank={r.place}
-          // Your own row shows your name even when you're hidden; you see the note below.
-          name={r.isMe ? r.name || t("you") : r.name || t("someone")}
-          hidden={r.hidden && !r.isMe}
-          isMe={r.isMe}
-          avatarSrc={r.userId && !(r.hidden && !r.isMe) ? avatarUrl(r.userId, r.avatarPath, "md") : undefined}
-          value={t(`score.${board}`, { count: r.score })}
-        />
-      ))}
+      {rows.map((r) => {
+        // Owners and admins get a hidden member's id (D-088); members never do.
+        const shown = r.isMe || !r.hidden || Boolean(r.userId);
+        return (
+          <LeaderboardRow
+            key={`${r.place}`}
+            rank={r.place}
+            // Your own row shows your name even when you're hidden; you see the note below.
+            name={r.isMe ? r.name || t("you") : r.name || t("someone")}
+            hidden={!shown}
+            note={r.hidden && !r.isMe && shown ? t("hiddenFromMembers") : undefined}
+            isMe={r.isMe}
+            avatarSrc={r.userId && shown ? avatarUrl(r.userId, r.avatarPath, "md") : undefined}
+            value={t(`score.${board}`, { count: r.score })}
+          />
+        );
+      })}
     </>
   );
 }

@@ -13,7 +13,7 @@ import { PAGE_SIZE, type Board, type GoalPeriod, type Period } from "../leaderbo
 
 export interface BoardRow {
   place: number;
-  /** Null for a hidden member, unless it's you. */
+  /** Null for a hidden member, unless it's you or you're an owner or admin there (D-088); null for a block either way. */
   userId: string | null;
   name: string;
   avatarPath: string | null;

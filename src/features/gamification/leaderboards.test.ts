@@ -92,3 +92,17 @@ describe("leaderboard and Together copy: grace, not shame (§2.1)", () => {
     expect(en.meta.groupLeaderboard).not.toMatch(SENSITIVE_WORDS);
   });
 });
+
+describe("hiding tells members the owner and admins still see them (D-088)", () => {
+  const sayOwnersSee = /owner and admins (can )?(still )?see/i;
+
+  it("in the note on the board, the covenant and the hide checkbox", () => {
+    expect(en.leaderboard.hiddenNote).toMatch(sayOwnersSee);
+    expect(en.groups.covenantInfo.hidingAllowed).toMatch(sayOwnersSee);
+    expect(en.groups.fields.leaderboardHiddenHint).toMatch(sayOwnersSee);
+  });
+
+  it("owners and admins see a hidden member marked as such", () => {
+    expect(en.leaderboard.hiddenFromMembers).toBe("Hidden from members");
+  });
+});
