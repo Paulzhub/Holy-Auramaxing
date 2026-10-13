@@ -690,3 +690,39 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Another group's invite id is a 404,** like an unknown one, even for someone who is an admin of both groups: the page reads the invite by id _and_ group. `public.group_invite_people(invite)` returns ids only, for that group's admins; it is in `022_groups_isolation`.
 - The link and code can't be shown again (only hashes are kept, D-037), so the page offers **"Replace with a new one"** (the new link and code are shown there, once) and **"Stop"**, which returns to the same page.
 - **Tests:** pgTAP `071`, `022`; e2e `invites-detail.spec.ts`, `group-isolation.spec.ts`.
+
+## D-077 · Phase 6a · The encouragement wall: plain-text posts and comments through functions
+
+- **Owner (2026-10-12) approved the Phase 6 plan:** three PRs (6a wall and safety, 6b nudges, partners, the slip page's prayer and milestone cards, 6c Realtime); two active partners per group; Prayer Warrior after praying for 10 people's prayer requests, Encourager after 50 encouragements given; links allowed as text but refused when explicit; owners and admins post and pin announcements; milestone cards on by default from the 7-day badge, each person can turn them off; Realtime through content-free pings on an HMAC topic.
+- **Tables:** `posts` (kinds encouragement, prayer request, testimony, announcement, and milestone for 6b; up to 2,000 characters; `pinned` only for announcements, at most three, `wall_pinned_max`), `comments` (one level, up to 500), `reactions` (pray, heart, fire, strong, dove; unique per person, target and kind; "I prayed" is the pray reaction on a prayer request). RLS by active membership; no write grants.
+- **Functions:** `create_post`, `edit_post`, `delete_post` (the author; an admin removes anyone's, audited), `pin_post`, `create_comment`, `edit_comment`, `delete_comment`, `set_reaction`; reads through `group_wall` (cursor by time-ordered id, never OFFSET; pinned separately), `wall_post` and `post_comments`. Deleting clears the text at once. Archived groups are read-only; closing accounts can't write and their posts are hidden.
+- **Counts are worked out per viewer** (reactions and comments, leaving out blocked people and closing accounts) rather than stored counters, because a block changes them per viewer. Pages are 20 posts, so this reads a few hundred rows at most.
+- **Encouragement:** a reaction on someone else's post or comment, or a comment on someone else's post, queues `encouragement` with the group set (+1, at most 10 a day, D-071), keyed per target so taking it back and giving it again never pays twice. The job also awards Encourager and Prayer Warrior (thresholds in `private.app_config`); a testimony queues a `social` job for First Testimony.
+- **Pages:** `/groups/[id]/wall` (tab title "Wall"; filters are links), `/groups/[id]/wall/[postId]` (comments), a wall card as the last card of the group home, report and block on the Members page. All forms work without JavaScript; the post and comment forms are the only client components and keep the typed text after an error.
+- **Export and erasure:** `my_social_export()` adds posts, comments, reactions, blocked people (ids) and reports made to "Download my data". Erasing an account keeps its posts and comments as "A former member" and removes its reactions, blocks and the reports it made.
+- **G-10:** the strong reaction reads "With you".
+- **Tests:** pgTAP `080_social_wall` (74) and `022`; Vitest `social.test.ts`; e2e `wall.spec.ts`, `group-isolation.spec.ts`.
+
+## D-078 · Phase 6a · Blocks work both ways, everywhere
+
+- `blocks` (blocker, blocked). `util.blocked_between(a, b)` is true when either has blocked the other, and it closes `util.can_see` (so `profile_cards`), the wall, comments, reaction counts, `group_checkins_today`, other members' rows in `group_members`, and names on the leaderboard (the place stays, without a name, like a hidden member). Neither can comment on, react to or report the other's things: the functions answer as if the post didn't exist.
+- Only the blocker can see their own blocks (Settings → Blocked people, with Unblock). The blocked person isn't told.
+- You can block anyone you share a group with. A group admin still sees a blocked member's membership row (to look after the group) but not their name or photo.
+- 6b adds: a block ends any partnership between them and removes nudges and pending requests.
+
+## D-079 · Phase 6a · Reports go to the group's admins, without the reporter's name
+
+- `report_content(group, post | comment | member, reason, note)`; reasons: unkind, sexual, hateful, spam, unsafe, other. The report copies the text as it was (`snapshot`), so editing or deleting can't hide it; the copy is cleared when an admin resolves the report. One open report per person and target.
+- `group_reports` (owners and admins; tab "Moderation" at `/groups/[id]/moderation`) shows what, why, when and how many times, never who: `reporter_id` and `resolved_by` have no column grant. Reports about the reader are left out, and they can't resolve them. Removing the post or comment and `resolve_report` (dealt with or dismissed) are audited.
+- A reported owner has no one to review it until Phase 12's platform queue.
+
+## D-080 · Phase 6a · The automatic filter
+
+- Runs inside the database on every post and comment (`private.clean_social_text`, `util.filter_match`), so calling the API directly can't skip it. Refused text answers `content_blocked` and the app keeps what was typed.
+- **Slurs** (a short curated list in `private.content_filter_terms`) are matched as whole words after folding case, compatibility forms, accents, invisible characters and look-alike digits; letters may repeat, and words spelled out in single letters are joined first. A doubled letter in a term must stay doubled, so place names like Niger aren't caught.
+- **Links** are allowed as plain text (never clickable). A link is refused when its host is an explicit site or one of its subdomains, or on an explicit top-level domain (.xxx, .porn, .sex, .adult, .sexy), or when a part of it is a marked word (xxx, hentai, nsfw…). Words about the struggle itself, and links to help ("covenanteyes.com/porn-addiction-help"), are allowed: this is a recovery app.
+- The list is deliberately small; reports and admins are the backstop.
+
+## D-081 · Phase 6a · Everyone's words are plain text
+
+- Posts, comments and report notes are stored as typed (trimmed, control characters removed, no more than one blank line in a row) and rendered as React text with `white-space: pre-wrap`. No markdown, no HTML, no automatic links. A post containing `<script>` or `<img onerror>` shows those characters and nothing runs (e2e). If rich text is ever added, it must go through DOMPurify (§10).

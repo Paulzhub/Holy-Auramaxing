@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Page() {
   const t = await getTranslations("pages.settings");
+  const tb = await getTranslations("social.block");
   const theme = await getThemePreference();
 
   return (
@@ -42,6 +43,17 @@ export default async function Page() {
             <div>
               <Link href="/settings/security" className={buttonVariants({ variant: "secondary" })}>
                 {t("securityLink")}
+              </Link>
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="grid gap-3">
+            <CardTitle as="h2">{tb("settingsTitle")}</CardTitle>
+            <p className="text-muted">{tb("settingsBody")}</p>
+            <div>
+              <Link href="/settings/blocked" className={buttonVariants({ variant: "secondary" })}>
+                {tb("settingsLink")}
               </Link>
             </div>
           </div>

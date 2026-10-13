@@ -26,20 +26,38 @@ test.describe("Group isolation", () => {
       p_leaderboard_hiding_allowed: false,
     });
     expect(outcome).toBe("proposed");
+    // Phase 6a: a post on B's wall.
+    const { data: postB, error: postError } = await bMember.client.rpc("create_post", {
+      p_group: groupB,
+      p_kind: "prayer_request",
+      p_body: "Only group B should read this.",
+    });
+    expect(postError).toBeNull();
 
     // Me: the owner of group A, signed in through the browser too.
     const me = await apiAs(await signInNewMember(page, "iso-a-owner"));
     const groupA = await createGroupAs(me, "Group A");
 
     // ---- pages: every group page of B is a 404, like a group that doesn't exist
-    for (const path of ["", "/leaderboard", "/members", "/invites", `/invites/${inviteB}`, "/settings"]) {
+    for (const path of [
+      "",
+      "/wall",
+      `/wall/${postB}`,
+      "/leaderboard",
+      "/members",
+      "/invites",
+      `/invites/${inviteB}`,
+      "/moderation",
+      "/settings",
+    ]) {
       const response = await page.goto(`/groups/${groupB}${path}`);
       expect(response?.status(), `/groups/B${path}`).toBe(404);
       await expect(page.getByText("Group B")).toHaveCount(0);
     }
     expect((await page.goto(`/groups/${groupA}`))?.status()).toBe(200);
-    // B's invite through A's own page (D-076).
+    // B's invite through A's own page (D-076), and B's post through A's wall (D-077).
     expect((await page.goto(`/groups/${groupA}/invites/${inviteB}`))?.status()).toBe(404);
+    expect((await page.goto(`/groups/${groupA}/wall/${postB}`))?.status()).toBe(404);
 
     // ---- endpoints: B's picture route
     const picture = await page.request.get(`/api/group-picture/${groupB}?px=96`);
@@ -55,6 +73,10 @@ test.describe("Group isolation", () => {
       ["group_covenant_agreements", "group_id"],
       ["leaderboard_entries", "group_id"],
       ["group_goals", "group_id"],
+      ["posts", "group_id"],
+      ["comments", "group_id"],
+      ["reactions", "group_id"],
+      ["reports", "group_id"],
     ] as const) {
       const { data, error } = await me.client.from(table).select(column).eq(column, groupB);
       expect(error, table).toBeNull();
@@ -125,6 +147,17 @@ test.describe("Group isolation", () => {
       ["set_group_goal", { p_group: groupB, p_period: "month", p_target: 10 }],
       ["end_group_goal", { p_group: groupB }],
       ["group_invite_people", { p_invite: inviteB }],
+      // Phase 6a (D-077 to D-079).
+      ["group_wall", { p_group: groupB }],
+      ["wall_post", { p_post: postB }],
+      ["post_comments", { p_post: postB }],
+      ["create_post", { p_group: groupB, p_kind: "encouragement", p_body: "Hello B" }],
+      ["edit_post", { p_post: postB, p_body: "Changed" }],
+      ["delete_post", { p_post: postB }],
+      ["create_comment", { p_post: postB, p_body: "Hi" }],
+      ["set_reaction", { p_target_type: "post", p_target: postB, p_kind: "pray", p_on: true }],
+      ["report_content", { p_group: groupB, p_target_type: "post", p_target: postB, p_reason: "spam" }],
+      ["group_reports", { p_group: groupB }],
     ];
     for (const [fn, args] of calls) {
       const { error } = await me.client.rpc(fn, args);

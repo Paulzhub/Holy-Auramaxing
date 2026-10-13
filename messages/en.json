@@ -37,7 +37,10 @@
     "groupSettings": "Group settings",
     "join": "Join a group",
     "progress": "Progress",
-    "groupLeaderboard": "Leaderboard"
+    "groupLeaderboard": "Leaderboard",
+    "groupWall": "Wall",
+    "groupModeration": "Moderation",
+    "blocked": "Blocked people"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -167,7 +170,7 @@
         "pray": "Praying",
         "heart": "Love",
         "fire": "On fire",
-        "strong": "Stay strong",
+        "strong": "With you",
         "dove": "Peace"
       }
     }
@@ -1052,7 +1055,9 @@
       "leaderboard": "Leaderboard",
       "members": "Members",
       "invites": "Invites",
-      "settings": "Settings"
+      "settings": "Settings",
+      "wall": "Wall",
+      "moderation": "Moderation"
     },
     "home": {
       "members": "{count, plural, one {# member} other {# members}}",
@@ -1061,7 +1066,7 @@
       "leaderboardTitle": "Leaderboard",
       "leaderboardBody": "The group's leaderboard arrives with check-ins and streaks.",
       "wallTitle": "Encouragement wall",
-      "wallBody": "Encouragement, prayer requests and testimonies will live here.",
+      "wallBody": "Encouragement, prayer requests and testimonies from your group.",
       "togetherTitle": "Together",
       "togetherBody": "Your group's free days, added up, will show here.",
       "archivedBanner": "This group is archived. Everything is kept, but nothing new can happen here.",
@@ -1708,6 +1713,170 @@
       "save": "Save the goal",
       "endNote": "Ending the goal removes the progress bar. Every free day still counts.",
       "end": "End the goal"
+    }
+  },
+  "social": {
+    "wall": {
+      "title": "Encouragement wall",
+      "lede": "Encourage each other, ask for prayer and share what God is doing. Only your group sees this.",
+      "filtersLabel": "Show",
+      "filters": {
+        "all": "Everything",
+        "prayer_request": "Prayer requests",
+        "testimony": "Testimonies",
+        "encouragement": "Encouragement",
+        "announcement": "Announcements"
+      },
+      "pinnedTitle": "Pinned",
+      "postsTitle": "Posts",
+      "older": "Show older posts",
+      "newest": "Back to the newest",
+      "empty": "Nothing here yet. Be the first to write something kind.",
+      "emptyFiltered": "Nothing of this kind yet.",
+      "homeTitle": "Encouragement wall",
+      "homeEmpty": "Nothing on the wall yet. A short word of encouragement goes a long way.",
+      "homeOpen": "Open the wall",
+      "homeWrite": "Write something",
+      "archived": "This group is archived, so the wall can be read but not written to."
+    },
+    "kinds": {
+      "encouragement": "Encouragement",
+      "prayer_request": "Prayer request",
+      "testimony": "Testimony",
+      "announcement": "Announcement",
+      "milestone": "Milestone"
+    },
+    "post": {
+      "formerMember": "A former member",
+      "edited": "Edited",
+      "pinned": "Pinned",
+      "you": "You",
+      "comments": "{count, plural, =0 {Comment} one {# comment} other {# comments}}",
+      "commentsFor": "{count, plural, =0 {Comment on this post} one {# comment, open the post} other {# comments, open the post}}",
+      "prayed": "{count, plural, =0 {Be the first to pray} one {# person prayed} other {# people prayed}}",
+      "postedOn": "Posted {date}",
+      "actionsFor": "More for this post",
+      "commentActionsFor": "More for this comment",
+      "back": "Back to the wall"
+    },
+    "reactions": {
+      "label": "Reactions",
+      "add": "{reaction}, {count, plural, =0 {no reactions yet} one {# reaction} other {# reactions}}. Add yours.",
+      "remove": "{reaction}, {count, plural, one {# reaction} other {# reactions}}, including yours. Take yours back.",
+      "iPrayed": "I prayed",
+      "iPrayedDone": "You prayed"
+    },
+    "form": {
+      "kind": "What kind of post?",
+      "body": "Your words",
+      "bodyHint": "Plain text, up to {max, number} characters. Links show as text and can't be clicked.",
+      "post": "Post to the group",
+      "posting": "Posting…",
+      "posted": "Posted to your group.",
+      "comment": "Your comment",
+      "commentHint": "Up to {max, number} characters.",
+      "sendComment": "Add comment",
+      "commented": "Comment added.",
+      "edit": "Edit",
+      "editTitle": "Edit your words",
+      "save": "Save",
+      "saved": "Saved.",
+      "cancel": "Cancel",
+      "remaining": "{count, plural, one {# character left} other {# characters left}}"
+    },
+    "manage": {
+      "delete": "Delete",
+      "deleteQuestion": "Delete this for good? It can't be brought back.",
+      "deleteYes": "Yes, delete it",
+      "remove": "Remove",
+      "removeQuestion": "Remove this from the group's wall? This is recorded.",
+      "removeYes": "Yes, remove it",
+      "pin": "Pin to the top",
+      "unpin": "Unpin"
+    },
+    "report": {
+      "open": "Report",
+      "openMember": "Report {name}",
+      "title": "Tell the group's admins",
+      "lede": "They'll see what was written and why, but not who told them.",
+      "reason": "What's wrong?",
+      "reasons": {
+        "unkind": "Unkind or hurtful",
+        "sexual": "Sexual content",
+        "hateful": "Hateful words",
+        "spam": "Spam or selling",
+        "unsafe": "Someone may not be safe",
+        "other": "Something else"
+      },
+      "note": "Anything they should know? (optional)",
+      "send": "Send report",
+      "unsafeHint": "If someone may be in danger right now, please also contact local emergency services."
+    },
+    "block": {
+      "open": "Block",
+      "openMember": "Block {name}",
+      "question": "Block {name}? You won't see each other's posts, comments, reactions, check-ins or names anywhere, and neither of you can react to the other. They aren't told.",
+      "questionNoName": "Block this person? You won't see each other's posts, comments, reactions, check-ins or names anywhere, and neither of you can react to the other. They aren't told.",
+      "yes": "Yes, block",
+      "listTitle": "Blocked people",
+      "listLede": "People you've blocked can't see you, and you can't see them, in any group you share.",
+      "listEmpty": "You haven't blocked anyone.",
+      "since": "Blocked {date}",
+      "unblock": "Unblock {name}",
+      "settingsTitle": "Blocked people",
+      "settingsBody": "See who you've blocked, and unblock them if you choose.",
+      "settingsLink": "Blocked people"
+    },
+    "moderation": {
+      "title": "Reports",
+      "lede": "What members have reported in this group. Reports about you go to the platform's team instead.",
+      "empty": "No open reports. Thank you for looking after your group.",
+      "about": {
+        "post": "A post by {name}",
+        "comment": "A comment by {name}",
+        "member": "{name}"
+      },
+      "someone": "a former member",
+      "reason": "Reason: {reason}",
+      "note": "Note: {note}",
+      "count": "{count, plural, one {Reported once} other {Reported # times}}",
+      "gone": "It has already been deleted.",
+      "reportedOn": "Reported {date}",
+      "view": "Open the post",
+      "removePost": "Remove the post",
+      "removeComment": "Remove the comment",
+      "actioned": "Mark as dealt with",
+      "dismiss": "Dismiss"
+    },
+    "notices": {
+      "postDeleted": "Deleted.",
+      "commentDeleted": "Comment deleted.",
+      "pinned": "Pinned to the top of the wall.",
+      "unpinned": "Unpinned.",
+      "reported": "Thank you. The group's admins will look at it.",
+      "blocked": "Blocked. You won't see each other in your groups.",
+      "unblocked": "Unblocked.",
+      "reportActioned": "Report closed as dealt with.",
+      "reportDismissed": "Report dismissed."
+    },
+    "errors": {
+      "signedOut": "Please sign in again.",
+      "notFound": "We couldn't find that group.",
+      "postNotFound": "That post isn't available any more.",
+      "memberNotFound": "We couldn't find that person in your group.",
+      "forbidden": "Only the group's owner or admins can do that.",
+      "archived": "This group is archived, so nothing new can be posted.",
+      "accountClosing": "Your account is closing, so you can't post right now.",
+      "invalidInput": "Something in that wasn't right. Please check and try again.",
+      "contentBlocked": "Some words or a link in this aren't allowed here. Please change them and try again.",
+      "pinnedFull": "Three announcements are already pinned. Unpin one first.",
+      "bodyEmpty": "Please write something first.",
+      "bodyTooLong": "That's a little long. Please shorten it.",
+      "reasonMissing": "Please choose what's wrong.",
+      "noteTooLong": "Please keep the note to 500 characters.",
+      "rateLimited": "That's a lot in a short time. Please wait a little and try again.",
+      "saveFailed": "That didn't save. Please try again.",
+      "errorSummaryTitle": "Please check this"
     }
   }
 }

@@ -63,6 +63,53 @@ export type Database = {
         };
         Relationships: [];
       };
+      blocks: {
+        Row: {
+          blocked_id: string;
+          blocker_id: string;
+          created_at: string;
+        };
+        Insert: {
+          blocked_id: string;
+          blocker_id: string;
+          created_at?: string;
+        };
+        Update: {
+          blocked_id?: string;
+          blocker_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "blocks_blocked_id_fkey";
+            columns: ["blocked_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "blocks_blocked_id_fkey";
+            columns: ["blocked_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey";
+            columns: ["blocker_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey";
+            columns: ["blocker_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       checkins: {
         Row: {
           created_at: string;
@@ -119,6 +166,71 @@ export type Database = {
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      comments: {
+        Row: {
+          author_id: string | null;
+          body: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          edited_at: string | null;
+          group_id: string;
+          id: string;
+          post_id: string;
+          removed_by_admin: boolean;
+        };
+        Insert: {
+          author_id?: string | null;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          edited_at?: string | null;
+          group_id: string;
+          id?: string;
+          post_id: string;
+          removed_by_admin?: boolean;
+        };
+        Update: {
+          author_id?: string | null;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          edited_at?: string | null;
+          group_id?: string;
+          id?: string;
+          post_id?: string;
+          removed_by_admin?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "comments_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "comments_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "comments_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey";
+            columns: ["post_id"];
+            isOneToOne: false;
+            referencedRelation: "posts";
             referencedColumns: ["id"];
           },
         ];
@@ -662,6 +774,77 @@ export type Database = {
           },
         ];
       };
+      posts: {
+        Row: {
+          author_id: string | null;
+          badge: string | null;
+          body: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          edited_at: string | null;
+          group_id: string;
+          id: string;
+          kind: string;
+          pinned: boolean;
+          removed_by_admin: boolean;
+        };
+        Insert: {
+          author_id?: string | null;
+          badge?: string | null;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          edited_at?: string | null;
+          group_id: string;
+          id?: string;
+          kind: string;
+          pinned?: boolean;
+          removed_by_admin?: boolean;
+        };
+        Update: {
+          author_id?: string | null;
+          badge?: string | null;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          edited_at?: string | null;
+          group_id?: string;
+          id?: string;
+          kind?: string;
+          pinned?: boolean;
+          removed_by_admin?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "posts_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "posts_badge_fkey";
+            columns: ["badge"];
+            isOneToOne: false;
+            referencedRelation: "badges";
+            referencedColumns: ["slug"];
+          },
+          {
+            foreignKeyName: "posts_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       privacy_settings: {
         Row: {
           bio_visibility: string;
@@ -799,6 +982,156 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [];
+      };
+      reactions: {
+        Row: {
+          created_at: string;
+          group_id: string;
+          id: string;
+          kind: string;
+          target_id: string;
+          target_type: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          group_id: string;
+          id?: string;
+          kind: string;
+          target_id: string;
+          target_type: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          group_id?: string;
+          id?: string;
+          kind?: string;
+          target_id?: string;
+          target_type?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reactions_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      reports: {
+        Row: {
+          created_at: string;
+          group_id: string;
+          id: string;
+          note: string | null;
+          reason: string;
+          reporter_id: string | null;
+          resolved_at: string | null;
+          resolved_by: string | null;
+          snapshot: string | null;
+          status: string;
+          subject_id: string | null;
+          target_id: string;
+          target_type: string;
+        };
+        Insert: {
+          created_at?: string;
+          group_id: string;
+          id?: string;
+          note?: string | null;
+          reason: string;
+          reporter_id?: string | null;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          snapshot?: string | null;
+          status?: string;
+          subject_id?: string | null;
+          target_id: string;
+          target_type: string;
+        };
+        Update: {
+          created_at?: string;
+          group_id?: string;
+          id?: string;
+          note?: string | null;
+          reason?: string;
+          reporter_id?: string | null;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          snapshot?: string | null;
+          status?: string;
+          subject_id?: string | null;
+          target_id?: string;
+          target_type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reports_group_id_fkey";
+            columns: ["group_id"];
+            isOneToOne: false;
+            referencedRelation: "groups";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey";
+            columns: ["reporter_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey";
+            columns: ["reporter_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_resolved_by_fkey";
+            columns: ["resolved_by"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_resolved_by_fkey";
+            columns: ["resolved_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_subject_id_fkey";
+            columns: ["subject_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_subject_id_fkey";
+            columns: ["subject_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       user_badges: {
         Row: {
@@ -1055,6 +1388,7 @@ export type Database = {
           session_active: boolean;
         }[];
       };
+      block_member: { Args: { p_user: string }; Returns: undefined };
       cancel_account_deletion: { Args: Record<PropertyKey, never>; Returns: boolean };
       change_group_covenant: {
         Args: {
@@ -1077,6 +1411,7 @@ export type Database = {
       complete_oauth_signup: { Args: { p_token: string; p_user_id: string }; Returns: boolean };
       complete_onboarding: { Args: Record<PropertyKey, never>; Returns: undefined };
       complete_storage_purge: { Args: { p_id: string }; Returns: undefined };
+      create_comment: { Args: { p_body: string; p_post: string }; Returns: string };
       create_group: {
         Args: {
           p_challenge_days: number;
@@ -1104,13 +1439,18 @@ export type Database = {
         };
         Returns: string;
       };
+      create_post: { Args: { p_body: string; p_group: string; p_kind: string }; Returns: string };
       create_signup_ticket: {
         Args: { p_policy_version: string; p_timezone?: string; p_token_hash: string; p_ttl_minutes?: number };
         Returns: undefined;
       };
       decline_covenant_change: { Args: { p_proposal: string }; Returns: undefined };
       decline_join_request: { Args: { p_group: string; p_user: string }; Returns: undefined };
+      delete_comment: { Args: { p_comment: string }; Returns: undefined };
       delete_group: { Args: { p_confirm_name: string; p_group: string }; Returns: undefined };
+      delete_post: { Args: { p_post: string }; Returns: undefined };
+      edit_comment: { Args: { p_body: string; p_comment: string }; Returns: undefined };
+      edit_post: { Args: { p_body: string; p_post: string }; Returns: undefined };
       end_group_goal: { Args: { p_group: string }; Returns: undefined };
       group_invite_details: {
         Args: { p_code_hash?: string; p_token_hash: string };
@@ -1151,7 +1491,40 @@ export type Database = {
           score: number;
         }[];
       };
+      group_reports: {
+        Args: { p_group: string };
+        Returns: {
+          created_at: string;
+          id: string;
+          note: string;
+          post_id: string;
+          reason: string;
+          reports_on_target: number;
+          snapshot: string;
+          still_there: boolean;
+          subject_id: string;
+          target_id: string;
+          target_type: string;
+        }[];
+      };
       group_together: { Args: { p_group: string }; Returns: Json };
+      group_wall: {
+        Args: { p_before?: string; p_group: string; p_kind?: string; p_limit?: number };
+        Returns: {
+          author_id: string;
+          badge: string;
+          body: string;
+          comment_count: number;
+          created_at: string;
+          edited_at: string;
+          id: string;
+          is_mine: boolean;
+          kind: string;
+          my_reactions: string[];
+          pinned: boolean;
+          reactions: Json;
+        }[];
+      };
       join_group: {
         Args: {
           p_accept_covenant: boolean;
@@ -1176,6 +1549,15 @@ export type Database = {
           device: string;
         }[];
       };
+      my_blocked_people: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          blocked_at: string;
+          display_name: string;
+          handle: string;
+          user_id: string;
+        }[];
+      };
       my_checkin_overview: { Args: Record<PropertyKey, never>; Returns: Json };
       my_level: { Args: Record<PropertyKey, never>; Returns: Json };
       my_sessions: {
@@ -1186,6 +1568,21 @@ export type Database = {
           is_current: boolean;
           last_active_at: string;
           signed_in_at: string;
+        }[];
+      };
+      my_social_export: { Args: Record<PropertyKey, never>; Returns: Json };
+      pin_post: { Args: { p_pinned: boolean; p_post: string }; Returns: undefined };
+      post_comments: {
+        Args: { p_post: string };
+        Returns: {
+          author_id: string;
+          body: string;
+          created_at: string;
+          edited_at: string;
+          id: string;
+          is_mine: boolean;
+          my_reactions: string[];
+          reactions: Json;
         }[];
       };
       preview_group_invite: {
@@ -1204,7 +1601,12 @@ export type Database = {
       remove_group_member: { Args: { p_group: string; p_user: string }; Returns: undefined };
       remove_group_picture: { Args: { p_group: string }; Returns: string[] };
       replace_recovery_codes: { Args: { p_hashes: string[] }; Returns: number };
+      report_content: {
+        Args: { p_group: string; p_note?: string; p_reason: string; p_target: string; p_target_type: string };
+        Returns: string;
+      };
       request_account_deletion: { Args: Record<PropertyKey, never>; Returns: string };
+      resolve_report: { Args: { p_outcome: string; p_report: string }; Returns: undefined };
       revoke_group_invite: { Args: { p_invite: string }; Returns: undefined };
       revoke_my_session: { Args: { p_session_id: string }; Returns: boolean };
       run_account_purge: { Args: Record<PropertyKey, never>; Returns: number };
@@ -1215,6 +1617,10 @@ export type Database = {
       set_group_goal: { Args: { p_group: string; p_period: string; p_target: number }; Returns: undefined };
       set_group_member_role: { Args: { p_group: string; p_role: string; p_user: string }; Returns: undefined };
       set_group_picture_pending: { Args: { p_group: string; p_path: string }; Returns: string };
+      set_reaction: {
+        Args: { p_kind: string; p_on: boolean; p_target: string; p_target_type: string };
+        Returns: undefined;
+      };
       submit_checkin: {
         Args: {
           p_local_date: string;
@@ -1240,6 +1646,7 @@ export type Database = {
       };
       transfer_group_ownership: { Args: { p_group: string; p_new_owner: string }; Returns: undefined };
       unarchive_group: { Args: { p_group: string }; Returns: undefined };
+      unblock_member: { Args: { p_user: string }; Returns: undefined };
       update_group_challenge: {
         Args: {
           p_challenge_days: number;
@@ -1258,6 +1665,24 @@ export type Database = {
         Returns: undefined;
       };
       use_recovery_code: { Args: { p_hash: string; p_user_id: string }; Returns: boolean };
+      wall_post: {
+        Args: { p_post: string };
+        Returns: {
+          author_id: string;
+          badge: string;
+          body: string;
+          comment_count: number;
+          created_at: string;
+          edited_at: string;
+          group_id: string;
+          id: string;
+          is_mine: boolean;
+          kind: string;
+          my_reactions: string[];
+          pinned: boolean;
+          reactions: Json;
+        }[];
+      };
       withdraw_covenant_change: { Args: { p_proposal: string }; Returns: undefined };
     };
     Enums: {

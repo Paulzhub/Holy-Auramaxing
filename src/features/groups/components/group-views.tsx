@@ -102,22 +102,20 @@ export async function PhaseText({ phase }: { phase: GroupPhase }) {
   }
 }
 
+type TabKey = "home" | "wall" | "leaderboard" | "members" | "invites" | "moderation" | "settings";
+
 /** The group's name, picture and day, with its tabs. */
-export async function GroupHeader({
-  ctx,
-  current,
-}: {
-  ctx: GroupContext;
-  current: "home" | "leaderboard" | "members" | "invites" | "settings";
-}) {
+export async function GroupHeader({ ctx, current }: { ctx: GroupContext; current: TabKey }) {
   const t = await getTranslations("groups");
   const { group } = ctx;
-  type Tab = { key: "home" | "leaderboard" | "members" | "invites" | "settings"; href: string };
+  type Tab = { key: TabKey; href: string };
   const tabs: Tab[] = [
     { key: "home", href: `/groups/${group.id}` },
+    { key: "wall", href: `/groups/${group.id}/wall` },
     { key: "leaderboard", href: `/groups/${group.id}/leaderboard` },
     { key: "members", href: `/groups/${group.id}/members` },
     ...(ctx.isAdmin ? [{ key: "invites", href: `/groups/${group.id}/invites` } as Tab] : []),
+    ...(ctx.isAdmin ? [{ key: "moderation", href: `/groups/${group.id}/moderation` } as Tab] : []),
     { key: "settings", href: `/groups/${group.id}/settings` },
   ];
   return (
@@ -405,7 +403,16 @@ function ConfirmOp({
 }
 
 /** The Members page: who's here, and what the viewer may do about it. */
-export async function MemberList({ ctx, members }: { ctx: GroupContext; members: MemberCard[] }) {
+export async function MemberList({
+  ctx,
+  members,
+  memberTools,
+}: {
+  ctx: GroupContext;
+  members: MemberCard[];
+  /** Extra controls for another active member's row (report and block, from the social module). */
+  memberTools?: (m: MemberCard) => ReactNode;
+}) {
   const t = await getTranslations("groups");
   const format = await getFormatter();
   const gid = ctx.group.id;
@@ -443,10 +450,11 @@ export async function MemberList({ ctx, members }: { ctx: GroupContext; members:
             const canRemove =
               !self && !archived && m.role !== "owner" && (ctx.isOwner || (ctx.isAdmin && m.role === "member"));
             const canRole = !self && !archived && ctx.isOwner && m.role !== "owner";
+            const tools = self ? null : (memberTools?.(m) ?? null);
             return (
               <li key={m.userId} className="group-row">
                 {person(m, since(m.joinedAt))}
-                {canRemove || canRole ? (
+                {canRemove || canRole || tools ? (
                   <div
                     className="group-row__actions"
                     role="group"
@@ -480,6 +488,7 @@ export async function MemberList({ ctx, members }: { ctx: GroupContext; members:
                         confirm={t("members.confirmRemoveYes")}
                       />
                     ) : null}
+                    {tools}
                   </div>
                 ) : null}
               </li>
@@ -667,18 +676,20 @@ export async function DangerZone({ ctx, members, error }: { ctx: GroupContext; m
   );
 }
 
-/** Placeholder cards for what later phases bring to a group's home. */
 /** The group home's panels. `today` is the check-in panel, supplied by the page (checkins module). */
 export async function GroupHomeSkeleton({
   ctx,
   today,
   leaderboard,
   together,
+  wall,
 }: {
   ctx: GroupContext;
   today?: ReactNode;
   leaderboard?: ReactNode;
   together?: ReactNode;
+  /** The encouragement wall's card (social module, Phase 6a). */
+  wall?: ReactNode;
 }) {
   const t = await getTranslations("groups.home");
   const card = (key: "today" | "leaderboard" | "wall" | "together") => (
@@ -703,7 +714,7 @@ export async function GroupHomeSkeleton({
       {today ?? card("today")}
       {leaderboard ?? card("leaderboard")}
       {together ?? card("together")}
-      {card("wall")}
+      {wall ?? card("wall")}
     </div>
   );
 }
