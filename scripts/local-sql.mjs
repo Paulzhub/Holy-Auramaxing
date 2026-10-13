@@ -29,40 +29,59 @@ export function localQuery(sql) {
       maxBuffer: 64 * 1024 * 1024,
     });
     if (run.error) throw run.error;
-    const result = firstJsonObject(run.stdout ?? "");
+    const result = answerObject(run.stdout ?? "");
     // The CLI reports failures as {"_tag": "Error", "error": {message, suggestion}}.
     if (result?._tag === "Error") {
       const { message, suggestion } = result.error ?? {};
       throw new Error([message, suggestion].filter(Boolean).join(" ") || "the Supabase CLI reported an error");
     }
     if (run.status !== 0) throw new Error((run.stderr || run.stdout || "").trim() || `exit code ${run.status}`);
-    return result?.rows ?? [];
+    if (!Array.isArray(result?.rows)) {
+      // Never pretend there were no rows: show what the CLI actually said.
+      throw new Error(`Unexpected answer from the Supabase CLI: ${(run.stdout ?? "").slice(0, 400)}`);
+    }
+    return result.rows;
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
 }
 
 /**
- * The first complete JSON object in the CLI's output. Anything around it is
- * ignored: on Windows the CLI can print more after the JSON (an update
- * notice, for example), which made JSON.parse fail ("Unexpected non-whitespace
- * character after JSON", 2026-10-13). Braces inside strings are skipped.
+ * The CLI's answer among the JSON objects it prints. On Windows it prints
+ * more than one (an update notice, for example), before or after the answer,
+ * so we take the one holding "rows" or an error ("Unexpected non-whitespace
+ * character after JSON", then empty results, 2026-10-13/14).
  */
-export function firstJsonObject(text) {
-  const start = text.indexOf("{");
-  if (start < 0) return null;
+export function answerObject(text) {
+  const objects = jsonObjects(text);
+  return (
+    objects.find((o) => o && typeof o === "object" && ("rows" in o || o._tag === "Error")) ?? objects.at(-1) ?? null
+  );
+}
+
+/** Every top-level JSON object in the text; braces inside strings are skipped. */
+export function jsonObjects(text) {
+  const found = [];
   let depth = 0;
+  let start = -1;
   let inString = false;
   let escaped = false;
-  for (let i = start; i < text.length; i++) {
+  for (let i = 0; i < text.length; i++) {
     const c = text[i];
-    if (inString) {
+    if (depth > 0 && inString) {
       if (escaped) escaped = false;
       else if (c === "\\") escaped = true;
       else if (c === '"') inString = false;
-    } else if (c === '"') inString = true;
-    else if (c === "{") depth++;
-    else if (c === "}" && --depth === 0) return JSON.parse(text.slice(start, i + 1));
+    } else if (depth > 0 && c === '"') inString = true;
+    else if (c === "{") {
+      if (depth++ === 0) start = i;
+    } else if (c === "}" && depth > 0 && --depth === 0) {
+      try {
+        found.push(JSON.parse(text.slice(start, i + 1)));
+      } catch {
+        // Not JSON after all (a brace in a plain message); keep looking.
+      }
+    }
   }
-  throw new Error("The Supabase CLI's answer wasn't complete JSON.");
+  return found;
 }

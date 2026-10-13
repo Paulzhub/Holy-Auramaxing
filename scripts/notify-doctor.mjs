@@ -97,6 +97,33 @@ section(
   `select jobname as c1, schedule as c2, active as c3 from cron.job where jobname like 'notify%' order by jobname`,
 );
 
+// 8 first, because 7's direct run would empty the queue: can the database
+// itself reach the app? pg_net (inside the database's Docker container) asks
+// the app's health page at the stored address, then we read its answer.
+say("\n== 8. Can the database reach the app? (the database asks the app's health page itself)");
+try {
+  const [row] = localQuery(
+    `select net.http_get(replace((select decrypted_secret from vault.decrypted_secrets
+                                   where name = 'notify_deliver_url'), '/api/notify/deliver', '/api/health'),
+                         timeout_milliseconds => 5000) as c1`,
+  );
+  const id = Number(row?.c1);
+  let answer = null;
+  for (let i = 0; i < 10 && !answer; i++) {
+    await new Promise((r) => setTimeout(r, 1000));
+    [answer] = localQuery(
+      `select status_code as c1, coalesce(left(error_msg, 200), '-') as c2 from net._http_response where id = ${id}`,
+    );
+  }
+  say(
+    answer
+      ? `  ${answer.c1 === 200 ? "yes" : "NO"}: HTTP ${answer.c1 ?? "-"} ${answer.c2 === "-" ? "" : answer.c2}`
+      : "  NO answer after 10 s (is pg_net running? the database may need a restart: npx supabase stop, then the launcher)",
+  );
+} catch (error) {
+  say(`  couldn't test: ${error instanceof Error ? error.message : error}`);
+}
+
 say("\n== 7. The app, Mailpit and one direct run of the sender");
 for (const [name, url, init] of [
   ["app health", `http://localhost:${port}/api/health`, {}],
@@ -125,6 +152,8 @@ What the answers mean:
 - 4 shows "email: ready" and 5 shows errors or nothing: the database can't reach the app
   (see 5's error). On Windows, allow Node.js through the firewall on private networks,
   then restart the launcher.
+- 8 says NO "Couldn't connect" while 7's app health is 200: the database (in Docker) can't reach
+  the app. On Windows, allow Node.js through the firewall on private networks, then restart the launcher.
 - 7 "sender" answers 401: the secret doesn't match; restart the launcher (it runs notify:configure).`);
 
 writeFileSync("notify-doctor.txt", lines.join("\n") + "\n");
