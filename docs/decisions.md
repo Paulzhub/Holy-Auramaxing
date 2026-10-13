@@ -767,3 +767,11 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 ## D-087 · Phase 6c · Reactions on check-ins
 
 - Members react to another member's check-in in the Today panel (the five reactions). `group_checkins_today` gains `checkin_id` (only when the member checked in today): it reveals nothing beyond "checked in today", which every member already sees. `react_to_checkin(group, checkin, kind, on)` checks the check-in belongs to another active member of that group, not blocked either way; `group_checkin_reactions(group)` gives counts and mine. +1 encouragement XP once per check-in. Reactions go when their check-in goes.
+
+## D-088 · Phase 7a · Owners and admins see who is hidden on the leaderboard
+
+- **Owner's request (2026-10-13):** a member who hides from a group's leaderboard (while the covenant allows it, D-074) stays nameless to other members, but the group's **owners and admins** now see who it is. `public.group_leaderboard` returns the member's id to them (so the name and photo, through `profile_cards`), still with `is_hidden = true`; the row reads **"Hidden from members"**.
+- **Unchanged:** members never receive the id, on the page or through the API; a block either way still hides the name from everyone, admins included (D-078); hiding only applies while `leaderboard_hiding_allowed` is on; the member sees their own row as before.
+- **Members are told:** the covenant ("Members may hide from the leaderboard. The owner and admins still see who they are."), the hide checkbox's hint when joining and in the group's Settings, and the note on the board.
+- **Why it's acceptable:** owners and admins already see every membership row (to look after the group, D-078); hiding is about the ranking shown to peers, not about secrecy from the group's leaders.
+- **Tests:** pgTAP `070` (+7: owner and admin see the id still marked hidden; a demoted admin and plain members don't; a block either way hides it), Vitest `leaderboards.test.ts` (the copy says so), e2e `leaderboards.spec.ts` (the owner's page shows the name with "Hidden from members"; members' API results carry no id; a block hides it).

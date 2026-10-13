@@ -304,6 +304,7 @@ export function MembershipForm({
           id="membership-leaderboardHidden"
           name="leaderboardHidden"
           label={t("fields.leaderboardHidden")}
+          hint={t("fields.leaderboardHiddenHint")}
           defaultChecked={values.leaderboardHidden}
           error={err("leaderboardHidden")}
         />

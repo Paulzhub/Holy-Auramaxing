@@ -78,7 +78,8 @@ test.describe("Leaderboards, Together and the group goal", () => {
     await checkIn(streaky, "clean", 2);
     await checkIn(hidden, "clean");
 
-    // ---- the Current streak board: Sam (3), Hana hidden, never Quinn.
+    // ---- the Current streak board: Sam (3), Hana hidden (the owner sees her name,
+    // marked "Hidden from members", D-088), never Quinn.
     const board = page.getByTestId("leaderboard");
     await expect(async () => {
       await page.goto(`/groups/${groupId}/leaderboard?board=streak`);
@@ -86,8 +87,8 @@ test.describe("Leaderboards, Together and the group goal", () => {
       await expect(board.getByText("3 days")).toBeVisible({ timeout: 1_000 });
     }).toPass({ timeout: 60_000, intervals: [2_000, 3_000, 5_000] });
     await expect(page.getByText("Quinn Quiet")).toHaveCount(0);
-    await expect(page.getByText("Hana Hidden")).toHaveCount(0);
-    await expect(board.getByText("Hidden member")).toHaveCount(1);
+    await expect(board.getByRole("listitem").filter({ hasText: "Hana Hidden" })).toContainText("Hidden from members");
+    await expect(board.getByText("Hidden member")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Current streak" })).toHaveAttribute("aria-current", "page");
     await expect(page).toHaveTitle(/^Leaderboard \|/);
     for (const tab of ["level", "free_days"]) {
@@ -103,7 +104,7 @@ test.describe("Leaderboards, Together and the group goal", () => {
       await page.goto(`/groups/${groupId}/leaderboard`);
       await expect(board.getByText("Quinn Quiet")).toBeVisible({ timeout: 1_000 });
     }).toPass({ timeout: 30_000, intervals: [2_000, 3_000] });
-    await expect(board.getByText("Hidden member")).toHaveCount(1);
+    await expect(board.getByText("Hidden from members")).toHaveCount(1);
     await page.goto(`/groups/${groupId}/leaderboard?board=encourager`);
     await expect(board.getByText("Quinn Quiet")).toBeVisible();
     await expectNoAxeViolations(page, "leaderboard");
@@ -111,14 +112,24 @@ test.describe("Leaderboards, Together and the group goal", () => {
     await noOverflow(page, "leaderboard at 320px");
     await page.setViewportSize({ width: 1280, height: 800 });
 
-    // ---- the API, directly: Quinn isn't on the streak board even for themselves,
-    // and nobody else gets Hana's id.
+    // ---- the API, directly: Quinn isn't on the streak board even for themselves;
+    // the owner gets Hana's id (still marked hidden), members never do (D-088).
     const { data: quietStreak } = await quiet.client.rpc("group_leaderboard", { p_group: groupId, p_board: "streak" });
     expect((quietStreak ?? []).some((r: { is_me: boolean }) => r.is_me)).toBe(false);
+    type Row = { member_id: string | null; is_hidden: boolean };
     const { data: ownerXp } = await owner.client.rpc("group_leaderboard", { p_group: groupId, p_board: "xp" });
-    const ids = (ownerXp ?? []).map((r: { member_id: string | null }) => r.member_id);
-    expect(ids).not.toContain(hidden.userId);
-    expect(ids).toContain(null);
+    expect((ownerXp ?? []).find((r: Row) => r.member_id === hidden.userId)?.is_hidden).toBe(true);
+    for (const member of [quiet, streaky]) {
+      const { data: memberXp } = await member.client.rpc("group_leaderboard", { p_group: groupId, p_board: "xp" });
+      const ids = (memberXp ?? []).map((r: Row) => r.member_id);
+      expect(ids).not.toContain(hidden.userId);
+      expect(ids).toContain(null);
+    }
+    // A block either way hides her name from the owner too.
+    expect((await hidden.client.rpc("block_member", { p_user: owner.userId })).error).toBeNull();
+    const { data: blockedXp } = await owner.client.rpc("group_leaderboard", { p_group: groupId, p_board: "xp" });
+    expect((blockedXp ?? []).map((r: Row) => r.member_id)).not.toContain(hidden.userId);
+    expect((await hidden.client.rpc("unblock_member", { p_user: owner.userId })).error).toBeNull();
 
     // ---- Together: Sam's 1 and Hana's 1 free day this challenge; never Quinn's.
     await page.goto(`/groups/${groupId}`);

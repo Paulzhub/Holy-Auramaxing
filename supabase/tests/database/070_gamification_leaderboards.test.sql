@@ -7,7 +7,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(36);
+select plan(43);
 
 create function pg_temp.make_user(id uuid, email text) returns void language plpgsql as $$
 declare token text := 'token-' || replace(id::text, '-', '');
@@ -158,6 +158,38 @@ select pg_temp.as_user(:a);
 select ok(:d::uuid = any (pg_temp.ids('xp')), 'Hiding works only while the covenant allows it');
 select pg_temp.as_postgres();
 update public.groups set leaderboard_hiding_allowed = true where id = pg_temp.g();
+
+-- D-088: owners and admins see who is hidden, still marked hidden.
+select pg_temp.as_user(:o);
+select is((select member_id from pg_temp.board('xp') where member_id = :d), :d::uuid,
+  'D-088: the owner sees a hidden member''s id');
+select is((select is_hidden from pg_temp.board('xp') where member_id = :d), true, '... still marked as hidden');
+select pg_temp.as_postgres();
+update public.group_members set role = 'admin' where group_id = pg_temp.g() and user_id = :a;
+select pg_temp.as_user(:a);
+select ok(:d::uuid = any (pg_temp.ids('free_days')), '... and so does an admin');
+select pg_temp.as_postgres();
+update public.group_members set role = 'member' where group_id = pg_temp.g() and user_id = :a;
+select pg_temp.as_user(:a);
+select ok(array_position(coalesce(pg_temp.ids('free_days'), '{}'), :d::uuid) is null,
+  '... and a member again gets no id');
+select pg_temp.as_user(:b);
+select is((select count(*) from pg_temp.board('xp') where is_hidden and member_id is null), 1::bigint,
+  'A plain member still gets the hidden place without an id');
+-- A block either way hides the name from the owner too.
+select pg_temp.as_postgres();
+insert into public.blocks (blocker_id, blocked_id) values (:d, :o);
+select pg_temp.as_user(:o);
+select ok(array_position(coalesce(pg_temp.ids('xp'), '{}'), :d::uuid) is null,
+  'A block either way hides a hidden member from the owner too');
+select pg_temp.as_postgres();
+delete from public.blocks where blocker_id = :d and blocked_id = :o;
+insert into public.blocks (blocker_id, blocked_id) values (:o, :x);
+select pg_temp.as_user(:o);
+select ok(array_position(coalesce(pg_temp.ids('xp'), '{}'), :x::uuid) is null,
+  '... and a blocked member who isn''t hidden is nameless to the owner as before');
+select pg_temp.as_postgres();
+delete from public.blocks where blocker_id = :o and blocked_id = :x;
 
 -- Paging: a page plus my own row.
 select pg_temp.as_user(:o);

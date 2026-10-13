@@ -43,7 +43,12 @@ export function JoinForm({
         error={err("shareLevel")}
       />
       {hidingAllowed ? (
-        <Checkbox id="join-leaderboardHidden" name="leaderboardHidden" label={t("fields.leaderboardHidden")} />
+        <Checkbox
+          id="join-leaderboardHidden"
+          name="leaderboardHidden"
+          label={t("fields.leaderboardHidden")}
+          hint={t("fields.leaderboardHiddenHint")}
+        />
       ) : null}
       <Checkbox id="join-accept" name="accept" label={t("join.accept")} required error={err("accept")} />
       {needsApproval ? <p className="text-muted">{t("join.approvalNote")}</p> : null}
