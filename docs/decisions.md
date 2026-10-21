@@ -825,3 +825,34 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Email:** React Email (`src/emails/notification.tsx`), sender "Holy Auramaxing", one line, a button into the app, and **one-click unsubscribe per type (RFC 8058)**: `List-Unsubscribe` and `List-Unsubscribe-Post: List-Unsubscribe=One-Click` point at `/api/notify/unsubscribe`, whose POST turns that type's email off (or the digest); the body's link opens `/unsubscribe`, a confirmation page with one button. Links are signed (HMAC-SHA256 with a key derived from `APP_ENCRYPTION_KEY`, D-025), so they need no session and can't be moved to another person or type; a GET only shows the page, so mail scanners change nothing. Security alerts can't be unsubscribed. Gmail's ~500 a day (D-031) is why email is off by default.
 - **Speed:** the worker now keeps reading while it has time, so a big group's follow-on jobs run in the same pass. `npm run bench:notify` seeds 5,000 members, times pages before and during an announcement's fan-out and reports p50/p95. Sandbox, 2026-10-13 (240 requests, 8 at a time): p50 454 / 436 / 406 ms and p95 634 / 726 / 541 ms before / during / after, none failed; 5,000 notifications in 21.8 s.
 - **Tests:** pgTAP `092_notifications_delivery` (32); Vitest `delivery.test.ts` (signed links, 404/410 and retries, the worker's safe paths, no logging of addresses) and the discretion test; e2e `delivery.spec.ts` (a real email from an announcement into Mailpit with RFC 8058 headers, a scanner's GET changing nothing, one click turning it off, a tampered link refused, the page; the explainer after a check-in and "Not now"; the iPhone guide; the manifest and service worker).
+
+## D-093 · Security review 2 · A block never stops moderation (SR2-1, high)
+
+- **Finding:** `delete_post()` and `delete_comment()` reached the post through `visible_post()` / `visible_comment()`, which hide everything between two people who blocked each other (D-078). A member could post something cruel or explicit and then block the owner and every admin: the report still arrived, but **Remove** answered `post_not_found` for all of them, while every other member kept seeing it. Removing the member didn't help (posts stay after their author leaves), so only deleting the group would.
+- **Fix:** `private.moderatable_post()` / `private.moderatable_comment()`: an active owner or admin of the post's own group reaches any post or comment there (not deleted) to remove it, block or not; anyone else goes through the old checks and gets the same `post_not_found`. Reading is unchanged: the block still hides the post from the admin's wall; they reach it from the report. Removals are audited as before.
+- **Migration:** `20261023000100_platform_security_review_2.sql`.
+- **Tests:** pgTAP `083_social_moderation_blocks` (checks 1–12); e2e `wall.spec.ts` "an owner the author blocked still removes the reported post".
+
+## D-094 · Security review 2 · Push only to push services (SR2-2, medium)
+
+- **Finding:** `save_push_subscription()` and the subscribe route accepted any `https://` address as an endpoint, so a member could point "their device" at a home router, a cloud metadata service or another site and make the server POST there on each of their notifications (SSRF), learning from the device list whether it answered 404/410.
+- **Fix:** only `fcm.googleapis.com` (Chrome, Edge on Android, Samsung, Opera, Brave), `updates.push.services.mozilla.com` (Firefox), `web.push.apple.com` (Safari) and `<name>.notify.windows.com` (Edge on Windows), on the default port with no user name. Checked by the Zod schema (`src/lib/push/endpoints.ts`), `util.push_endpoint_ok()` in `save_push_subscription()`, a check constraint on `push_subscriptions` (non-matching rows deleted by the migration), and `sendPush()`, which never contacts anything else and reports it gone. A browser with another push service needs adding in both lists.
+- **Tests:** pgTAP `093_notifications_hardening` (checks 1–10); Vitest `src/features/notifications/push-endpoints.test.ts`. Earlier tests now use real push-service addresses.
+
+## D-095 · Security review 2 · Comments follow their post (SR2-3, low)
+
+- **Finding:** comments under a deleted post (a prayer request taken back, with replies quoting it), under a post whose author blocked the reader, or under a milestone card no longer shown were still readable with `select` through the Data API.
+- **Fix:** the `comments: members read` policy also requires the post to be readable to the caller (the posts policy applies inside it).
+- **Tests:** pgTAP `083` (checks 13–16).
+
+## D-096 · Security review 2 · Live channels are listen-only (SR2-4, low)
+
+- **Finding:** live-update pings (D-086, D-089) used public Realtime channels, where anyone with the publishable key can also send. Whoever knew a channel's name (a member removed today keeps it until midnight UTC) could fake pings to every member's open page, each one a server round trip per page. Verified over the socket: 20 of 20 fake pings arrived.
+- **Fix:** `private.ping_group()` and `private.ping_user()` send private messages; the two listeners join with `private: true`; the policy `live pings: listen only` on `realtime.messages` lets `anon` (browsers hold only the publishable key, D-086) and `authenticated` select only on `group:`/`user:` HMAC names. No insert policy exists, so client broadcasts are dropped. Verified again: the fake pings are dropped, the database's still arrive.
+- **Tests:** pgTAP `093` (checks 11–16) and `082` updated; Vitest `src/test/realtime-private.test.ts`; e2e `live.spec.ts` and `notifications.spec.ts` (the live toast).
+
+## D-097 · Security review 2 · A mute stops queued nudges (SR2-5, low)
+
+- **Finding:** the notify worker called `util.takes_nudges(group, user)` with its arguments swapped, so the check always passed and a nudge still queued when its recipient muted nudges was delivered.
+- **Fix:** the arguments are in the right order.
+- **Tests:** pgTAP `093` (checks 17–18).

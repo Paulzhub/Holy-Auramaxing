@@ -2,6 +2,8 @@ import webpush, { WebPushError, type PushSubscription } from "web-push";
 
 import { readPublicEnv, readServerEnv } from "@/lib/env";
 
+import { isPushServiceEndpoint } from "./endpoints";
+
 /**
  * Web Push with VAPID (CLAUDE.md §13, D-092), through the `web-push`
  * package (payload encryption, RFC 8291; VAPID, RFC 8292). Server-only: the
@@ -38,6 +40,9 @@ export async function sendPush(
   options: { urgent: boolean; ttlSeconds: number },
 ): Promise<PushResult> {
   if (!pushConfigured()) return "retry";
+  // Never contact anything but a push service (SR2-2); the database refuses
+  // others too. "gone" deletes the subscription.
+  if (!isPushServiceEndpoint(target.endpoint)) return "gone";
   const subscription: PushSubscription = {
     endpoint: target.endpoint,
     keys: { p256dh: target.p256dh, auth: target.auth },
