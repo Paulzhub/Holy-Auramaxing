@@ -31,8 +31,8 @@ describe("leaderboards: boards and views (§7.6, D-074)", () => {
   });
 
   it("reads the URL safely", () => {
-    expect(parseBoardQuery({ board: "streak", period: "week" })).toEqual({ board: "streak", period: "all", after: 0 });
-    expect(parseBoardQuery({ board: "free_days", period: "week", after: "50" })).toEqual({
+    expect(parseBoardQuery({ board: "3", period: "week" })).toEqual({ board: "streak", period: "all", after: 0 });
+    expect(parseBoardQuery({ board: "4", period: "week", after: "50" })).toEqual({
       board: "free_days",
       period: "week",
       after: 50,
@@ -44,14 +44,22 @@ describe("leaderboards: boards and views (§7.6, D-074)", () => {
     });
     expect(parseBoardQuery({ after: "73" }).after).toBe(50);
     expect(parseBoardQuery({ after: String(MAX_AFTER + PAGE_SIZE) }).after).toBe(0);
-    expect(parseBoardQuery({ board: ["level", "xp"] }).board).toBe("level");
+    expect(parseBoardQuery({ board: ["2", "1"] }).board).toBe("level");
+    // Boards go by number in the address, never by name (privacy review 2, D-098).
+    expect(parseBoardQuery({ board: "streak" }).board).toBe("xp");
   });
 
   it("builds links without defaults", () => {
     expect(boardHref(GROUP, "xp")).toBe(`/groups/${GROUP}/leaderboard`);
     expect(boardHref(GROUP, "xp", "week")).toBe(`/groups/${GROUP}/leaderboard?period=week`);
-    expect(boardHref(GROUP, "level", "week")).toBe(`/groups/${GROUP}/leaderboard?board=level`);
-    expect(boardHref(GROUP, "streak", "all", 100)).toBe(`/groups/${GROUP}/leaderboard?board=streak&after=100`);
+    expect(boardHref(GROUP, "level", "week")).toBe(`/groups/${GROUP}/leaderboard?board=2`);
+    expect(boardHref(GROUP, "streak", "all", 100)).toBe(`/groups/${GROUP}/leaderboard?board=3&after=100`);
+    for (const board of BOARDS) {
+      expect(
+        parseBoardQuery(Object.fromEntries(new URL(boardHref(GROUP, board), "https://x.test").searchParams)).board,
+      ).toBe(board);
+      expect(boardHref(GROUP, board, "week", 50)).not.toMatch(/streak|free|level|encour|xp/);
+    }
   });
 });
 

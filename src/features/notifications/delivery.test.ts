@@ -17,20 +17,69 @@ describe("one-click unsubscribe links (RFC 8058, D-092)", () => {
 
   it("round-trips for a type or the digest", async () => {
     const { unsubscribeQuery, verifyUnsubscribe } = await import("./server/unsubscribe");
-    for (const kind of ["announcement", "digest"]) {
+    for (const kind of ["announcement", "digest", "partner_sos"]) {
       const q = new URLSearchParams(unsubscribeQuery(USER, kind));
-      expect(verifyUnsubscribe({ u: q.get("u"), t: q.get("t"), s: q.get("s") })).toEqual({ userId: USER, kind });
+      expect([...q.keys()]).toEqual(["k"]);
+      expect(verifyUnsubscribe(q.get("k"))).toEqual({ userId: USER, kind });
     }
   });
 
   it("can't be moved to another person or type, or forged", async () => {
-    const { unsubscribeQuery, verifyUnsubscribe } = await import("./server/unsubscribe");
-    const q = new URLSearchParams(unsubscribeQuery(USER, "announcement"));
-    expect(verifyUnsubscribe({ u: OTHER, t: "announcement", s: q.get("s") })).toBeNull();
-    expect(verifyUnsubscribe({ u: USER, t: "nudge", s: q.get("s") })).toBeNull();
-    expect(verifyUnsubscribe({ u: USER, t: "announcement", s: "x".repeat(43) })).toBeNull();
-    expect(verifyUnsubscribe({ u: USER, t: "not_a_type", s: q.get("s") })).toBeNull();
-    expect(verifyUnsubscribe({ u: "nope", t: "announcement", s: q.get("s") })).toBeNull();
+    const { unsubscribeToken, verifyUnsubscribe } = await import("./server/unsubscribe");
+    const k = unsubscribeToken(USER, "announcement");
+    // Any changed character fails the check.
+    for (const i of [0, 14, 30, k.length - 1]) {
+      const flipped = k.slice(0, i) + (k[i] === "A" ? "B" : "A") + k.slice(i + 1);
+      expect(verifyUnsubscribe(flipped)).toBeNull();
+    }
+    expect(verifyUnsubscribe(unsubscribeToken(OTHER, "announcement"))).toEqual({ userId: OTHER, kind: "announcement" });
+    expect(verifyUnsubscribe(unsubscribeToken(USER, "not_a_type"))).toBeNull();
+    expect(verifyUnsubscribe("x".repeat(43))).toBeNull();
+    expect(verifyUnsubscribe("x".repeat(400))).toBeNull();
+    expect(verifyUnsubscribe(null)).toBeNull();
+  });
+
+  it("says nothing readable: no account id, no type (privacy review 2, D-098)", async () => {
+    const { unsubscribeQuery } = await import("./server/unsubscribe");
+    for (const kind of ["streak_at_risk", "partner_sos", "partner_missed", "digest"]) {
+      const query = unsubscribeQuery(USER, kind);
+      expect(query).not.toContain(USER);
+      expect(query).not.toContain(USER.replace(/-/g, ""));
+      expect(query).not.toMatch(/streak|partner|sos|missed|digest|u=|t=/i);
+      // A fresh value every time, so two emails can't be matched up by their links.
+      expect(unsubscribeQuery(USER, kind)).not.toBe(query);
+    }
+  });
+
+  it("every link in every notification email, and its List-Unsubscribe header, says nothing (D-098)", async () => {
+    const { notificationEmailLinks } = await import("./server/unsubscribe");
+    const { emailWords } = await import("./outbound");
+    const { NOTIFICATION_TYPE_LIST } = await import("./constants");
+    const { renderNotificationEmail } = await import("@/emails/notification");
+    const { SENSITIVE_WORDS } = await import("@/lib/discretion");
+    for (const type of NOTIFICATION_TYPE_LIST) {
+      for (const discreet of [true, false]) {
+        const words = emailWords({
+          type,
+          data: { groupName: "NoFap Brothers" },
+          discreet,
+          actorName: "Sam",
+          groupId: "0199a000-0000-7000-8000-000000000001",
+        });
+        const { oneClick, ...links } = notificationEmailLinks("https://example.test", USER, type, words.url);
+        const email = await renderNotificationEmail(words, links);
+        // The raw HTML, attributes and all: what a mail app shows on hover.
+        for (const [where, text] of [
+          [`${type} html`, email.html],
+          [`${type} text`, email.text],
+          [`${type} List-Unsubscribe`, oneClick],
+        ] as const) {
+          expect(text, where).not.toMatch(SENSITIVE_WORDS);
+          expect(text, where).not.toContain(USER);
+          expect(text, where).not.toMatch(/[?&](u|t)=/);
+        }
+      }
+    }
   });
 
   it("a GET only shows the confirmation page; the change needs a POST", () => {

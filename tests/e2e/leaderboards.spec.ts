@@ -82,7 +82,7 @@ test.describe("Leaderboards, Together and the group goal", () => {
     // marked "Hidden from members", D-088), never Quinn.
     const board = page.getByTestId("leaderboard");
     await expect(async () => {
-      await page.goto(`/groups/${groupId}/leaderboard?board=streak`);
+      await page.goto(`/groups/${groupId}/leaderboard?board=3`);
       await expect(board.getByText("Sam Streak")).toBeVisible({ timeout: 1_000 });
       await expect(board.getByText("3 days")).toBeVisible({ timeout: 1_000 });
     }).toPass({ timeout: 60_000, intervals: [2_000, 3_000, 5_000] });
@@ -91,12 +91,12 @@ test.describe("Leaderboards, Together and the group goal", () => {
     await expect(board.getByText("Hidden member")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Current streak" })).toHaveAttribute("aria-current", "page");
     await expect(page).toHaveTitle(/^Leaderboard \|/);
-    for (const tab of ["level", "free_days"]) {
+    for (const tab of ["2", "4"]) {
       await page.goto(`/groups/${groupId}/leaderboard?board=${tab}`);
       await expect(board).toBeVisible();
       await expect(page.getByText("Quinn Quiet"), tab).toHaveCount(0);
     }
-    await page.goto(`/groups/${groupId}/leaderboard?board=free_days&period=week`);
+    await page.goto(`/groups/${groupId}/leaderboard?board=4&period=week`);
     await expect(page.getByText("Quinn Quiet")).toHaveCount(0);
 
     // ---- Consistency XP and Encourager: everyone, Quinn included.
@@ -105,7 +105,7 @@ test.describe("Leaderboards, Together and the group goal", () => {
       await expect(board.getByText("Quinn Quiet")).toBeVisible({ timeout: 1_000 });
     }).toPass({ timeout: 30_000, intervals: [2_000, 3_000] });
     await expect(board.getByText("Hidden from members")).toHaveCount(1);
-    await page.goto(`/groups/${groupId}/leaderboard?board=encourager`);
+    await page.goto(`/groups/${groupId}/leaderboard?board=5`);
     await expect(board.getByText("Quinn Quiet")).toBeVisible();
     await expectNoAxeViolations(page, "leaderboard");
     await page.setViewportSize({ width: 320, height: 720 });

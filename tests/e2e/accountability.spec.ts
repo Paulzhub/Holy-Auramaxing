@@ -210,11 +210,12 @@ test.describe("Nudges, partners and milestones", () => {
     await expect(page.getByText("Your partner has been asked to pray for you.")).toBeVisible();
     const { data: theirs } = await partner.client.rpc("my_nudges", { p_group: groupId });
     expect((theirs as { kind: string }[]).map((n) => n.kind)).toEqual(["pray_for_me"]);
-    // The address says nothing about the answer (D-055).
-    expect(page.url()).not.toMatch(/slip|mercies/);
+    // The address says nothing about the answer (D-055), nor that this card was used (D-098).
+    expect(page.url()).toMatch(/\/check-in\/done\?date=\d{4}-\d{2}-\d{2}$/);
 
     await page.getByRole("button", { name: "Ask my group to pray" }).click();
     await expect(page.getByText("Your prayer request is on your group's wall.")).toBeVisible();
+    expect(page.url()).toMatch(/\/check-in\/done\?date=\d{4}-\d{2}-\d{2}$/);
     await expectNoAxeViolations(page, "slip page with the prayer card");
     await at320(page, "slip page");
     await page.goto(`/groups/${groupId}/wall?kind=prayer_request`);

@@ -89,7 +89,10 @@ test.describe("Delivery", () => {
     >;
     expect(headers["List-Unsubscribe-Post"]?.[0]).toBe("List-Unsubscribe=One-Click");
     const oneClick = /<(https?:\/\/[^>]+)>/.exec(headers["List-Unsubscribe"]?.[0] ?? "")?.[1];
-    expect(oneClick).toMatch(/\/api\/notify\/unsubscribe\?u=/);
+    // One opaque value: no account id or type in the link (privacy review 2, D-098).
+    expect(oneClick).toMatch(/\/api\/notify\/unsubscribe\?k=[A-Za-z0-9_-]+$/);
+    expect(oneClick).not.toContain(friend.userId);
+    expect(oneClick).not.toMatch(/announcement/);
 
     // A GET (a link scanner) changes nothing.
     const scanned = await request.get(oneClick!.replace(/^https?:\/\/[^/]+/, ""), { maxRedirects: 0 });
@@ -108,7 +111,7 @@ test.describe("Delivery", () => {
 
     // A tampered link does nothing.
     const tampered = await request.post(
-      oneClick!.replace(/^https?:\/\/[^/]+/, "").replace(/t=announcement/, "t=nudge"),
+      oneClick!.replace(/^https?:\/\/[^/]+/, "").replace(/k=(.)/, (_, c: string) => `k=${c === "A" ? "B" : "A"}`),
       { data: "List-Unsubscribe=One-Click" },
     );
     expect(tampered.status()).toBe(400);

@@ -122,6 +122,17 @@ test.describe("Check-ins", () => {
     await reflection.getByLabel("Your reflection").fill("late scrolling, alone");
     await reflection.getByRole("button", { name: "Save my reflection" }).click();
     await expect(page.getByText("Saved. Only you can read it.")).toBeVisible();
+    // Back on the very same address: nothing in the history says a reflection
+    // (offered only after a slip) was saved (privacy review 2, D-098).
+    expect(new URL(page.url()).pathname + new URL(page.url()).search).toBe(`/check-in/done?date=${kolkataDate()}`);
+    expect(new URL(page.url()).hash).toBe("");
+    // ... and nothing new in the security log either (D-099).
+    const { data: auditsAfter } = await admin()
+      .from("audit_log")
+      .select("action, metadata")
+      .eq("actor_id", me.userId)
+      .like("action", "checkin.%");
+    expect(auditsAfter).toEqual([{ action: "checkin.edited", metadata: {} }]);
     const { data: after } = await admin()
       .from("checkins")
       .select("outcome, note_encrypted, triggers")
