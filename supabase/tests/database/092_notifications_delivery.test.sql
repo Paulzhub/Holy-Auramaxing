@@ -47,7 +47,7 @@ select pg_temp.make_user(:c, 'cara@example.test');
 -- ---------------------------------------------------------------- devices
 
 select pg_temp.as_user(:a);
-select lives_ok($$select public.save_push_subscription('https://push.example.test/a1', 'BAAAAAAAAAAAAAAAAAAAAAAAAAA', 'AAAAAAAAAA', 'Chrome on Android')$$,
+select lives_ok($$select public.save_push_subscription('https://fcm.googleapis.com/fcm/send/a1', 'BAAAAAAAAAAAAAAAAAAAAAAAAAA', 'AAAAAAAAAA', 'Chrome on Android')$$,
   'Saving this browser''s push subscription');
 select is((select count(*) from public.push_subscriptions), 1::bigint, '... I see my device');
 select is((select user_agent from public.push_subscriptions), 'Chrome on Android', '... by its label');
@@ -61,12 +61,12 @@ select throws_ok($$select public.notify_configure('http://x.test/api/notify/deli
 select pg_temp.as_user(:b);
 select is((select count(*) from public.push_subscriptions), 0::bigint, 'Nobody else sees my devices');
 -- The same browser, now signed in as b: the endpoint moves to b.
-select public.save_push_subscription('https://push.example.test/a1', 'BAAAAAAAAAAAAAAAAAAAAAAAAAA', 'AAAAAAAAAA', 'Chrome on Android');
+select public.save_push_subscription('https://fcm.googleapis.com/fcm/send/a1', 'BAAAAAAAAAAAAAAAAAAAAAAAAAA', 'AAAAAAAAAA', 'Chrome on Android');
 select pg_temp.as_postgres();
-select is((select user_id from public.push_subscriptions where endpoint = 'https://push.example.test/a1'), :b::uuid,
+select is((select user_id from public.push_subscriptions where endpoint = 'https://fcm.googleapis.com/fcm/send/a1'), :b::uuid,
   'An endpoint belongs to one browser: it moves to whoever saved it last');
 select pg_temp.as_user(:b);
-select public.save_push_subscription('https://push.example.test/b' || i, 'BAAAAAAAAAAAAAAAAAAAAAAAAAA', 'AAAAAAAAAA', null)
+select public.save_push_subscription('https://fcm.googleapis.com/fcm/send/b' || i, 'BAAAAAAAAAAAAAAAAAAAAAAAAAA', 'AAAAAAAAAA', null)
   from generate_series(1, 11) i;
 select is((select count(*) from public.push_subscriptions), 10::bigint, 'At most 10 devices; the oldest goes');
 select pg_temp.as_postgres();
@@ -77,7 +77,7 @@ select pg_temp.as_postgres();
 
 -- ---------------------------------------------------------------- claiming and finishing
 
-insert into public.push_subscriptions (user_id, endpoint, p256dh, auth) values (:a, 'https://push.example.test/a2', 'k', 'a');
+insert into public.push_subscriptions (user_id, endpoint, p256dh, auth) values (:a, 'https://fcm.googleapis.com/fcm/send/a2', 'k', 'a');
 select private.deliver(array[:a]::uuid[], 'nudge', null, :b, '{"kind":"praying"}'::jsonb, 'claim:1');
 insert into public.notification_preferences (user_id, type, channel, enabled) values (:a, 'announcement', 'email', true);
 select private.deliver(array[:a]::uuid[], 'announcement', null, :b, '{}'::jsonb, 'claim:2');
@@ -100,9 +100,9 @@ select pg_temp.as_service();
 select is((select count(*) from public.notify_claim(50)), 3::bigint, '... unless a sender died: after two minutes they come back');
 select is(public.notify_finish(jsonb_build_array(
   jsonb_build_object('id', (select delivery_id from claimed where type = 'nudge' and channel = 'push'), 'status', 'sent',
-                     'used', jsonb_build_array('https://push.example.test/a2')),
+                     'used', jsonb_build_array('https://fcm.googleapis.com/fcm/send/a2')),
   jsonb_build_object('id', (select delivery_id from claimed where type = 'announcement' and channel = 'push'),
-                     'status', 'retry', 'reason', 'push_error', 'gone', jsonb_build_array('https://push.example.test/a2')),
+                     'status', 'retry', 'reason', 'push_error', 'gone', jsonb_build_array('https://fcm.googleapis.com/fcm/send/a2')),
   jsonb_build_object('id', (select delivery_id from claimed where channel = 'email'), 'status', 'failed', 'reason', 'no_address')
 )), 3, 'Recording three results');
 select pg_temp.as_postgres();
@@ -112,7 +112,7 @@ select is((select status from private.notification_deliveries where id = (select
   'ready', 'A retry is ready again');
 select is((select status || ':' || reason from private.notification_deliveries where id = (select delivery_id from claimed where channel = 'email')),
   'failed:no_address', 'A failure is kept with its reason');
-select is((select count(*) from public.push_subscriptions where endpoint = 'https://push.example.test/a2'), 0::bigint,
+select is((select count(*) from public.push_subscriptions where endpoint = 'https://fcm.googleapis.com/fcm/send/a2'), 0::bigint,
   'A subscription the push service called gone (404/410) is deleted at once');
 update private.notification_deliveries set attempts = 5, status = 'sending' where id = (select delivery_id from claimed where type = 'announcement' and channel = 'push');
 select pg_temp.as_service();
@@ -140,7 +140,7 @@ select pg_temp.as_service();
 select public.notify_configure('http://host.docker.internal:3000/api/notify/deliver', repeat('s', 40));
 select pg_temp.as_postgres();
 select private.deliver(array[:c]::uuid[], 'security', null, null, '{"what":"new_login"}'::jsonb, null);
-insert into public.push_subscriptions (user_id, endpoint, p256dh, auth) values (:c, 'https://push.example.test/c1', 'k', 'a');
+insert into public.push_subscriptions (user_id, endpoint, p256dh, auth) values (:c, 'https://fcm.googleapis.com/fcm/send/c1', 'k', 'a');
 select private.deliver(array[:c]::uuid[], 'security', null, null, '{"what":"new_login"}'::jsonb, null);
 select ok(private.kick_sender() is not null, 'Something ready and configured: pg_net is asked to call the sender');
 

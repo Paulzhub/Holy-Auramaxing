@@ -85,7 +85,8 @@ export function LiveAlerts({ topic, labels }: { topic: string | null; labels: { 
       if (!topic || !realtimeEnabled()) return;
       const client = await getRealtime();
       if (stopped || !client) return;
-      const channel = client.channel(topic, { config: { broadcast: { self: false } } });
+      // Private: listen-only for browsers (SR2-4, D-096); only the database sends.
+      const channel = client.channel(topic, { config: { broadcast: { self: false }, private: true } });
       channel
         .on("broadcast", { event: "changed" }, (message: { payload?: { what?: unknown } }) => {
           if (message.payload?.what === "alerts") soon();

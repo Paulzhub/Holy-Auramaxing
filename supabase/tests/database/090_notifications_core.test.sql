@@ -50,7 +50,7 @@ create function pg_temp.delivery(uid uuid, t text, ch text) returns text languag
 $$;
 create function pg_temp.device(uid uuid) returns void language sql as $$
   insert into public.push_subscriptions (user_id, endpoint, p256dh, auth)
-  values (uid, 'https://push.example.test/' || uid, 'key', 'auth');
+  values (uid, 'https://fcm.googleapis.com/fcm/send/' || uid, 'key', 'auth');
 $$;
 create function pg_temp.post(author uuid, k text) returns uuid language sql as $$
   insert into public.posts (group_id, author_id, kind, body) values (pg_temp.g(), author, k, 'Words.') returning id

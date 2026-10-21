@@ -270,6 +270,16 @@ A review of what people near the user could see, and of data we hold but don't n
 | **E**levation of privilege | A push opening another site                                   | The service worker opens only paths inside the app (`safePath`, Vitest); payloads carry paths built from validated UUIDs                                                                                                               |
 | **T**ampering              | A stale service worker staying on devices                     | `/sw.js` is served `no-cache, no-store` with its own CSP, `skipWaiting` and `clients.claim`; it caches nothing until Phase 10                                                                                                          |
 
+## Security review 2 additions (D-093 to D-097)
+
+| STRIDE                     | Threat                                                                      | Mitigation                                                                                                                                                                                                                                 |
+| -------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **E**levation of privilege | A member blocking every admin so their cruel post can't be removed          | `moderatable_post` / `moderatable_comment`: the group's own owners and admins reach any post or comment there to remove it, block or not; everyone else gets `post_not_found` as before; removals audited (D-093, pgTAP `083`, e2e `wall`) |
+| **T**ampering              | A "device" pointed at a home router or metadata service (SSRF via Web Push) | Endpoints only on the browsers' push services, default port, no user name: Zod, `save_push_subscription`, a table constraint and `sendPush` itself (D-094, pgTAP `093`, Vitest `push-endpoints`)                                           |
+| **I**nformation disclosure | Reading comments under a deleted or hidden post through the Data API        | The comments policy requires the post to be readable to the caller (D-095)                                                                                                                                                                 |
+| **D**enial of service      | Faking live-update pings to every member's open page                        | Private Realtime messages; browsers may only listen, only on our channel names; no insert policy (D-096, pgTAP `093`, Vitest `realtime-private`)                                                                                           |
+| **T**ampering              | A nudge still queued when its recipient mutes nudges                        | The worker checks the mute with the right arguments (D-097)                                                                                                                                                                                |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -297,6 +307,7 @@ A review of what people near the user could see, and of data we hold but don't n
 - The QR decode check (jsQR at three sizes) runs by hand, not in CI (D-037).
 - Until there is hosting with `CRON_SECRET`, photos of erased accounts wait in the private bucket (nothing can serve them); run `npm run accounts:purge` locally (D-033).
 - Export and deletion don't ask for a fresh sign-in (owner's choice); revisit with the app lock (D-032).
+- A new browser push service (beyond FCM, Mozilla, Apple and WNS) must be added to both `util.push_endpoint_ok` and `src/lib/push/endpoints.ts`, or those browsers can't turn push on (D-094).
 - Owner, before launch (privacy review 1): a domain without "xxx" or the topic; the Google OAuth consent screen named "Holy Auramaxing"; keep `.env.local` out of OneDrive.
 - Phase 7 must add every notification, push and digest template to `src/test/discretion.test.ts`; Phase 9's manifest uses "Holy Auramaxing" and `start_url` `/home`; Phase 12's Sentry scrubs query strings and request bodies (D-055).
 - The app lock (Phase 10) is the main protection when someone else holds the unlocked phone; until then Home and Progress are one tap away.

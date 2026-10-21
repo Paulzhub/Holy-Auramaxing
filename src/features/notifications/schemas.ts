@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { PUSH_ENDPOINT } from "@/lib/push/endpoints";
+
 import { DIGEST_MODES } from "./constants";
 
 export const uuidSchema = z.uuid();
@@ -29,10 +31,7 @@ export function parseCursor(before: unknown, id: unknown): { at: string; id: str
 
 /** A browser's PushSubscription.toJSON(), as the subscribe route receives it. */
 export const pushSubscriptionSchema = z.object({
-  endpoint: z
-    .string()
-    .max(1000)
-    .regex(/^https:\/\/[^\s]+$/),
+  endpoint: z.string().max(1000).regex(PUSH_ENDPOINT),
   keys: z.object({
     p256dh: z.string().regex(/^[A-Za-z0-9_-]{20,200}={0,2}$/),
     auth: z.string().regex(/^[A-Za-z0-9_-]{8,100}={0,2}$/),
@@ -40,8 +39,5 @@ export const pushSubscriptionSchema = z.object({
 });
 
 export const pushEndpointSchema = z.object({
-  endpoint: z
-    .string()
-    .max(1000)
-    .regex(/^https:\/\/[^\s]+$/),
+  endpoint: z.string().max(1000).regex(PUSH_ENDPOINT),
 });

@@ -52,7 +52,7 @@ describe("Web Push (D-092)", () => {
     process.env.VAPID_SUBJECT = "mailto:test@example.test";
     const { WebPushError } = await import("web-push");
     const { sendPush } = await import("@/lib/push/web-push");
-    const target = { endpoint: "https://push.example.test/abc", p256dh: "k", auth: "a" };
+    const target = { endpoint: "https://fcm.googleapis.com/fcm/send/abc", p256dh: "k", auth: "a" };
     for (const [status, expected] of [
       [410, "gone"],
       [404, "gone"],

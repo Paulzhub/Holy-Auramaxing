@@ -80,8 +80,8 @@ select pg_temp.set('p', public.create_post(pg_temp.get('g'), 'prayer_request', '
 select pg_temp.as_postgres();
 select results_eq(
   format($$ select event, private, payload - 'id' from realtime.messages where topic = %L $$, current_setting('test.topic')),
-  $$ values ('changed'::text, false, '{"what": "wall"}'::jsonb) $$,
-  'A new post sends one ping that says only "the wall changed"');
+  $$ values ('changed'::text, true, '{"what": "wall"}'::jsonb) $$,
+  'A new post sends one private ping that says only "the wall changed" (listen-only for browsers, D-096)');
 select is((select count(*) from realtime.messages where payload::text like '%private about my week%'), 0::bigint,
   '... never the words');
 delete from realtime.messages where topic = current_setting('test.topic');
