@@ -14,18 +14,16 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: NextRequest) {
   const url = new URL(request.url);
-  const link = verifyUnsubscribe({
-    u: url.searchParams.get("u"),
-    t: url.searchParams.get("t"),
-    s: url.searchParams.get("s"),
-  });
+  const link = verifyUnsubscribe(url.searchParams.get("k"));
   if (!link) return reply("invalid", 400);
   return (await applyUnsubscribe(link.userId, link.kind)) ? reply("ok", 200) : reply("invalid", 400);
 }
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
-  const target = new URL(`/unsubscribe${url.search}`, siteOrigin(url.origin));
+  // Only the opaque link value goes on (D-098), nothing else from the address.
+  const k = url.searchParams.get("k");
+  const target = new URL(`/unsubscribe${k ? `?${new URLSearchParams({ k })}` : ""}`, siteOrigin(url.origin));
   const response = NextResponse.redirect(target, { status: 303 });
   response.headers.set("Cache-Control", "no-store");
   response.headers.set("Referrer-Policy", "no-referrer");

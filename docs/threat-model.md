@@ -280,6 +280,16 @@ A review of what people near the user could see, and of data we hold but don't n
 | **D**enial of service      | Faking live-update pings to every member's open page                        | Private Realtime messages; browsers may only listen, only on our channel names; no insert policy (D-096, pgTAP `093`, Vitest `realtime-private`)                                                                                           |
 | **T**ampering              | A nudge still queued when its recipient mutes nudges                        | The worker checks the mute with the right arguments (D-097)                                                                                                                                                                                |
 
+## Privacy review 2 additions (D-098 to D-102)
+
+| STRIDE                     | Threat                                                                                           | Mitigation                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | Browser history and request logs show slip days through the slip page's own forms (PR2-1)        | Results in a one-minute httpOnly cookie, same address back (D-098); `discretion.test.ts`, e2e `checkins`, `accountability` |
+| **I**nformation disclosure | Email links and List-Unsubscribe headers name the account and the type (`partner_sos`) (PR2-2)   | One opaque, encrypted `?k=` value, new in every email (D-098); Vitest `delivery.test.ts`                                   |
+| **I**nformation disclosure | The security log marks slip days through reflection entries, for platform admins to read (PR2-3) | Reflections aren't audited (D-099); pgTAP `094`                                                                            |
+| **I**nformation disclosure | A quiet member's group learns from a live ping that their answer changed (PR2-5)                 | A changed answer pings only groups that see it (D-101); pgTAP `094`                                                        |
+| **I**nformation disclosure | Old nudges date slips; a partner learns they were blocked or that the other is leaving (PR2-6)   | 90-day retention; `ended_reason` not readable through the API (D-100); pgTAP `094`                                         |
+
 ## Headers sent on every response
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
@@ -298,6 +308,7 @@ A review of what people near the user could see, and of data we hold but don't n
 - Rejected photos are deleted immediately. Phase 11's written CSAM procedure must decide whether flagged images are preserved for reporting (NCMEC, cybercrime.gov.in) instead.
 - Avatar screening runs in `after()` until Phase 7's job queue exists; a photo left pending is retried when its owner opens their profile (D-026).
 - Security emails are sent in `after()` until Phase 7's job queue; a crash at that moment loses one alert (D-030).
+- While email goes through Gmail SMTP, the sending account's Sent folder keeps every message: members' addresses and, once Supabase Auth uses it, sign-in and reset links. Two-step verification on that account; move to Resend or SES with a domain (privacy review 2).
 - Until there is a domain, email goes through a dedicated Gmail account over SMTP (D-031). Its app password is a mailbox credential: keep it only in the host's environment and Supabase, and use that account for nothing else. Move to Resend with a verified domain when the app grows.
 - Passkeys are a Supabase beta; set the production relying party (domain) in the dashboard, and keep `PASSKEYS_ENABLED` as the kill switch (D-029).
 - Supabase's native MFA recovery codes are experimental and off locally; ours replace them for now (D-028).

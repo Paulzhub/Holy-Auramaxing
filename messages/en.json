@@ -530,7 +530,7 @@
   "legal": {
     "draftNotice": "Draft: this page is waiting for legal review and may change before launch.",
     "updated": "Last updated {date}",
-    "updatedDate": "8 October 2026",
+    "updatedDate": "21 October 2026",
     "privacy": {
       "short": "Privacy",
       "title": "Privacy Policy",
@@ -542,7 +542,7 @@
         },
         "whatWeCollectAndWhy": {
           "heading": "What we collect, and why",
-          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account. If you sign in with Google, we keep only your email address from Google, not your name or photo.\n\nYour profile: the photo, bio, testimony and favourite verse you add, shown only to the people you choose.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nSecurity records: sign-ins, password changes, exports and deletions, with a rough device name such as “Chrome on Android”, kept for one year to protect your account. We do not keep your IP address: our sign-in provider sees it while you sign in, and we clear it within the hour."
+          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account. If you sign in with Google, we keep only your email address from Google, not your name or photo.\n\nYour profile: the photo, bio, testimony and favourite verse you add, shown only to the people you choose.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nYour progress: your level, XP and badges, worked out from your check-ins. A group sees your level and badges only if you share at least your streak with it, and your check-in details only at the level you choose for that group.\n\nEncouragement: the nudges you send and receive (kept for 90 days), and accountability partners you choose together. A partner sees your full check-ins in that group, and, only if you allow it, is told when you miss two days or ask for prayer.\n\nNotifications: what we have to tell you, kept for 90 days, and your choices about them. If you turn on push, your browser's push service (Google, Mozilla, Apple or Microsoft, depending on your browser) receives an encrypted message it can't read and the address of your device for it.\n\nSecurity records: sign-ins, password changes, exports and deletions, with a rough device name such as “Chrome on Android”, kept for one year to protect your account. We do not keep your IP address: our sign-in provider sees it while you sign in, and we clear it within the hour."
         },
         "whatWeNeverDo": {
           "heading": "What we never do",
@@ -550,11 +550,11 @@
         },
         "whoProcessesDataForUs": {
           "heading": "Who processes data for us",
-          "body": "Supabase (database and sign-in, hosted in Mumbai, India), Cloudflare (bot protection), Google Cloud Vision (checks uploaded profile and group pictures for explicit images; it receives only the picture), Google (only if you choose to sign in with Google), our email provider, and our web host. Each processes data only on our instructions under a data processing agreement."
+          "body": "Supabase (database and sign-in, hosted in Mumbai, India), Cloudflare (bot protection), Google Cloud Vision (checks uploaded profile and group pictures for explicit images; it receives only the picture), Google (only if you choose to sign in with Google), the browser push services named above (only if you turn on push), our email provider (for now Google's Gmail), and our web host. Each processes data only on our instructions under a data processing agreement."
         },
         "howLongWeKeepIt": {
           "heading": "How long we keep it",
-          "body": "While your account is open. If you delete your account, we wait 14 days in case you change your mind, then permanently delete your personal data. Anything you posted in a group is anonymised. Backups roll over within 30 days."
+          "body": "While your account is open, except notifications and nudges, which we keep for 90 days, and security records, kept for one year. If you delete your account, we wait 14 days in case you change your mind, then permanently delete your personal data. Anything you posted in a group is anonymised. Backups roll over within 30 days."
         },
         "yourRights": {
           "heading": "Your rights",
@@ -608,7 +608,7 @@
         },
         "discreetEverywhere": {
           "heading": "Discreet everywhere",
-          "body": "Browser tabs, emails and notifications use the name “Holy Auramaxing” and never mention what the app is about."
+          "body": "Browser tabs, the addresses in your browser history, emails, their links and notifications use the name “Holy Auramaxing” and never mention what the app is about, or how a day went."
         },
         "yoursToTakeOrDelete": {
           "heading": "Yours to take or delete",

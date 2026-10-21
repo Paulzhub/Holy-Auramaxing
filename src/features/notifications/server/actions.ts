@@ -162,11 +162,7 @@ export async function saveGroupMutesAction(formData: FormData): Promise<void> {
 
 /** "Stop these emails" from the confirmation page: the signed link decides, no session needed. */
 export async function unsubscribeAction(formData: FormData): Promise<void> {
-  const link = verifyUnsubscribe({
-    u: String(formData.get("u") ?? ""),
-    t: String(formData.get("t") ?? ""),
-    s: String(formData.get("s") ?? ""),
-  });
+  const link = verifyUnsubscribe(String(formData.get("k") ?? ""));
   if (!link || !(await applyUnsubscribe(link.userId, link.kind))) return go("/unsubscribe?status=invalid");
   return go("/unsubscribe?status=done");
 }

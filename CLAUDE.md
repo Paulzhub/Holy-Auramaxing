@@ -243,7 +243,8 @@ Theme (light, dark, system), language, time zone, reminder time, notifications, 
 - **Privacy by design:** collect the minimum; no third-party trackers, ad pixels or fingerprinting; cookieless analytics; essential cookies only; never sell or share data; never train AI on user content.
 - **Pages:** Privacy Policy, Terms, Community Guidelines, Accessibility Statement, Security, and a plain-language "Your data" page. Mark them as drafts pending legal review.
 - **No health claims:** never claim to treat or cure addiction; state that the app is not a substitute for professional help.
-- **Retention defaults:** notifications 90 days; dead push subscriptions removed immediately; audit logs 1 year; deleted accounts purged after the 14-day grace period and backup rotation.
+- **Retention defaults:** notifications, nudges and ended partnerships 90 days; dead push subscriptions removed immediately; audit logs 1 year; the scheduler's run log 7 days; deleted accounts purged after the 14-day grace period and backup rotation (D-100).
+- **Addresses and links stay neutral:** no URL, query or fragment may say which answer someone gave or what the app is about; a form's result on an answer-dependent page travels in a one-minute cookie, and email links carry only opaque values (D-098).
 
 ## 12. SEO and GEO (generative engine optimisation)
 
