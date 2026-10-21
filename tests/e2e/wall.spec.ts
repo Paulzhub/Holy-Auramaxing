@@ -332,4 +332,35 @@ test.describe("The encouragement wall", () => {
     await expect(page.getByText("Report closed as dealt with.")).toBeVisible();
     await expect(page.getByText("No open reports. Thank you for looking after your group.")).toBeVisible();
   });
+
+  // Security review 2, SR2-1 (D-093): blocking the owner doesn't make a post permanent.
+  test("an owner the author blocked still removes the reported post", async ({ page }) => {
+    const owner = await apiAs(await signInNewMember(page, "wall-sr21-owner"));
+    const groupId = await createGroupAs(owner, "Kept Kind");
+    const { token } = await createInviteAs(owner, groupId);
+    const unkind = await newMember("wall-sr21-unkind");
+    const witness = await newMember("wall-sr21-witness");
+    await joinAs(unkind, token);
+    await joinAs(witness, token);
+    const postId = await post(unkind, groupId, "encouragement", "Something cruel about a member.");
+    expect((await unkind.client.rpc("block_member", { p_user: owner.userId })).error).toBeNull();
+    const { error } = await witness.client.rpc("report_content", {
+      p_group: groupId,
+      p_target_type: "post",
+      p_target: postId,
+      p_reason: "unkind",
+      p_note: null,
+    });
+    expect(error).toBeNull();
+
+    await page.goto(`/groups/${groupId}/moderation`);
+    const list = page.getByTestId("report-list");
+    await expect(list.getByText("Something cruel about a member.")).toBeVisible();
+    await list.getByText("Remove", { exact: true }).click();
+    await list.getByRole("button", { name: "Yes, remove it" }).click();
+    await expect(page.getByText("Deleted.", { exact: true })).toBeVisible();
+    // Gone for everyone, including the member who reported it.
+    const { data: wall } = await witness.client.rpc("group_wall", { p_group: groupId });
+    expect((wall as { id: string }[]).map((p) => p.id)).not.toContain(postId);
+  });
 });
