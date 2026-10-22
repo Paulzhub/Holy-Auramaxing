@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 
 import { buttonVariants } from "@/components/ui/button-variants";
+import { FocusOnArrival } from "@/components/ui/focus-on-arrival";
 import { requireAccount } from "@/features/auth";
 import {
   CheckinErrorBanner,
@@ -19,6 +20,7 @@ import { getMyGroups } from "@/features/groups";
 import { getPushDevices, PushExplainer } from "@/features/notifications";
 import { AskForPrayerCard, getMyActivePartners } from "@/features/social";
 import { Link, redirect } from "@/i18n/navigation";
+import { readFlash } from "@/lib/server/flash";
 
 // A neutral tab title for both answers: never anything about a slip (§2.3).
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("checkIn") };
 }
 
-type SearchParams = Promise<{ date?: string; saved?: string; error?: string; prayer?: string }>;
+type SearchParams = Promise<{ date?: string }>;
 type Overview = Awaited<ReturnType<typeof getCheckinOverview>>;
 type Checkin = NonNullable<Awaited<ReturnType<typeof getCheckinFor>>>;
 
@@ -34,7 +36,9 @@ type Checkin = NonNullable<Awaited<ReturnType<typeof getCheckinFor>>>;
  * After a check-in (CLAUDE.md §7.5). One address for both answers, so the
  * browser history, the address bar and the host's request logs never show
  * which answer someone gave (privacy review 1, D-055). What the page shows
- * comes from the saved check-in, never from the URL.
+ * comes from the saved check-in, never from the URL. The slip page's own
+ * forms (the reflection, asking for prayer) come back to this same address
+ * and leave their result in a one-minute cookie (privacy review 2, D-098).
  */
 export default async function Page({ searchParams }: { searchParams: SearchParams }) {
   const [{ userId }, overview, query, level] = await Promise.all([
@@ -44,14 +48,14 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
     getMyLevel(),
   ]);
   const date = query.date && /^\d{4}-\d{2}-\d{2}$/.test(query.date) ? query.date : overview.today;
-  const checkin = await getCheckinFor(userId, date);
+  const [checkin, flash] = await Promise.all([getCheckinFor(userId, date), readFlash(date)]);
   if (!checkin) {
     redirect({ href: "/check-in", locale: await getLocale() });
     return null;
   }
 
   return checkin.outcome === "slipped" ? (
-    <NewMercies overview={overview} checkin={checkin} date={date} query={query} level={level} userId={userId} />
+    <NewMercies overview={overview} checkin={checkin} date={date} flash={flash} level={level} userId={userId} />
   ) : (
     <Done overview={overview} date={date} level={level} />
   );
@@ -111,14 +115,14 @@ async function NewMercies({
   overview,
   checkin,
   date,
-  query,
+  flash,
   level,
   userId,
 }: {
   overview: Overview;
   checkin: Checkin;
   date: string;
-  query: { saved?: string; error?: string; prayer?: string };
+  flash: { saved?: string; error?: string; prayer?: string };
   level: LevelOverview;
   userId: string;
 }) {
@@ -152,10 +156,16 @@ async function NewMercies({
       <KeptMessage overview={overview} reason="slip" />
       {/* One quiet line, never a celebration or an alarm (§7.6). */}
       <LevelChangeNotice change={levelChangeAfterSave(level)} />
-      <CheckinErrorBanner error={isCheckinErrorKey(query.error) ? query.error : null} />
-      {canReflect ? <ReflectionForm existing={checkin} saved={query.saved === "1"} /> : null}
+      <CheckinErrorBanner error={isCheckinErrorKey(flash.error) ? flash.error : null} />
+      {canReflect ? <ReflectionForm existing={checkin} saved={flash.saved === "1"} /> : null}
       {/* Asking a group or a partner to pray (D-046, Phase 6b). */}
-      <AskForPrayerCard date={date} groups={openGroups} partners={partners} result={query.prayer} />
+      <AskForPrayerCard date={date} groups={openGroups} partners={partners} result={flash.prayer} />
+      {/* Back from one of the forms above: take the person to its result (no #fragment, D-098). */}
+      {flash.prayer ? (
+        <FocusOnArrival targetId="prayer-title" />
+      ) : flash.saved || flash.error ? (
+        <FocusOnArrival targetId="reflection" />
+      ) : null}
       <NextStep date={date} />
 
       <div className="profile-actions">

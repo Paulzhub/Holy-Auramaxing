@@ -856,3 +856,46 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Finding:** the notify worker called `util.takes_nudges(group, user)` with its arguments swapped, so the check always passed and a nudge still queued when its recipient muted nudges was delivered.
 - **Fix:** the arguments are in the right order.
 - **Tests:** pgTAP `093` (checks 17–18).
+
+## D-098 · Privacy review 2 · Results never ride in the address; email links are opaque (PR2-1, PR2-2, PR2-4)
+
+- **Finding:**
+  - **The slip page's forms:** the reflection and asking for prayer returned with `&saved=1#reflection` or `&prayer=…#prayer-title`. Only a slip shows them, so the history and request logs marked slip days again (undoing D-055).
+  - **Unsubscribe links:** they carried the account id and the type in plain text (`t=partner_sos`, `t=streak_at_risk`).
+  - **Leaderboard tabs:** their names (`?board=streak`) went into the history.
+- **Decision:**
+  - **A form's result on a page whose content depends on an answer** travels in a one-minute httpOnly cookie, `notice` (`src/lib/server/flash.ts`, read for the same date only). The redirect goes back to exactly the address the form came from, with no query or fragment added. `FocusOnArrival` moves focus to the result in place of a `#fragment`.
+  - **Unsubscribe links** carry one value, `?k=`: the person and the type sealed with AES-256-GCM (a key derived from `APP_ENCRYPTION_KEY`, `notification-unsubscribe-v2`), fresh in every email. The earlier signed links stop working; no real users had them.
+  - **Leaderboard tabs** go by number (`?board=2` to `5`).
+- **Tests:** `src/test/discretion.test.ts` (every `/check-in/done` address in the code; tab addresses); Vitest `delivery.test.ts` (tokens, every email's raw HTML and List-Unsubscribe header) and `leaderboards.test.ts`; e2e `checkins`, `accountability`, `delivery`, `leaderboards`, `wall`.
+
+## D-099 · Privacy review 2 · A reflection isn't audited (PR2-3)
+
+- **Finding:** `save_checkin_reflection` logged `checkin.edited {"part":"reflection"}`. Reflections exist only after a slip, so the security log, which platform admins will read, marked slip days.
+- **Decision:** a reflection is the person's own private note, like a journal entry, not a change to their answer, so it isn't audited. A changed answer still is (§7.5). Earlier entries are deleted by the migration. **Phase 8:** journal entries aren't audited either.
+- **Tests:** pgTAP `094` (checks 1–4); e2e `checkins.spec.ts`.
+
+## D-100 · Privacy review 2 · Retention for nudges, ended partnerships and the scheduler's log; why a partnership ended stays ours (PR2-6, PR2-7)
+
+- **Finding:**
+  - **Nudges** (including "please pray for me" from the slip page) and **ended partnerships** were kept forever.
+  - **The other person could read why a partnership ended:** `blocked` or `closing`, telling them they had been blocked or that the other person is deleting their account.
+  - **pg_cron** logged about 25,000 runs a day, forever.
+- **Decision:**
+  - **`private.privacy_retention()`** runs daily at 03:41 UTC. It removes nudges and ended partnerships after `social_keep_days` (90, like notifications) and `cron.job_run_details` after `cron_log_keep_days` (7).
+  - **Column grants:** `partnerships.ended_reason` is no longer readable through the API.
+- **Tests:** pgTAP `094` (checks 9–16).
+
+## D-101 · Privacy review 2 · A changed answer pings only groups that can see it (PR2-5)
+
+- **Finding:** a changed answer pinged every group the person is in, so a group that sees only "checked in" learned that something about their answer just changed.
+- **Decision:** a new check-in pings every group. A changed answer pings only groups where the person shares at least their streak, or has an active partner.
+- **Tests:** pgTAP `094` (checks 5–8).
+
+## D-102 · Privacy review 2 · The export and the Privacy Policy catch up with Phases 5–7 (PR2-8, PR2-9)
+
+- **Export:** new sections `nudges_sent`, `nudges_received` (never who sent them), `partnerships` (account ids, my alert choice, dates), plus milestone cards, nudge mutes, digest, snooze, sound, vibration and per-group mutes.
+- **Privacy Policy:**
+  - It now covers levels, XP and badges, and who sees them; nudges (kept 90 days); partners (what a partner sees, and alerts only with consent); notifications (kept 90 days); and the browser push services (Google, Mozilla, Apple, Microsoft), which get an encrypted message they can't read.
+  - It also says email goes through Gmail for now.
+  - `POLICY_VERSION` is `2026-10-21-draft`, and the pages show "21 October 2026".

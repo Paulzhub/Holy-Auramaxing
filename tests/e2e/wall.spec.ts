@@ -217,7 +217,7 @@ test.describe("The encouragement wall", () => {
     await expect(page.getByTestId("member-list").getByText("Tia Third", { exact: true })).toBeVisible();
 
     // My pages no longer show Rex.
-    for (const path of ["", "/wall", `/wall/${myPost}`, "/leaderboard", "/leaderboard?board=encourager"]) {
+    for (const path of ["", "/wall", `/wall/${myPost}`, "/leaderboard", "/leaderboard?board=5"]) {
       await page.goto(`/groups/${groupId}${path}`);
       await expect(page.getByText(/Rex/), path || "home").toHaveCount(0);
     }

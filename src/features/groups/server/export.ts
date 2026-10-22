@@ -16,7 +16,7 @@ export async function exportGroupsData(userId: string): Promise<ExportPart> {
     supabase
       .from("group_members")
       .select(
-        "role, status, share_level, leaderboard_hidden, covenant_accepted_at, requested_at, joined_at, groups!inner(id, name, owner_id, description, challenge_type, challenge_days, start_date, end_date, group_timezone, covenant_text, min_share_level, leaderboard_hiding_allowed, join_policy, max_members, cover_path, archived_at, created_at)",
+        "role, status, share_level, leaderboard_hidden, nudges_muted, notifications_muted, covenant_accepted_at, requested_at, joined_at, groups!inner(id, name, owner_id, description, challenge_type, challenge_days, start_date, end_date, group_timezone, covenant_text, min_share_level, leaderboard_hiding_allowed, join_policy, max_members, cover_path, archived_at, created_at)",
       )
       .eq("user_id", userId),
     supabase

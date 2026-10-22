@@ -8,6 +8,7 @@ import { redirect } from "@/i18n/navigation";
 import { encryptText } from "@/lib/security/encryption";
 import { consume } from "@/lib/security/rate-limit";
 import { devLog } from "@/lib/server/dev-log";
+import { setFlash } from "@/lib/server/flash";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import { checkinErrorKey, type CheckinErrorKey } from "../errors";
@@ -72,15 +73,26 @@ export async function submitCheckinAction(formData: FormData): Promise<void> {
   return go(`/check-in/done?date=${input.date}`);
 }
 
-/** The optional "what led to it?" reflection after a slip. */
+/**
+ * The optional "what led to it?" reflection after a slip. It comes back to
+ * the very address the check-in itself went to, with the result in a
+ * one-minute cookie: only a slip offers a reflection, so `?saved=1` or
+ * `#reflection` in the history would say which answer that day was
+ * (privacy review 2, D-098). A reflection is the person's private note, not a
+ * change to their answer, so it isn't audited (D-099).
+ */
 export async function saveReflectionAction(formData: FormData): Promise<void> {
   const { userId } = await requireAccount();
   const parsed = readReflectionForm(formData);
   const rawDate = formData.get("date");
   const date = typeof rawDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : "";
   const page = `/check-in/done?date=${date}`;
-  if (!(await consume("checkinSaveByUser", userId)).ok) return go(`${page}&error=rateLimited`);
-  if (!parsed.success) return go(`${page}&error=invalid`);
+  const done = async (field: "saved" | "error", code: string) => {
+    await setFlash(date, field, code);
+    return go(page);
+  };
+  if (!(await consume("checkinSaveByUser", userId)).ok) return done("error", "rateLimited");
+  if (!parsed.success) return done("error", "invalid");
   const input = parsed.data;
 
   const supabase = await createSupabaseServerClient();
@@ -91,8 +103,8 @@ export async function saveReflectionAction(formData: FormData): Promise<void> {
   });
   if (error) {
     devLog("checkin-reflection", error);
-    return go(`${page}&error=${checkinErrorKey(error)}`);
+    return done("error", checkinErrorKey(error));
   }
   refresh();
-  return go(`${page}&saved=1#reflection`);
+  return done("saved", "1");
 }

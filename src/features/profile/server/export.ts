@@ -23,12 +23,16 @@ export async function exportProfileData(userId: string): Promise<ExportPart> {
       .maybeSingle(),
     supabase
       .from("privacy_settings")
-      .select("profile_visibility, bio_visibility, testimony_visibility, verse_visibility, updated_at")
+      .select(
+        "profile_visibility, bio_visibility, testimony_visibility, verse_visibility, milestone_cards, nudges_muted, updated_at",
+      )
       .eq("user_id", userId)
       .maybeSingle(),
     supabase
       .from("notification_settings")
-      .select("reminder_time, discreet_mode, quiet_hours_start, quiet_hours_end, updated_at")
+      .select(
+        "reminder_time, discreet_mode, quiet_hours_start, quiet_hours_end, digest, snooze_until, sound, vibrate, updated_at",
+      )
       .eq("user_id", userId)
       .maybeSingle(),
     supabase.from("profile_private").select("my_why_encrypted, updated_at").eq("user_id", userId).maybeSingle(),
@@ -62,12 +66,12 @@ export async function exportProfileData(userId: string): Promise<ExportPart> {
       { name: "profile", description: "Your profile.", rows: [{ ...profileRow, has_photo: Boolean(avatarPath) }] },
       {
         name: "privacy_settings",
-        description: "Who can see each part of your profile.",
+        description: "Who can see each part of your profile, milestone cards and nudges.",
         rows: privacy.data ? [privacy.data] : [],
       },
       {
         name: "notification_settings",
-        description: "Reminder time, discreet mode and quiet hours.",
+        description: "Reminder time, discreet mode, quiet hours, digest, snooze, sound and vibration.",
         rows: notifications.data ? [notifications.data] : [],
       },
       {

@@ -11,6 +11,7 @@ import { parseFrom } from "../lib/email/sender";
 import { renderNotificationEmail } from "../emails/notification";
 import { NOTIFICATION_TYPE_LIST } from "../features/notifications/constants";
 import { buildDigestPush, buildPush, emailWords, outboundLine } from "../features/notifications/outbound";
+import { BOARDS, boardHref } from "../features/gamification/leaderboards";
 
 /**
  * Discretion (CLAUDE.md §2.3; privacy review 1, D-055). Everything someone
@@ -257,6 +258,35 @@ describe("discretion: addresses in the browser history", () => {
       .filter(Boolean);
     const leaks = segments.filter((s) => /merc|grace|slip|clean|streak|\burge|relapse|porn|fap|lust|purity/i.test(s));
     expect(leaks).toEqual([]);
+  });
+
+  it("the slip page's own forms come back to the very same address, with nothing added (D-098)", () => {
+    // ?saved=, ?prayer=, ?error= or a #fragment after /check-in/done would
+    // exist only after a slip, so the history would say which answer it was.
+    const sources = ["src/features", "src/app"].flatMap((dir) =>
+      filesUnder(join(root, dir)).filter((p) => /\.tsx?$/.test(p) && !/\.test\.tsx?$/.test(p)),
+    );
+    const addresses = sources.flatMap((file) =>
+      [...readFileSync(file, "utf8").matchAll(/\/check-in\/done[^`"'\s)]*/g)].map((m): [string, string] => [
+        relative(root, file),
+        m[0],
+      ]),
+    );
+    expect(addresses.length).toBeGreaterThan(3);
+    for (const [file, address] of addresses) {
+      expect(address, file).toMatch(/^\/check-in\/done(\?date=\$\{\w+(\.\w+)?\})?$/);
+    }
+    // Results travel in a one-minute cookie instead (src/lib/server/flash.ts).
+    const code = (path: string) => read(path).replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
+    expect(code("src/features/checkins/server/actions.ts")).not.toMatch(/saved=1|#reflection/);
+    expect(code("src/features/social/server/accountability-actions.ts")).not.toMatch(/prayer=|#prayer-title/);
+    expect(code("src/app/[locale]/(app)/check-in/done/page.tsx")).not.toMatch(/query\.(saved|error|prayer)/);
+  });
+
+  it("leaderboard tabs go by number in the address, never by name (D-098)", () => {
+    const group = "0199a000-0000-7000-8000-000000000001";
+    expectDiscreet(BOARDS.flatMap((b) => [[`board ${b}`, boardHref(group, b, "week", 50)] as [string, string]]));
+    for (const b of BOARDS) expect(boardHref(group, b)).not.toMatch(/level|free|encour|xp/);
   });
 
   it("a check-in lands on the same address whichever answer was given", () => {

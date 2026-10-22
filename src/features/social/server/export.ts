@@ -3,9 +3,11 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
  * The social module's part of "Download my data" (D-032, D-077): the person's
- * own posts, comments and reactions, the people they blocked (ids only) and
- * the reports they made. Never anything anyone else wrote, and never who
- * reported them.
+ * own posts, comments and reactions, the nudges they sent and got (never who
+ * sent one), their accountability partnerships, the people they blocked (ids
+ * only) and the reports they made. Never anything anyone else wrote, and
+ * never who reported them. Nudges and partnerships were missing until
+ * privacy review 2 (D-102).
  */
 export async function exportSocialData(): Promise<ExportPart> {
   const supabase = await createSupabaseServerClient();
@@ -30,6 +32,22 @@ export async function exportSocialData(): Promise<ExportPart> {
         name: "reactions",
         description: "The reactions you gave to posts and comments.",
         rows: rows("reactions"),
+      },
+      {
+        name: "nudges_sent",
+        description: "The nudges you sent in the last 90 days: what kind, in which group, and when.",
+        rows: rows("nudges_sent"),
+      },
+      {
+        name: "nudges_received",
+        description: "The nudges you got in the last 90 days: what kind, in which group, and when (not who sent them).",
+        rows: rows("nudges_received"),
+      },
+      {
+        name: "partnerships",
+        description:
+          "Your accountability partners (account ids), whether you allow alerts, and when it started or ended.",
+        rows: rows("partnerships"),
       },
       {
         name: "blocked_people",

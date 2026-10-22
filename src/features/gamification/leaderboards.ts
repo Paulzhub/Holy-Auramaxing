@@ -27,11 +27,19 @@ export const MAX_AFTER = 10_000;
 type Query = Record<string, string | string[] | undefined>;
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
+/**
+ * What each board is called in the address: a number, never its name
+ * (privacy review 2, D-098). "?board=streak" in the browser history, or in
+ * the host's request logs, would say what the app counts.
+ */
+const BOARD_CODES: Record<Board, string> = { xp: "1", level: "2", streak: "3", free_days: "4", encourager: "5" };
+const BOARD_BY_CODE = new Map(Object.entries(BOARD_CODES).map(([board, code]) => [code, board as Board]));
+
 /** Reads ?board=, ?period= and ?after= safely: anything unknown falls back to the default. */
 export function parseBoardQuery(query: Query): { board: Board; period: Period; after: number } {
   const b = first(query.board);
   const p = first(query.period);
-  const board: Board = (BOARDS as readonly string[]).includes(b ?? "") ? (b as Board) : "xp";
+  const board: Board = BOARD_BY_CODE.get(b ?? "") ?? "xp";
   const period: Period = p === "week" && boardHasWeek(board) ? "week" : "all";
   const a = Number.parseInt(first(query.after) ?? "", 10);
   const after = Number.isFinite(a) && a > 0 && a <= MAX_AFTER ? a - (a % PAGE_SIZE) : 0;
@@ -41,7 +49,7 @@ export function parseBoardQuery(query: Query): { board: Board; period: Period; a
 /** The URL of a board view, without defaults. */
 export function boardHref(groupId: string, board: Board, period: Period = "all", after = 0): string {
   const params = new URLSearchParams();
-  if (board !== "xp") params.set("board", board);
+  if (board !== "xp") params.set("board", BOARD_CODES[board]);
   if (period === "week" && boardHasWeek(board)) params.set("period", "week");
   if (after > 0) params.set("after", String(after));
   const qs = params.toString();

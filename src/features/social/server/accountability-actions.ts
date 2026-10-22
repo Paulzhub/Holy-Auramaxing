@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { requireAccount } from "@/features/auth";
 import { redirect } from "@/i18n/navigation";
 import { consume, type RateLimitRule } from "@/lib/security/rate-limit";
+import { setFlash } from "@/lib/server/flash";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import { NUDGE_KINDS, REACTION_KINDS, SOCIAL_LIMITS } from "../constants";
@@ -152,37 +153,41 @@ export async function partnerAlertsAction(groupId: string, formData: FormData): 
 // ---------------------------------------------------------------- asking for prayer (the slip page, D-046)
 
 /**
- * The slip page lives at /check-in/done for both answers (D-055), so it comes
- * back there with ?date= and a neutral ?prayer= result.
+ * The slip page lives at /check-in/done for both answers (D-055). Asking for
+ * prayer comes back to exactly that address, `?date=` and nothing else, with
+ * the result in a one-minute cookie: only the slip page offers this card, so
+ * a `?prayer=` or `#prayer-title` in the history would say which answer that
+ * day was (privacy review 2, D-098).
  */
-function donePage(formData: FormData, param: string): string {
+async function backToDonePage(formData: FormData, result: string): Promise<never> {
   const date = String(formData.get("date") ?? "");
   const safeDate = /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : "";
-  return `/check-in/done?${safeDate ? `date=${safeDate}&` : ""}${param}#prayer-title`;
+  if (safeDate) await setFlash(safeDate, "prayer", result);
+  return go(safeDate ? `/check-in/done?date=${safeDate}` : "/check-in/done");
 }
 
 export async function askGroupToPrayAction(formData: FormData): Promise<void> {
   const groupId = String(formData.get("groupId") ?? "");
   const parsed = postBodySchema.safeParse(String(formData.get("body") ?? ""));
   if (!ids(groupId) || !parsed.success || parsed.data.length > SOCIAL_LIMITS.postMax) {
-    return go(donePage(formData, "prayer=invalidInput"));
+    return backToDonePage(formData, "invalidInput");
   }
   const ctx = await signedIn("wallPostByUser");
-  if (!ctx) return go(donePage(formData, "prayer=rateLimited"));
+  if (!ctx) return backToDonePage(formData, "rateLimited");
   const { error } = await ctx.rpc("create_post", { p_group: groupId, p_kind: "prayer_request", p_body: parsed.data });
   refresh();
-  return go(donePage(formData, `prayer=${error ? socialErrorKey(error) : "askedGroup"}`));
+  return backToDonePage(formData, error ? socialErrorKey(error) : "askedGroup");
 }
 
 export async function askPartnerToPrayAction(formData: FormData): Promise<void> {
   // One button per partner: value "<group id>:<partner id>".
   const [groupId = "", userId = ""] = String(formData.get("target") ?? "").split(":");
-  if (!ids(groupId, userId)) return go(donePage(formData, "prayer=invalidInput"));
+  if (!ids(groupId, userId)) return backToDonePage(formData, "invalidInput");
   const ctx = await signedIn("nudgeByUser");
-  if (!ctx) return go(donePage(formData, "prayer=rateLimited"));
+  if (!ctx) return backToDonePage(formData, "rateLimited");
   const { error } = await ctx.rpc("send_nudge", { p_group: groupId, p_to: userId, p_kind: "pray_for_me" });
   refresh();
-  return go(donePage(formData, `prayer=${error ? socialErrorKey(error) : "askedPartner"}`));
+  return backToDonePage(formData, error ? socialErrorKey(error) : "askedPartner");
 }
 
 // ---------------------------------------------------------------- reactions on check-ins (D-087)

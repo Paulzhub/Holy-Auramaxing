@@ -14,7 +14,7 @@ const one = (v: Params[string]) => (typeof v === "string" ? v : null);
 export async function UnsubscribeView({ params }: { params: Params }) {
   const t = await getTranslations("notifications");
   const status = one(params.status);
-  const link = verifyUnsubscribe({ u: one(params.u), t: one(params.t), s: one(params.s) });
+  const link = verifyUnsubscribe(one(params.k));
   const settings = (
     <p className="auth-switch">
       <Link href="/settings/notifications">{t("unsubscribe.settings")}</Link>
@@ -47,9 +47,7 @@ export async function UnsubscribeView({ params }: { params: Params }) {
         }
       />
       <form action={unsubscribeAction}>
-        <input type="hidden" name="u" value={one(params.u) ?? ""} />
-        <input type="hidden" name="t" value={one(params.t) ?? ""} />
-        <input type="hidden" name="s" value={one(params.s) ?? ""} />
+        <input type="hidden" name="k" value={one(params.k) ?? ""} />
         <button type="submit" className={buttonVariants({ variant: "primary" })}>
           {t("unsubscribe.confirm")}
         </button>

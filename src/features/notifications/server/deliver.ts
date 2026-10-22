@@ -7,7 +7,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 import { isNotificationType, type NotificationType } from "../constants";
 import { buildDigestPush, buildPush, emailWords } from "../outbound";
-import { unsubscribeQuery } from "./unsubscribe";
+import { notificationEmailLinks } from "./unsubscribe";
 
 /**
  * The sender (CLAUDE.md §7.8, D-092). The database asks for it (pg_net)
@@ -107,18 +107,14 @@ async function deliverEmail(row: Claimed): Promise<Result> {
         discreet: row.discreet,
         actorName: row.actor_name,
       });
-  const unsubscribe = `${origin}/api/notify/unsubscribe?${unsubscribeQuery(row.user_id, kind)}`;
-  const message = await renderNotificationEmail(words, {
-    open: new URL(words.url, origin).toString(),
-    unsubscribe: `${origin}/unsubscribe?${unsubscribeQuery(row.user_id, kind)}`,
-    settings: `${origin}/settings/notifications`,
-  });
+  const { oneClick, ...links } = notificationEmailLinks(origin, row.user_id, kind, words.url);
+  const message = await renderNotificationEmail(words, links);
   await sendEmail({
     to: row.email,
     ...message,
     headers: {
       // RFC 8058: mail apps show "Unsubscribe" and POST to it in one click.
-      "List-Unsubscribe": `<${unsubscribe}>`,
+      "List-Unsubscribe": `<${oneClick}>`,
       "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
     },
   });
