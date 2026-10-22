@@ -56,7 +56,7 @@ export async function expectNoAxeViolations(page: Page, label: string) {
 }
 
 /** A made-up client address per test, so the app's per-IP rate limits don't add up across the suite. */
-function testClientIp(): string {
+export function testClientIp(): string {
   const n = () => Math.floor(Math.random() * 254) + 1;
   return `10.${n()}.${n()}.${n()}`;
 }

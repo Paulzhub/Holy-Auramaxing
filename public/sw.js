@@ -69,6 +69,9 @@ self.addEventListener("activate", (event) => {
 
 // The app asks for a refresh when it opens (at most once a day it actually fetches).
 self.addEventListener("message", (event) => {
+  // Only the app's own pages may ask (they're the only clients this worker has).
+  const from = event.source && "url" in event.source ? new URL(event.source.url).origin : event.origin;
+  if (from !== self.location.origin) return;
   if (event.data === "refresh-offline") event.waitUntil(refreshOfflinePage(false));
 });
 

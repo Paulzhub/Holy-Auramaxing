@@ -1,6 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 
-import { expectNoAxeViolations, signedOut, test } from "./fixtures";
+import { expectNoAxeViolations, signedOut, test, testClientIp } from "./fixtures";
 import { apiAs, createGroupAs, createInviteAs, joinAs, newMember } from "./support/groups";
 import { signInNewMember } from "./support/session";
 import { admin } from "./support/supabase";
@@ -106,7 +106,11 @@ test.describe("SOS", () => {
     await page.keyboard.press("Escape");
 
     // The partner shares a number through the real Settings form; I allow alerts.
-    const partnerPage = await page.context().browser()!.newPage({ storageState: signedOut });
+    // Its own made-up address, like every test page, so the per-IP sign-in limit isn't shared.
+    const partnerPage = await page
+      .context()
+      .browser()!
+      .newPage({ storageState: signedOut, extraHTTPHeaders: { "x-forwarded-for": testClientIp() } });
     await partnerPage.goto("/sign-in");
     await partnerPage.locator("#email").fill(partner.email);
     await partnerPage.locator("#current-password").fill(partner.password);
@@ -208,7 +212,10 @@ test.describe("Journal", () => {
     await expectNoAxeViolations(page, "journal entry");
 
     // Someone else, even knowing the address, gets nothing.
-    const other = await browser.newPage({ storageState: signedOut });
+    const other = await browser.newPage({
+      storageState: signedOut,
+      extraHTTPHeaders: { "x-forwarded-for": testClientIp() },
+    });
     await signInNewMember(other, "journal-other");
     const response = await other.goto(`/journal/${id}`);
     expect(response?.status()).toBe(404);
@@ -257,10 +264,9 @@ test.describe("Resources", () => {
     // Test accounts are in Asia/Kolkata: India first.
     await expect(lines.first()).toContainText("India");
     await expect(lines.first().getByRole("link")).toHaveAttribute("href", "tel:14416");
-    await expect(page.getByRole("link", { name: /findahelpline\.com/ })).toHaveAttribute(
-      "href",
-      "https://findahelpline.com",
-    );
+    await expect(
+      page.getByRole("link", { name: "Somewhere else? Find a line near you at findahelpline.com." }),
+    ).toHaveAttribute("href", "https://findahelpline.com");
     await expect(page.getByText("is not a medical service", { exact: false })).toBeVisible();
   });
 });
