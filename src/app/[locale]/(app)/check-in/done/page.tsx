@@ -37,6 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 type SearchParams = Promise<{ date?: string }>;
 
+
 const STATUS_ID = "checkin-saved";
 
 /**
@@ -52,6 +53,7 @@ function arrivalHeading(change: LevelChange) {
     "aria-describedby": change.kind === "same" ? STATUS_ID : `${STATUS_ID} ${LEVEL_CHANGE_ID}`,
   } as const;
 }
+
 type Overview = Awaited<ReturnType<typeof getCheckinOverview>>;
 type Checkin = NonNullable<Awaited<ReturnType<typeof getCheckinFor>>>;
 
@@ -185,7 +187,11 @@ async function NewMercies({
 
       <KeptMessage overview={overview} reason="slip" />
       {/* One quiet line, never a celebration or an alarm (§7.6). */}
+
       <LevelChangeNotice change={change} />
+
+      <LevelChangeNotice change={levelChangeAfterSave(level)} />
+
       <CheckinErrorBanner error={isCheckinErrorKey(flash.error) ? flash.error : null} />
       {canReflect ? <ReflectionForm existing={checkin} saved={flash.saved === "1"} /> : null}
       {/* Asking a group or a partner to pray (D-046, Phase 6b). */}
