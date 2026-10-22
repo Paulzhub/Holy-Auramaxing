@@ -129,7 +129,7 @@ test.describe("Delivery", () => {
     );
     expect(overflow).toBeLessThanOrEqual(0);
     await page.getByRole("button", { name: "Stop these emails" }).click();
-    await expect(page.getByRole("heading", { name: "Done. You won’t get these emails any more." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Done", exact: true })).toBeVisible();
   });
 
   test("the push explainer comes after a check-in, never on its own, and 'Not now' keeps it away", async ({ page }) => {

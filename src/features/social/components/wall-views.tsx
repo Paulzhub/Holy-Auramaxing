@@ -730,9 +730,10 @@ export async function ModerationList({ viewer, reports }: { viewer: WallViewer; 
         return (
           <li key={r.id}>
             <article className="ui-card wall-post" aria-labelledby={headingId}>
-              <h2 id={headingId} className="wall-post__by">
+              {/* Under the page's "Reports" heading (A2-5, WCAG 1.3.1). */}
+              <h3 id={headingId} className="wall-post__by">
                 {t(`moderation.about.${r.targetType}`, { name })}
-              </h2>
+              </h3>
               <p className="text-muted">
                 {t("moderation.reportedOn", {
                   date: format.dateTime(new Date(r.createdAt), {

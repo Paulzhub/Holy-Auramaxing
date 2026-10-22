@@ -15,7 +15,14 @@ import {
   ReflectionForm,
   StreakStats,
 } from "@/features/checkins";
-import { getMyLevel, levelChangeAfterSave, LevelChangeNotice, type LevelOverview } from "@/features/gamification";
+import {
+  getMyLevel,
+  LEVEL_CHANGE_ID,
+  type LevelChange,
+  levelChangeAfterSave,
+  LevelChangeNotice,
+  type LevelOverview,
+} from "@/features/gamification";
 import { getMyGroups } from "@/features/groups";
 import { getPushDevices, PushExplainer } from "@/features/notifications";
 import { AskForPrayerCard, getMyActivePartners } from "@/features/social";
@@ -29,6 +36,23 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type SearchParams = Promise<{ date?: string }>;
+
+const STATUS_ID = "checkin-saved";
+
+/**
+ * Arriving from the check-in form, focus lands on the page's heading
+ * (FocusAfterAction), which also reads out "Saved" and any level change:
+ * the title doesn't change between the two pages, so nothing else would be
+ * announced (accessibility review 2, A2-4).
+ */
+function arrivalHeading(change: LevelChange) {
+  return {
+    "data-arrival-focus": "",
+    tabIndex: -1,
+    "aria-describedby": change.kind === "same" ? STATUS_ID : `${STATUS_ID} ${LEVEL_CHANGE_ID}`,
+  } as const;
+}
+
 type Overview = Awaited<ReturnType<typeof getCheckinOverview>>;
 type Checkin = NonNullable<Awaited<ReturnType<typeof getCheckinFor>>>;
 
@@ -74,17 +98,21 @@ async function Done({ overview, date, level }: { overview: Overview; date: strin
       ? tForm("today")
       : format.dateTime(new Date(`${date}T12:00:00Z`), { timeZone: "UTC", weekday: "long" });
 
+  const change = levelChangeAfterSave(level);
+
   return (
     <div className="stack checkin-result">
       <header className="checkin-result__header">
         <CircleCheck aria-hidden="true" className="checkin-result__icon checkin-icon--clean" />
-        <h1 className="page-title">{t("title")}</h1>
-        <p className="checkin-result__status" role="status">
+        <h1 className="page-title" {...arrivalHeading(change)}>
+          {t("title")}
+        </h1>
+        <p className="checkin-result__status" role="status" id={STATUS_ID}>
           {t("status", { day: when })}
         </p>
         <p className="page-lede">{t("lede")}</p>
       </header>
-      <LevelChangeNotice change={levelChangeAfterSave(level)} />
+      <LevelChangeNotice change={change} />
       <StreakStats overview={overview} />
       <figure className="verse">
         <blockquote>
@@ -135,13 +163,16 @@ async function NewMercies({
     .filter((g) => g.status === "active" && !g.archivedAt)
     .map((g) => ({ id: g.id, name: g.name }));
   const canReflect = overview.openDates.includes(date);
+  const change = levelChangeAfterSave(level);
 
   return (
     <div className="stack mercies">
       <header className="mercies__hero">
         <Sunrise aria-hidden="true" className="mercies__icon" />
-        <h1 className="page-title">{t("title")}</h1>
-        <p className="checkin-result__status" role="status">
+        <h1 className="page-title" {...arrivalHeading(change)}>
+          {t("title")}
+        </h1>
+        <p className="checkin-result__status" role="status" id={STATUS_ID}>
           {t("status")}
         </p>
         <p className="page-lede">{t("lede")}</p>
@@ -155,7 +186,9 @@ async function NewMercies({
 
       <KeptMessage overview={overview} reason="slip" />
       {/* One quiet line, never a celebration or an alarm (§7.6). */}
-      <LevelChangeNotice change={levelChangeAfterSave(level)} />
+
+      <LevelChangeNotice change={change} />
+
       <CheckinErrorBanner error={isCheckinErrorKey(flash.error) ? flash.error : null} />
       {canReflect ? <ReflectionForm existing={checkin} saved={flash.saved === "1"} /> : null}
       {/* Asking a group or a partner to pray (D-046, Phase 6b). */}

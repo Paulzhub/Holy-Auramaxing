@@ -827,7 +827,9 @@
 
   .ui-lb-row {
     display: grid;
-    grid-template-columns: 2.25rem auto minmax(0, 1fr) auto;
+    /* The score may shrink and wrap too, so a long one ("12 encouragements")
+       still fits at 320 px with wider text spacing (A2-1). */
+    grid-template-columns: 2.25rem auto minmax(0, 1fr) minmax(0, auto);
     align-items: center;
     gap: var(--space-3);
     min-block-size: 3.5rem;
@@ -861,23 +863,28 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* Names wrap rather than being cut off: at 320 px or with wider text
+     spacing an ellipsis hid whole names (accessibility review 2, A2-1;
+     WCAG 1.4.10, 1.4.12). */
   .ui-lb-row__name {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-1) var(--space-2);
     min-inline-size: 0;
     font-weight: 650;
   }
 
   .ui-lb-row__name > span:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .ui-lb-row__value {
     font-weight: 700;
     font-variant-numeric: tabular-nums;
+    text-align: end;
+    overflow-wrap: anywhere;
   }
 
   .ui-tag {

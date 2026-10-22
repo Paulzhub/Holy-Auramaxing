@@ -2175,8 +2175,10 @@
       "lede": "You won’t get emails for “{type}” any more. Everything still shows in the app.",
       "ledeDigest": "You won’t get digest emails any more. Everything still shows in the app.",
       "confirm": "Stop these emails",
-      "done": "Done. You won’t get these emails any more.",
-      "invalid": "This link isn’t valid any more. You can change what reaches you in the app’s settings.",
+      "done": "Done",
+      "doneLede": "You won’t get these emails any more. Everything still shows in the app.",
+      "invalid": "This link isn’t valid any more",
+      "invalidLede": "You can change what reaches you in the app’s notification settings.",
       "settings": "Notification settings"
     },
     "device": {

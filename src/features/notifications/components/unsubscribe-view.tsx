@@ -23,7 +23,7 @@ export async function UnsubscribeView({ params }: { params: Params }) {
   if (status === "done") {
     return (
       <div className="auth-card">
-        <AuthHeading title={t("unsubscribe.done")} />
+        <AuthHeading title={t("unsubscribe.done")} lede={t("unsubscribe.doneLede")} />
         {settings}
       </div>
     );
@@ -31,7 +31,7 @@ export async function UnsubscribeView({ params }: { params: Params }) {
   if (!link || status === "invalid") {
     return (
       <div className="auth-card">
-        <AuthHeading title={t("unsubscribe.invalid")} />
+        <AuthHeading title={t("unsubscribe.invalid")} lede={t("unsubscribe.invalidLede")} />
         {settings}
       </div>
     );

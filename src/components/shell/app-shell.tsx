@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
+import { FocusAfterAction } from "@/components/ui/focus-after-action";
 import { ToastProvider } from "@/components/ui/toast";
 import { SosButton } from "@/features/recovery";
 import { Link } from "@/i18n/navigation";
@@ -70,6 +71,7 @@ export function AppShell({
           </main>
           <BottomNav />
         </div>
+        <FocusAfterAction />
         {live}
       </AlertCountsProvider>
     </ToastProvider>

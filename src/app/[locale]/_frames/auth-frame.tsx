@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { BrandMark } from "@/components/shell/brand-mark";
 import { ThemeSwitcher } from "@/components/shell/theme-switcher";
+import { FocusAfterAction } from "@/components/ui/focus-after-action";
 import { clientMessages } from "@/i18n/client-messages";
 import { Link } from "@/i18n/navigation";
 import { getThemePreference } from "@/lib/server/theme";
@@ -51,6 +52,7 @@ export async function AuthFrame({ children }: { children: ReactNode }) {
         </nav>
         <p className="text-muted">{t("auth.footer.notMedical")}</p>
       </footer>
+      <FocusAfterAction />
     </>
   );
 }
