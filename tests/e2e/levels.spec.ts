@@ -47,7 +47,7 @@ test.describe("Levels", () => {
     await page.goto("/home");
     const card = page.getByRole("region", { name: "Clay" });
     await expect(card).toContainText("Level 0 · Beginning");
-    await expect(card).toContainText("Everyone starts as Clay.");
+    await expect(card).toContainText("Everyone starts as Clay, in the Potter’s hands.");
     // Clay has a share card too (owner, 2026-10-12, D-073).
     await expect(card.getByRole("link", { name: "Save a picture of your level" })).toBeVisible();
 
@@ -96,10 +96,37 @@ test.describe("Levels", () => {
     await page.getByRole("button", { name: "I slipped" }).click();
     await expect(page).toHaveURL(/\/check-in\/done\?date=/);
     await expect(
-      page.getByText("You’re now Clay. Your longest streak and total free days are still yours."),
+      page.getByText(
+        "You’re still here, and that matters. You’re now Clay, and your longest streak and every free day are still yours.",
+      ),
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: /new chapter|You reached/ })).toHaveCount(0);
     await expectNoAxeViolations(page, "level-down");
+  });
+
+  test("days away get a welcome back, and the level card says why it moved (grace review 2, GR-2)", async ({
+    page,
+    baseURL,
+  }) => {
+    const me = await signInNewMember(page, "levels-away");
+    // 30 free days that ended four days ago, then nothing: at least two missed days.
+    await seedCleanRun(me.userId, 33, 5);
+    // The last one goes through the real path (an offline check-in), so the level is worked out.
+    const fourDaysAgo = kolkataDate(-4);
+    const synced = await page.request.post(`${baseURL}/api/checkins/sync`, {
+      headers: { origin: baseURL ?? "", "content-type": "application/json" },
+      data: { date: fourDaysAgo, recordedAt: `${fourDaysAgo}T14:30:00Z`, outcome: "clean" },
+    });
+    expect(synced.status()).toBe(200);
+    await page.goto("/home");
+    await expect(page.getByText("Welcome back. Look at everything you’ve built")).toBeVisible();
+    await expect(
+      page.getByText(
+        /^Welcome back\. Days without a check-in moved your level back, just as a slip would\. You’re now /,
+      ),
+    ).toBeVisible();
+    await expect(page.getByText(/streak paused/)).toHaveCount(0);
+    await expectNoAxeViolations(page, "level-away");
   });
 
   test("a group sees a level only from members who share their streak there", async ({ page }) => {

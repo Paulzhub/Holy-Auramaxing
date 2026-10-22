@@ -32,8 +32,12 @@ describe("badges (§7.6, D-072)", () => {
   });
 
   it("each verse is the World English Bible text in data/badge_verses.json", () => {
+    // The Phase 5 seed holds the old edition; the D-105 migration sets today's text.
+    const current = read("supabase/migrations/20261025000100_gamification_verses_web_current.sql");
     for (const b of seeded) {
-      expect(verses[b.reference], b.reference).toBe(b.verse);
+      expect(current, b.reference).toContain(
+        `update public.badges set verse_text = '${(verses[b.reference] ?? "").replace(/'/g, "''")}' where slug = '${b.slug}';`,
+      );
     }
   });
 
