@@ -115,7 +115,8 @@ test.describe("accessibility review 2", () => {
   let s: Seed;
   let owner: Page;
 
-  test.beforeAll(async ({ browser, baseURL }) => {
+  test.beforeAll(async ({ browser, baseURL, isMobile }) => {
+    if (isMobile) return;
     s = await seed(browser, baseURL!);
   });
 
@@ -124,8 +125,9 @@ test.describe("accessibility review 2", () => {
     owner = await context.newPage();
   });
 
-  test.afterEach(async () => {
-    await owner.context().close();
+  // On the mobile project every test is skipped, and no page was opened.
+  test.afterEach(async ({ isMobile }) => {
+    if (!isMobile) await owner.context().close();
   });
 
   test("no axe violations on the changed pages, in both themes", async ({ baseURL }) => {
