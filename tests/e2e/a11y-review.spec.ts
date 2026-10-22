@@ -1,38 +1,11 @@
-import type { Page } from "@playwright/test";
-
 import { allRoutes, authRoutes, expect, signedOut, test } from "./fixtures";
 import { apiAs, createGroupAs, createInviteAs } from "./support/groups";
+import { overflowing } from "./support/layout";
 import { signInNewMember } from "./support/session";
 
 // Accessibility review 1 (docs/accessibility-review-1.md): checks the axe and
 // keyboard suites don't cover — reflow at 320 px, short screens, reduced
 // motion, names that give context, and page titles.
-
-/** Elements wider than the viewport, outside any sideways-scrolling box. */
-async function overflowing(page: Page): Promise<string[]> {
-  return page.evaluate(() => {
-    const vw = document.documentElement.clientWidth;
-    const out: string[] = [];
-    if (document.documentElement.scrollWidth > vw + 1)
-      out.push(`page scrolls sideways (${document.documentElement.scrollWidth}px)`);
-    for (const el of Array.from(document.querySelectorAll<HTMLElement>("body *"))) {
-      const rect = el.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0 || el.closest(".visually-hidden, [aria-hidden=true]")) continue;
-      if (getComputedStyle(el).visibility === "hidden") continue;
-      let p = el.parentElement;
-      let inScroller = false;
-      while (p) {
-        if (/(auto|scroll)/.test(getComputedStyle(p).overflowX)) inScroller = true;
-        p = p.parentElement;
-      }
-      if (!inScroller && (rect.right > vw + 1 || rect.left < -1))
-        out.push(
-          `${el.tagName.toLowerCase()}.${String(el.className).slice(0, 40)} [${Math.round(rect.left)}, ${Math.round(rect.right)}]`,
-        );
-    }
-    return out.slice(0, 10);
-  });
-}
 
 test.describe("reflow at 320 px (WCAG 1.4.10)", () => {
   test.skip(({ isMobile }) => isMobile, "sets its own viewport");

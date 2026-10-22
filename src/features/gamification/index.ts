@@ -16,7 +16,7 @@ export {
   type LevelOverview,
   type XpAndBadges,
 } from "./server/queries";
-export { LevelCard, LevelChangeNotice } from "./components/level-views";
+export { LEVEL_CHANGE_ID, LevelCard, LevelChangeNotice } from "./components/level-views";
 export { BADGE_SLUGS } from "./badges";
 export { exportGamificationData } from "./server/export";
 export { MemberBadges, XpBadgesCard, XpLine } from "./components/badge-views";

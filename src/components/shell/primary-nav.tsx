@@ -9,16 +9,24 @@ import { cn } from "@/lib/cn";
 import { countLabel, useAlertCounts } from "./alert-counts";
 import { isActive, navItems } from "./nav-items";
 
-/** The unread count on the Alerts item (the bell), announced with the link's name. */
+/**
+ * The unread count on the Alerts item (the bell). The number is drawn on the
+ * icon; the words are read after the link's own label, so its name starts with
+ * what's on screen: "Alerts, 3 unread" (A2-6, WCAG 2.5.3).
+ */
 function UnreadBadge({ count }: { count: number }) {
-  const t = useTranslations("nav");
   if (count <= 0) return null;
   return (
-    <span className="nav-badge" data-testid="unread-badge">
-      <span aria-hidden="true">{countLabel(count)}</span>
-      <span className="visually-hidden">{t("unreadSuffix", { count })}</span>
+    <span className="nav-badge" data-testid="unread-badge" aria-hidden="true">
+      {countLabel(count)}
     </span>
   );
+}
+
+function UnreadWords({ count }: { count: number }) {
+  const t = useTranslations("nav");
+  if (count <= 0) return null;
+  return <span className="visually-hidden">{t("unreadSuffix", { count })}</span>;
 }
 
 export function BottomNav() {
@@ -42,6 +50,7 @@ export function BottomNav() {
                 {key === "alerts" ? <UnreadBadge count={total} /> : null}
               </span>
               {t(key)}
+              {key === "alerts" ? <UnreadWords count={total} /> : null}
             </Link>
           </li>
         ))}
@@ -65,6 +74,7 @@ export function SidebarNav() {
             <Link href={href} className="nav-link" aria-current={isActive(pathname, href) ? "page" : undefined}>
               <Icon aria-hidden="true" />
               {t(key)}
+              {key === "alerts" ? <UnreadWords count={total} /> : null}
               {key === "alerts" ? <UnreadBadge count={total} /> : null}
             </Link>
           </li>

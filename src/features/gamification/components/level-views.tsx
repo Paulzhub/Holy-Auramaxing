@@ -32,7 +32,8 @@ export async function LevelCard({
   const Heading = headingLevel;
   const dropped = level.missedSinceLast > 0 && level.level < level.storedLevel;
   return (
-    <section className="ui-card level-card" aria-labelledby="level-card-title">
+    // Named "Your level, Clay", not just "Clay", in a list of regions (A2-9, WCAG 2.4.6).
+    <section className="ui-card level-card" aria-labelledby="level-card-kicker level-card-title">
       <div className="level-card__top">
         <ProgressRing
           value={level.progressDays}
@@ -45,7 +46,9 @@ export async function LevelCard({
           <span className="ui-ring__caption">{t("levelWord")}</span>
         </ProgressRing>
         <div className="level-card__name">
-          <p className="level-card__kicker">{t("title")}</p>
+          <p className="level-card__kicker" id="level-card-kicker">
+            {t("title")}
+          </p>
           <Heading id="level-card-title" className="level-card__label">
             {level.label}
           </Heading>
@@ -96,14 +99,21 @@ export async function LevelCard({
  * After a check-in: a level-up (and a new era) gets a small celebration; a
  * level-down gets one quiet line. Never notified to anyone else (§7.6).
  */
+/** The level-change notice's id: the page's heading reads it out on arrival (A2-4). */
+export const LEVEL_CHANGE_ID = "level-change";
+
 export async function LevelChangeNotice({ change }: { change: LevelChange }) {
   if (change.kind === "same") return null;
   const t = await getTranslations("levels");
   if (change.kind === "down") {
-    return <p className="level-down">{t("down", { label: change.label })}</p>;
+    return (
+      <p className="level-down" id={LEVEL_CHANGE_ID}>
+        {t("down", { label: change.label })}
+      </p>
+    );
   }
   return (
-    <section className="level-up" aria-labelledby="level-up-title">
+    <section className="level-up" aria-labelledby="level-up-title" id={LEVEL_CHANGE_ID}>
       <div className="level-up__light" aria-hidden="true">
         <span />
         <span />

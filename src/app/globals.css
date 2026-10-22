@@ -60,6 +60,9 @@
     font-weight: 600;
     line-height: var(--leading-tight);
     text-wrap: balance;
+    /* A one-word title ("Notifications") still fits at 320 px with wider
+       text spacing (accessibility review 2, A2-2; WCAG 1.4.10, 1.4.12). */
+    overflow-wrap: anywhere;
   }
 
   p {

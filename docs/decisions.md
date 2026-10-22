@@ -899,3 +899,16 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
   - It now covers levels, XP and badges, and who sees them; nudges (kept 90 days); partners (what a partner sees, and alerts only with consent); notifications (kept 90 days); and the browser push services (Google, Mozilla, Apple, Microsoft), which get an encrypted message they can't read.
   - It also says email goes through Gmail for now.
   - `POLICY_VERSION` is `2026-10-21-draft`, and the pages show "21 October 2026".
+
+## D-103 · Accessibility review 2 · After a form is sent, focus goes to its result (A2-3, A2-4)
+
+- **Finding:** the app's server-action forms come back as a new page, often the same address with a `?notice=`. The pressed button was gone by then, so focus fell to the top of the document, and the notice banner, added with the new page, wasn't reliably announced (WCAG 2.4.3, 4.1.3). After checking in, nothing was announced at all: both answers share one neutral address and title (D-055).
+- **Decision:** one client component, `FocusAfterAction` (`src/components/ui/focus-after-action.tsx`), in the app shell and the sign-in frame. After a form is sent, it moves focus to a new result notice (`.auth-banner` with `role=status`/`alert`, or `[data-arrival-focus]`), or to the page's `h1` if focus was lost and there's no notice. It does nothing if focus stayed put or the person moved on, and it lets a page's own `FocusOnArrival` go first. It makes no change to addresses (D-098) or to how forms work without JavaScript. The check-in result pages mark their `h1` as the arrival point, described by "Saved…" and the level change (`id="level-change"`), so a screen reader reads the result and any level change on arrival.
+- **Alternatives:** a `#fragment` or a fresh key per notice in the address would say more than it should on answer-dependent pages (D-098). Converting every form to `useActionState` would be a rewrite of most pages, and would lose the no-JavaScript path.
+- **Tests:** Vitest `focus-after-action.test.tsx`; e2e `a11y-review-2.spec.ts`.
+
+## D-104 · Accessibility review 2 · Leaderboard names and scores wrap, never "…" (A2-1)
+
+- **Finding:** at 320 px, and with wider text spacing on any screen, leaderboard names were cut to "Finn …" and the viewer's own name vanished. A long score ("12 encouragements") pushed the page sideways (WCAG 1.4.10, 1.4.12).
+- **Decision:** names wrap (`overflow-wrap: anywhere`), the "You" and "Hidden from members" tags drop under the name, and the score column may shrink and wrap. Rows grow taller rather than lose text. Headings may break inside a long word only when it can't fit (A2-2).
+- **Tests:** e2e `a11y-review-2.spec.ts` ("leaderboard names wrap", "320 px with wider text spacing").
