@@ -37,7 +37,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 type SearchParams = Promise<{ date?: string }>;
 
-
 const STATUS_ID = "checkin-saved";
 
 /**
@@ -189,8 +188,6 @@ async function NewMercies({
       {/* One quiet line, never a celebration or an alarm (§7.6). */}
 
       <LevelChangeNotice change={change} />
-
-      <LevelChangeNotice change={levelChangeAfterSave(level)} />
 
       <CheckinErrorBanner error={isCheckinErrorKey(flash.error) ? flash.error : null} />
       {canReflect ? <ReflectionForm existing={checkin} saved={flash.saved === "1"} /> : null}

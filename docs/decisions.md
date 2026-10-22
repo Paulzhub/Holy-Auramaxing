@@ -912,4 +912,3 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Finding:** at 320 px, and with wider text spacing on any screen, leaderboard names were cut to "Finn …" and the viewer's own name vanished. A long score ("12 encouragements") pushed the page sideways (WCAG 1.4.10, 1.4.12).
 - **Decision:** names wrap (`overflow-wrap: anywhere`), the "You" and "Hidden from members" tags drop under the name, and the score column may shrink and wrap. Rows grow taller rather than lose text. Headings may break inside a long word only when it can't fit (A2-2).
 - **Tests:** e2e `a11y-review-2.spec.ts` ("leaderboard names wrap", "320 px with wider text spacing").
-
