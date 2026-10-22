@@ -290,7 +290,9 @@ describe("discretion: addresses in the browser history", () => {
     for (const address of addresses) {
       // Journal forms come back to the same page (the result is in the one-minute cookie);
       // the partner number goes back to Settings, which says nothing about any answer.
-      expect(address).toMatch(/^(\/journal(\/\$\{(id|rawId)\})?|\/settings\?(error=phone\w+|notice=\$\{[^}]+\})|\/\[locale\])$/);
+      expect(address).toMatch(
+        /^(\/journal(\/\$\{(id|rawId)\})?|\/settings\?(error=phone\w+|notice=\$\{[^}]+\})|\/\[locale\])$/,
+      );
     }
     // SOS actions answer the sheet itself and never redirect.
     const sos = code.slice(code.indexOf("export async function sosContextAction"), code.indexOf("const today ="));
