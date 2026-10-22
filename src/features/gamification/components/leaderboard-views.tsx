@@ -144,7 +144,6 @@ export async function LeaderboardBoard({
           {meHidden ? <p>{t("hiddenNote")}</p> : null}
           {!boardShowsEveryone(board) ? <p>{t("shareNote")}</p> : null}
           {!boardShowsEveryone(board) && !iAmOnBoard ? <p>{t("notOnBoard")}</p> : null}
-          {board === "encourager" ? <p>{t("encouragerSoon")}</p> : null}
           {period === "week" ? <p>{t("weekNote")}</p> : null}
           <p>{t("updatedNote")}</p>
         </div>
