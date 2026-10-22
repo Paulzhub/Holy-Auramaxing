@@ -1,0 +1,383 @@
+/* ---------- recovery: SOS, journal, resources (CLAUDE.md §7.9, Phase 8a) ----------
+   Restrained motion (§8): the breathing circle is transform only, and stands
+   still under reduced motion, where the words step on instead. Nothing is
+   shown as a failure, and nothing is marked by colour alone. */
+@layer components {
+  .sos-button--corner {
+    inset-block-end: calc(var(--space-4) + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 1024px) {
+    .sos-button.sos-button--corner {
+      inset-inline: auto var(--space-5);
+      inline-size: auto;
+    }
+  }
+
+  .auth-main--with-sos {
+    padding-block-end: calc(var(--space-8) + var(--space-5));
+  }
+
+  .sos-body {
+    display: grid;
+    gap: var(--space-5);
+    min-inline-size: 0;
+  }
+
+  .sos-section {
+    display: grid;
+    gap: var(--space-3);
+    min-inline-size: 0;
+  }
+
+  .sos-section > p,
+  .sos-action > p {
+    margin: 0;
+  }
+
+  .sos-section__title {
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--text-lg);
+    overflow-wrap: anywhere;
+  }
+
+  .sos-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .sos-buttons--spread {
+    justify-content: space-between;
+  }
+
+  .sos-gentle {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    border-inline-start: 4px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+  }
+
+  .sos-verse {
+    margin: 0;
+  }
+
+  /* Breathing: a circle that grows on the in-breath, rests, and shrinks on the out-breath. */
+  .breath {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+  }
+
+  .breath__circle {
+    inline-size: 7rem;
+    block-size: 7rem;
+    border-radius: 50%;
+    border: 3px solid var(--color-primary);
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-accent) 45%, transparent) 0%,
+      color-mix(in srgb, var(--color-primary) 20%, transparent) 70%
+    );
+    transform: scale(0.7);
+  }
+
+  .breath[data-phase="hold"] .breath__circle {
+    transform: scale(1);
+  }
+
+  .breath[data-phase="in"] .breath__circle--moving {
+    animation: breath-in linear forwards;
+  }
+
+  .breath[data-phase="out"] .breath__circle--moving {
+    animation: breath-out linear forwards;
+  }
+
+  @keyframes breath-in {
+    from {
+      transform: scale(0.7);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes breath-out {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(0.7);
+    }
+  }
+
+  .breath__words {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-1);
+    min-block-size: 3rem;
+    margin: 0;
+    text-align: center;
+  }
+
+  .breath__words strong {
+    font-size: var(--text-lg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .breath__circle,
+    .breath__circle--moving {
+      animation: none !important;
+    }
+  }
+
+  /* The timer: time as text, and a bar that fills (transform only). */
+  .wave {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .wave__clock {
+    margin: 0;
+    font-size: var(--text-xl);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .wave__bar {
+    overflow: hidden;
+    block-size: 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-sunken);
+  }
+
+  .wave__bar span {
+    display: block;
+    block-size: 100%;
+    background-color: var(--color-primary);
+    transform-origin: left center;
+    transition: transform 1s linear;
+  }
+
+  [dir="rtl"] .wave__bar span {
+    transform-origin: right center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wave__bar span {
+      transition: none;
+    }
+  }
+
+  .sos-tally {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+
+  .sos-tally > p {
+    margin: 0;
+  }
+
+  .sos-action {
+    display: grid;
+    gap: var(--space-2);
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--color-line-subtle);
+  }
+
+  .sos-action__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--text-base);
+    overflow-wrap: anywhere;
+  }
+
+  .sos-action__title svg {
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  .sos-action__more {
+    display: grid;
+    gap: var(--space-1);
+    justify-items: start;
+  }
+
+  .sos-partners {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sos-page {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  /* The crisis card under a text field: calm, never alarming red. */
+  .crisis-card {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    background-color: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface));
+  }
+
+  .crisis-card > p {
+    margin: 0;
+  }
+
+  .crisis-card__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--text-base);
+  }
+
+  .crisis-card__lines,
+  .crisis-lines,
+  .journal-list {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .crisis-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    border-block-end: 1px solid var(--color-line-subtle);
+  }
+
+  .crisis-line__text {
+    display: grid;
+    min-inline-size: 0;
+  }
+
+  .crisis-line__text > p {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .crisis-line__country {
+    font-weight: 700;
+  }
+
+  .crisis-emergency {
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .resource-item {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .resource-item > p,
+  .resource-item__title {
+    margin: 0;
+  }
+
+  .resource-item__title {
+    font-size: var(--text-base);
+  }
+
+  .resource-list {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding-inline-start: var(--space-5);
+  }
+
+  /* Journal */
+  .journal-text {
+    min-block-size: 10rem;
+  }
+
+  .journal-private {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+
+  .journal-item {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .journal-item > p,
+  .journal-item__date {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .journal-item__date {
+    font-size: var(--text-base);
+  }
+
+  .journal-item__prompt {
+    margin: 0;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .journal-item__preview {
+    white-space: pre-line;
+  }
+
+  .journal-pages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .journal-delete summary {
+    cursor: pointer;
+    color: var(--color-primary);
+    font-weight: 650;
+    min-block-size: 24px;
+  }
+
+  .journal-delete > form {
+    margin-block-start: var(--space-3);
+  }
+
+  @media (forced-colors: active) {
+    .breath__circle {
+      border-color: CanvasText;
+      background: Canvas;
+    }
+
+    .wave__bar {
+      border-color: CanvasText;
+    }
+
+    .wave__bar span {
+      background-color: Highlight;
+    }
+
+    .sos-gentle,
+    .crisis-card {
+      border-color: CanvasText;
+    }
+  }
+}

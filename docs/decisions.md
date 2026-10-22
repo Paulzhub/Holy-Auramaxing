@@ -912,3 +912,31 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Finding:** at 320 px, and with wider text spacing on any screen, leaderboard names were cut to "Finn …" and the viewer's own name vanished. A long score ("12 encouragements") pushed the page sideways (WCAG 1.4.10, 1.4.12).
 - **Decision:** names wrap (`overflow-wrap: anywhere`), the "You" and "Hidden from members" tags drop under the name, and the score column may shrink and wrap. Rows grow taller rather than lose text. Headings may break inside a long word only when it can't fit (A2-2).
 - **Tests:** e2e `a11y-review-2.spec.ts` ("leaderboard names wrap", "320 px with wider text spacing").
+
+## D-106 · Phase 8a · The SOS sheet, its tally, and SOS offline
+
+- **Sheet:** the shell's SOS button (now on onboarding too) opens one sheet: a guided breathing circle, five Scripture cards (current ebible.org WEB, D-105), the prayer, the ten-minute "ride the wave" timer, the tally, quick actions and the "Already slipped?" block, which stays.
+  - **Breathing:** in 4, hold 4, out 6, four breaths (about a minute). It never starts by itself, can be paused and stepped by hand, and stands still under reduced motion. Screen readers hear one polite line per breath.
+  - **Timer:** ten minutes. Spoken only at 5 min, 1 min and the end, through the sheet's one `aria-live="polite"` line (no second `role="status"`). Stopping early says "That's okay. You reached out." and records nothing.
+  - **Tally:** one number per person, no dates (`recovery_tallies`), so it can't show a gap or a failure, or when someone struggled. It only counts up: when the timer ends, or "I made it through". Offline, a wave waits on the page and is sent when the connection returns. Kept until the account is deleted; in the export.
+- **Results:** SOS actions are server actions that return to the sheet; nothing reaches the address (D-098).
+- **Offline:** `/breathe` (title "Take a breath", no account needed) holds the same tools minus reaching out. `sw.js` now registers for everyone signed in (`OfflineReady`), keeps `/breathe` and the files it names in `ha-offline-v1` (fetched without cookies, refreshed daily), and answers only when `navigator.onLine` is false: a failed navigation gets `/breathe`. Online, the worker stays out of the way. Phase 10 builds network-first caching on this cache. The manifest gains one shortcut ("Take a breath").
+- **Alternatives:** an `/sos` page instead of a sheet (one more navigation in the worst moment); a full app-shell cache now (Phase 10's job, and riskier to get wrong).
+
+## D-107 · Phase 8a · "Call my partner": the partner alert plus an optional number (owner, 2026-10-22)
+
+- **Decision:** the sheet shows each active partner. If they shared a number, there's a "Call" (`tel:`) and a "WhatsApp" (`wa.me`) link. "Let my partners know" sends the existing partner SOS (`send_partner_sos`, high urgency, discreet), and only partners I allowed alerts for get it.
+- **The number:** set on Settings, optional, validated (6 to 15 digits), encrypted by the app (bound to the owner) in `partner_contacts`, removable. `partner_contacts_for_me()` hands it, still encrypted, only to active partners in a group both are still in, never across a block or to a closing account. Kept until removed or the account is deleted; in the export.
+- **"Ask my group to pray":** a prayer request on the chosen group's wall through social's `askGroupForPrayer` (the same `create_post` as the slip page).
+
+## D-108 · Phase 8a · The private journal
+
+- **Decision:** `/journal` (title "Journal") with an optional guided question: 30 that invite reflection, never confession, one suggested each day. `/journal/<id>` edits or deletes.
+- **Encryption:** AES-256-GCM in server code with `APP_ENCRYPTION_KEY` (D-025), bound to `journal:<author>:<entry id>`. The app picks the UUIDv7 id first so the binding holds. The database accepts only `v1:` ciphertext, the author alone can read the row (RLS), and there are no write grants and no admin path. Not audited (D-099). Kept until the person deletes it or the account; in the export, decrypted for the owner.
+- **Results:** forms come back to the same address with the result in the one-minute cookie (D-098); focus lands on it (D-103).
+
+## D-109 · Phase 8a · Resources and on-device crisis detection
+
+- **Resources:** `/resources` (title "Resources") lists crisis lines first, with the person's own country (guessed from their time zone, on the server) at the top, then India and the US. It also covers family-safe DNS and device settings, finding a counsellor, books (pending pastoral review), and that the app is not a medical service. The numbers in `crisis-lines.ts` were checked on 2026-10-22; check again before launch and every six months.
+- **Detection:** `mentionsSelfHarm()` matches about 30 phrases (not single words, to avoid "this homework is killing me"), in the browser only, as someone types in the journal, a post or a comment. A match shows a calm card with two crisis lines, the emergency number and a link to Resources. Nothing is sent, logged or blocked, and saving works as before. A unit test checks the matcher and the card make no network calls.
+- **Alternatives:** server-side matching (would send the words somewhere, which §7.9 forbids); blocking the post (would punish honesty).

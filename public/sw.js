@@ -1,15 +1,98 @@
 /*
- * Holy Auramaxing service worker (CLAUDE.md §13, D-092). Phase 7 gives it
- * one job: show push notifications and open the app when one is tapped.
- * Phase 10 adds caching, the offline page and the offline check-in queue.
+ * Holy Auramaxing service worker (CLAUDE.md §13, D-092). Phase 7 gave it
+ * push: show a notification and open the app when one is tapped. Phase 8a
+ * (D-106) adds one small, versioned cache: the /breathe page and the files it
+ * needs, shown whenever a page can't load because the device is offline.
+ * Phase 10 extends this cache into the full app shell and offline queue.
  *
  * A push carries only what's shown (discreet by default) and where to go;
- * it never holds anyone's words. Nothing is cached here.
+ * it never holds anyone's words. The cache holds only /breathe, a page with
+ * nobody's data on it; nothing personal is ever cached.
  */
 "use strict";
 
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+// ---------------------------------------------------------------- offline page
+
+const OFFLINE_CACHE = "ha-offline-v1";
+const OFFLINE_PAGE = "/breathe";
+const REFRESH_AFTER_MS = 24 * 60 * 60 * 1000;
+
+/** The page, plus the scripts, styles and fonts it names (same origin, under /_next/static/ only). */
+async function cacheOfflinePage() {
+  const cache = await caches.open(OFFLINE_CACHE);
+  const response = await fetch(OFFLINE_PAGE, { credentials: "omit", cache: "no-store" });
+  if (!response.ok) return;
+  const html = await response.clone().text();
+  const assets = new Set();
+  for (const match of html.matchAll(/(?:src|href)="(\/_next\/static\/[^"?#]+)"/gi)) assets.add(match[1]);
+  await Promise.all(
+    [...assets].map((url) =>
+      fetch(url)
+        .then((r) => (r.ok ? cache.put(url, r) : undefined))
+        .catch(() => undefined),
+    ),
+  );
+  const headers = new Headers(response.headers);
+  headers.set("x-cached-at", String(Date.now()));
+  await cache.put(OFFLINE_PAGE, new Response(await response.blob(), { status: 200, headers }));
+}
+
+/** Refresh the copy now and then (a new deploy has new file names). Never fails the caller. */
+async function refreshOfflinePage(force) {
+  try {
+    const cache = await caches.open(OFFLINE_CACHE);
+    const cached = await cache.match(OFFLINE_PAGE);
+    const at = Number(cached && cached.headers.get("x-cached-at"));
+    if (force || !cached || !at || Date.now() - at > REFRESH_AFTER_MS) await cacheOfflinePage();
+  } catch {
+    // Offline or the server is down: keep the old copy.
+  }
+}
+
+self.addEventListener("install", (event) => {
+  // Best effort: push must keep working even if the page can't be fetched now.
+  event.waitUntil(refreshOfflinePage(true).then(() => self.skipWaiting()));
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.filter((k) => k.startsWith("ha-offline-") && k !== OFFLINE_CACHE).map((k) => caches.delete(k)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  );
+});
+
+// The app asks for a refresh when it opens (at most once a day it actually fetches).
+self.addEventListener("message", (event) => {
+  if (event.data === "refresh-offline") event.waitUntil(refreshOfflinePage(false));
+});
+
+// Only while the device says it's offline: everything else goes to the network
+// exactly as without a service worker (Phase 10 adds network-first caching).
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  if (request.method !== "GET" || self.navigator.onLine) return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request).catch(() =>
+        caches.match(OFFLINE_PAGE, { cacheName: OFFLINE_CACHE }).then((r) => r || Response.error()),
+      ),
+    );
+    return;
+  }
+  if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(caches.match(url.pathname, { cacheName: OFFLINE_CACHE }).then((r) => r || fetch(request)));
+  }
+});
+
+// ---------------------------------------------------------------- push
 
 const ICON = "/icons/icon-192.png";
 const BADGE = "/icons/badge-96.png";

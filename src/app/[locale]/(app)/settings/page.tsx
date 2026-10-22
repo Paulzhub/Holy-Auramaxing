@@ -7,6 +7,7 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { getThemePreference } from "@/lib/server/theme";
 import { requireAccount, SignOutButton } from "@/features/auth";
 import { NotificationSettingsCard } from "@/features/notifications";
+import { getMyPartnerContact, PartnerContactCard, RecoveryNotice } from "@/features/recovery";
 import { getSocialSettings, SocialNotice, SocialSettingsCard } from "@/features/social";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
@@ -20,7 +21,7 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function Page({ searchParams }: { searchParams: SearchParams }) {
   const [{ userId }, query] = await Promise.all([requireAccount(), searchParams]);
-  const socialSettings = await getSocialSettings(userId);
+  const [socialSettings, partnerPhone] = await Promise.all([getSocialSettings(userId), getMyPartnerContact(userId)]);
   const t = await getTranslations("pages.settings");
   const tb = await getTranslations("social.block");
   const tn = await getTranslations("social.nudges");
@@ -31,6 +32,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
     <>
       <PageHeader title={t("title")} lede={t("lede")} />
       <SocialNotice notice={query.notice} error={query.error} />
+      <RecoveryNotice notice={query.notice} error={query.error} />
       <div className="stack">
         <Card>
           <div className="grid gap-3">
@@ -68,6 +70,9 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
             <p className="text-muted">{tn("settingsBody")}</p>
             <SocialSettingsCard settings={socialSettings} />
           </div>
+        </Card>
+        <Card>
+          <PartnerContactCard phone={partnerPhone} />
         </Card>
         <Card>
           <div className="grid gap-3">

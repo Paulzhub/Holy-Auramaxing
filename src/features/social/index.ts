@@ -47,6 +47,7 @@ export {
   type SocialSettings,
 } from "./server/accountability";
 export { exportSocialData } from "./server/export";
+export { askGroupForPrayer, sendPartnerSos } from "./server/sos";
 
 // Server components: no JavaScript reaches the browser for these.
 export {

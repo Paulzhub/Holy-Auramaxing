@@ -74,7 +74,8 @@ describe("one-click unsubscribe links (RFC 8058, D-092)", () => {
           [`${type} text`, email.text],
           [`${type} List-Unsubscribe`, oneClick],
         ] as const) {
-          expect(text, where).not.toMatch(SENSITIVE_WORDS);
+          // The opaque ?k= value is random: it can spell "xXx" by chance, so only the words around it are checked.
+          expect(text.replace(/([?&]k=)[A-Za-z0-9_-]+/g, "$1…"), where).not.toMatch(SENSITIVE_WORDS);
           expect(text, where).not.toContain(USER);
           expect(text, where).not.toMatch(/[?&](u|t)=/);
         }

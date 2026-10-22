@@ -2,23 +2,41 @@
 
 import { LifeBuoy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Link } from "@/i18n/navigation";
 
+import { QuickActions, Tally, useSosContext, useWaves } from "./sos-actions";
+import {
+  AfterSlip,
+  Breathing,
+  LiveLine,
+  SosPrayer,
+  useAnnouncer,
+  VerseCards,
+  WaveTimer,
+  type WaveTimerHandle,
+} from "./sos-tools";
+
 /**
- * Always visible, one tap away. Phase 8 replaces the placeholder content
- * with the breathing timer, Scripture cards and quick actions.
+ * Always visible, one tap away on every signed-in screen (CLAUDE.md §7.9,
+ * D-106). Everything except reaching out works without a connection, because
+ * it is all in this bundle; the offline page (/breathe) has the same tools.
  */
-export function SosButton() {
+export function SosButton({ placement = "shell" }: { placement?: "shell" | "corner" }) {
   const t = useTranslations("sos");
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <button type="button" className="sos-button" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={placement === "corner" ? "sos-button sos-button--corner" : "sos-button"}
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+      >
         <LifeBuoy aria-hidden="true" />
         {t("button")}
       </button>
@@ -29,41 +47,51 @@ export function SosButton() {
         title={t("title")}
         description={t("description")}
         closeLabel={t("close")}
+        className="sos-sheet"
         footer={
           <Button variant="primary" onClick={() => setOpen(false)}>
             {t("done")}
           </Button>
         }
       >
-        <p>{t("breathe")}</p>
-        <figure className="verse">
-          <blockquote>
-            <p>{t("verseText")}</p>
-          </blockquote>
-          <figcaption>{t("verseReference")}</figcaption>
-        </figure>
-        <section className="grid gap-1">
-          <h3 className="font-display text-(length:--text-lg)">{t("prayerHeading")}</h3>
-          <p>{t("prayer")}</p>
-        </section>
-        {/* Someone may open SOS after a slip, out of shame rather than temptation (grace review 1, G-7). */}
-        <details className="sos-after-slip">
-          <summary>{t("afterSlip")}</summary>
-          <figure className="verse">
-            <blockquote>
-              <p>{t("afterSlipText")}</p>
-            </blockquote>
-            <figcaption>{t("afterSlipReference")}</figcaption>
-          </figure>
-          <p>{t("afterSlipNext")}</p>
-          <p>
-            <Link href="/check-in" className="text-link" onClick={() => setOpen(false)}>
-              {t("afterSlipLink")}
-            </Link>
-          </p>
-        </details>
-        <p className="text-muted text-(length:--text-sm)">{t("comingSoon")}</p>
+        {open ? <SosSheetBody onClose={() => setOpen(false)} /> : null}
       </Dialog>
     </>
+  );
+}
+
+function SosSheetBody({ onClose }: { onClose: () => void }) {
+  const t = useTranslations("sos");
+  const [message, announce] = useAnnouncer();
+  const context = useSosContext();
+  const initial = context && context !== "loading" ? context.waves : 0;
+  const { waves, note, count } = useWaves(initial, announce);
+  const timer = useRef<WaveTimerHandle>(null);
+
+  return (
+    <div className="sos-body">
+      <LiveLine message={message} />
+      <Breathing announce={announce} />
+      <VerseCards />
+      <SosPrayer />
+      <WaveTimer ref={timer} announce={announce} onFinish={() => void count()} />
+      <Tally waves={waves} note={note} onCount={count} />
+      <QuickActions
+        context={context}
+        announce={announce}
+        onClose={onClose}
+        onWalk={() => {
+          timer.current?.start();
+          document.getElementById("sos-wave")?.scrollIntoView({ block: "start" });
+        }}
+      />
+      <AfterSlip
+        link={
+          <Link href="/check-in" className="text-link" onClick={onClose}>
+            {t("afterSlipLink")}
+          </Link>
+        }
+      />
+    </div>
   );
 }
