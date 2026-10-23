@@ -75,11 +75,15 @@ self.addEventListener("message", (event) => {
   if (event.data === "refresh-offline") event.waitUntil(refreshOfflinePage(false));
 });
 
-// Only while the device says it's offline: everything else goes to the network
-// exactly as without a service worker (Phase 10 adds network-first caching).
+// Page loads go to the network as usual; only when one fails (offline, or
+// the server can't be reached) does the worker answer, with /breathe. The
+// static files /breathe needs come from its own small cache when present
+// (their names change with every deploy, so a cached one is never stale).
+// Everything else isn't touched. (A device's "offline" flag isn't reliable
+// enough to decide this, so it isn't used.) Phase 10 adds caching for the rest.
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  if (request.method !== "GET" || self.navigator.onLine) return;
+  if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (request.mode === "navigate") {

@@ -10,13 +10,20 @@ import { useEffect } from "react";
 export function OfflineReady() {
   useEffect(() => {
     if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
-    navigator.serviceWorker
-      .register("/sw.js", { scope: "/" })
-      .then(() => navigator.serviceWorker.ready)
-      .then((registration) => registration.active?.postMessage("refresh-offline"))
-      .catch(() => {
-        // No service worker here (private browsing, an old browser): SOS still works while online.
-      });
+    // After the page has settled, so copying /breathe never competes with the page itself.
+    const register = () =>
+      navigator.serviceWorker
+        .register("/sw.js", { scope: "/" })
+        .then(() => navigator.serviceWorker.ready)
+        .then((registration) => registration.active?.postMessage("refresh-offline"))
+        .catch(() => {
+          // No service worker here (private browsing, an old browser): SOS still works while online.
+        });
+    const timer = window.setTimeout(() => {
+      if ("requestIdleCallback" in window) window.requestIdleCallback(() => void register(), { timeout: 5000 });
+      else void register();
+    }, 8000);
+    return () => window.clearTimeout(timer);
   }, []);
   return null;
 }

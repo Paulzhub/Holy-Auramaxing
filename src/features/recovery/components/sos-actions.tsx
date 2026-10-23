@@ -304,15 +304,27 @@ export function useSosContext(): SosContext | null | "loading" {
   const [context, setContext] = useState<SosContext | null | undefined>(undefined);
   useEffect(() => {
     let cancelled = false;
-    sosContextAction()
-      .then((c) => {
-        if (!cancelled) setContext(c);
-      })
-      .catch(() => {
-        if (!cancelled) setContext(null);
-      });
+    // Never call the server while offline: a server action that can't reach
+    // the server makes Next.js reload the page, which would close the sheet.
+    const load = () => {
+      if (!navigator.onLine) {
+        if (!cancelled) setContext((c) => (c === undefined ? null : c));
+        return;
+      }
+      sosContextAction()
+        .then((c) => {
+          if (!cancelled) setContext(c);
+        })
+        .catch(() => {
+          if (!cancelled) setContext((c) => (c === undefined ? null : c));
+        });
+    };
+    const timer = window.setTimeout(load, 0);
+    window.addEventListener("online", load);
     return () => {
       cancelled = true;
+      window.clearTimeout(timer);
+      window.removeEventListener("online", load);
     };
   }, []);
   return context === undefined ? "loading" : context;

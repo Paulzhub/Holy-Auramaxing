@@ -154,16 +154,21 @@ test.describe("SOS", () => {
     await signInNewMember(page, "sos-offline");
     await page.goto("/home");
     // The app registers the worker and it keeps a copy of /breathe.
-    await page.waitForFunction(
-      async () => {
-        const reg = await navigator.serviceWorker.getRegistration("/");
-        if (!reg?.active) return false;
-        const cache = await caches.open("ha-offline-v1");
-        return Boolean(await cache.match("/breathe"));
-      },
-      undefined,
-      { timeout: 30_000 },
-    );
+    // (waitForFunction doesn't wait for an async check, so poll it.)
+    await expect
+      .poll(
+        () =>
+          page.evaluate(async () => {
+            const reg = await navigator.serviceWorker.getRegistration("/");
+            if (!reg?.active) return false;
+            const cache = await caches.open("ha-offline-v1");
+            return Boolean(await cache.match("/breathe"));
+          }),
+        { timeout: 30_000 },
+      )
+      .toBe(true);
+    // The sheet's code warms a few seconds after the page settles.
+    await expect(page.getByRole("button", { name: "SOS" })).toHaveAttribute("data-ready", "true", { timeout: 15_000 });
     // Offline, the SOS sheet on an open page still works...
     await context.setOffline(true);
     const sheet = await openSos(page);

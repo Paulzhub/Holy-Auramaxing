@@ -181,10 +181,10 @@ describe("discretion (§2.3, D-055)", () => {
     expect(isDiscreet(en.sos.offlinePage.title)).toBe(true);
   });
 
-  it("the service worker keeps only /breathe and its files, and only answers when offline", () => {
+  it("the service worker keeps only /breathe and its files, and answers a page load only when it fails", () => {
     const sw = read("public/sw.js");
     expect(sw).toMatch(/const OFFLINE_PAGE = "\/breathe";/);
-    expect(sw).toMatch(/self\.navigator\.onLine\) return;/);
+    expect(sw).toMatch(/fetch\(request\)\.catch\(\(\) =>\s*caches\.match\(OFFLINE_PAGE/);
     expect(sw).toMatch(/credentials: "omit"/);
     expect(sw.match(/cache\.put\(/g)).toHaveLength(2);
   });
