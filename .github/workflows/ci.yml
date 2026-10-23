@@ -128,7 +128,15 @@ jobs:
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Lighthouse CI
-        run: npm run lighthouse
+        shell: bash
+        # Job logs aren't always reachable, so on a failure the last lines
+        # (which page and which score) are also shown as annotations.
+        run: |
+          set -o pipefail
+          npm run lighthouse 2>&1 | tee lighthouse.log || {
+            grep -E "failure|expected|Error|✘|URL" lighthouse.log | tail -40 | sed 's/^/::error title=Lighthouse::/'
+            exit 1
+          }
       - name: Upload reports
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
