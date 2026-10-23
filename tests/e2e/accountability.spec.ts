@@ -261,8 +261,8 @@ test.describe("Nudges, partners and milestones", () => {
     expect(count).toBe(0);
 
     const card = page.getByRole("article").filter({ hasText: "Ray Runner reached Sabbath Rest" });
-    await card.getByRole("button", { name: /^On fire, no reactions yet/ }).click();
-    await expect(card.getByRole("button", { name: /^On fire, 1 reaction, including yours/ })).toHaveAttribute(
+    await card.getByRole("button", { name: /^Proud of you, no reactions yet/ }).click();
+    await expect(card.getByRole("button", { name: /^Proud of you, 1 reaction, including yours/ })).toHaveAttribute(
       "aria-pressed",
       "true",
     );

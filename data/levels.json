@@ -286,7 +286,7 @@
    "tier": 45,
    "era": "Kingdom",
    "name": "Undignified Dancer",
-   "reference": "2 Samuel 6:22"
+   "reference": "2 Samuel 6:14"
   },
   {
    "tier": 46,
@@ -664,7 +664,7 @@
    "tier": 108,
    "era": "Gospels",
    "name": "Narrow Gate",
-   "reference": "Matthew 7:13"
+   "reference": "Matthew 7:14"
   },
   {
    "tier": 109,
@@ -3679,7 +3679,7 @@
    "tier_name": "Undignified Dancer",
    "variant": "",
    "era": "Kingdom",
-   "reference": "2 Samuel 6:22",
+   "reference": "2 Samuel 6:14",
    "days_from_level_0": 2550
   },
   {
@@ -3689,7 +3689,7 @@
    "tier_name": "Undignified Dancer",
    "variant": "Lite",
    "era": "Kingdom",
-   "reference": "2 Samuel 6:22",
+   "reference": "2 Samuel 6:14",
    "days_from_level_0": 2560
   },
   {
@@ -3699,7 +3699,7 @@
    "tier_name": "Undignified Dancer",
    "variant": "Pro",
    "era": "Kingdom",
-   "reference": "2 Samuel 6:22",
+   "reference": "2 Samuel 6:14",
    "days_from_level_0": 2570
   },
   {
@@ -3709,7 +3709,7 @@
    "tier_name": "Undignified Dancer",
    "variant": "Max",
    "era": "Kingdom",
-   "reference": "2 Samuel 6:22",
+   "reference": "2 Samuel 6:14",
    "days_from_level_0": 2580
   },
   {
@@ -3719,7 +3719,7 @@
    "tier_name": "Undignified Dancer",
    "variant": "Ultra",
    "era": "Kingdom",
-   "reference": "2 Samuel 6:22",
+   "reference": "2 Samuel 6:14",
    "days_from_level_0": 2590
   },
   {
@@ -3729,7 +3729,7 @@
    "tier_name": "Undignified Dancer",
    "variant": "Ultra Pro Max",
    "era": "Kingdom",
-   "reference": "2 Samuel 6:22",
+   "reference": "2 Samuel 6:14",
    "days_from_level_0": 2600
   },
   {
@@ -7459,7 +7459,7 @@
    "tier_name": "Narrow Gate",
    "variant": "",
    "era": "Gospels",
-   "reference": "Matthew 7:13",
+   "reference": "Matthew 7:14",
    "days_from_level_0": 6330
   },
   {
@@ -7469,7 +7469,7 @@
    "tier_name": "Narrow Gate",
    "variant": "Lite",
    "era": "Gospels",
-   "reference": "Matthew 7:13",
+   "reference": "Matthew 7:14",
    "days_from_level_0": 6340
   },
   {
@@ -7479,7 +7479,7 @@
    "tier_name": "Narrow Gate",
    "variant": "Pro",
    "era": "Gospels",
-   "reference": "Matthew 7:13",
+   "reference": "Matthew 7:14",
    "days_from_level_0": 6350
   },
   {
@@ -7489,7 +7489,7 @@
    "tier_name": "Narrow Gate",
    "variant": "Max",
    "era": "Gospels",
-   "reference": "Matthew 7:13",
+   "reference": "Matthew 7:14",
    "days_from_level_0": 6360
   },
   {
@@ -7499,7 +7499,7 @@
    "tier_name": "Narrow Gate",
    "variant": "Ultra",
    "era": "Gospels",
-   "reference": "Matthew 7:13",
+   "reference": "Matthew 7:14",
    "days_from_level_0": 6370
   },
   {
@@ -7509,7 +7509,7 @@
    "tier_name": "Narrow Gate",
    "variant": "Ultra Pro Max",
    "era": "Gospels",
-   "reference": "Matthew 7:13",
+   "reference": "Matthew 7:14",
    "days_from_level_0": 6380
   },
   {

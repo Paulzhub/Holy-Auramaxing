@@ -59,7 +59,8 @@ export async function LevelCard({
         {t("progress", { done: level.progressDays, total: level.daysToNext, next: level.nextLabel })}
       </p>
       {children}
-      {dropped ? <p className="level-card__quiet">{t("down", { label: level.label })}</p> : null}
+      {/* Only missed days lower the level between check-ins; a slip is told on the check-in page (GR-2). */}
+      {dropped ? <p className="level-card__quiet">{t("downMissed", { label: level.label })}</p> : null}
       {level.level === 0 && !dropped ? <p className="level-card__quiet">{t("clay")}</p> : null}
       <figure className="verse level-card__verse">
         <blockquote>

@@ -82,7 +82,7 @@
     "close": "Close",
     "done": "I’m okay for now",
     "afterSlip": "Already slipped? There’s grace for that too.",
-    "afterSlipText": "If we confess our sins, he is faithful and righteous to forgive us the sins, and to cleanse us from all unrighteousness.",
+    "afterSlipText": "If we confess our sins, he is faithful and righteous to forgive us the sins and to cleanse us from all unrighteousness.",
     "afterSlipReference": "1 John 1:9 (WEB)",
     "afterSlipNext": "When you’re ready, check in honestly. A slip resets a streak, never you.",
     "afterSlipLink": "Go to your check-in",
@@ -236,6 +236,8 @@
       "journalBody": "A private place to write. Only you can read it.",
       "resourcesLink": "Resources",
       "resourcesBody": "Crisis lines, safer devices, counsellors and books."
+      "progressBody": "Your streaks, calendar, charts, level and badges.",
+      "progressLink": "See your journey"
     },
     "settings": {
       "title": "Settings",
@@ -289,7 +291,7 @@
       "kinds": {
         "pray": "Praying",
         "heart": "Love",
-        "fire": "On fire",
+        "fire": "Proud of you",
         "strong": "With you",
         "dove": "Peace"
       }
@@ -753,7 +755,7 @@
     "welcome": {
       "title": "Welcome. You're not alone.",
       "lede": "This is a place of grace. Every day is a fresh start, and a slip never defines you.",
-      "verseText": "It is because of Yahweh's loving kindnesses that we are not consumed, because his mercies don't fail. They are new every morning. Great is your faithfulness.",
+      "verseText": "It is because of Yahweh’s loving kindnesses that we are not consumed, because his mercies don’t fail. They are new every morning. Great is your faithfulness.",
       "verseReference": "Lamentations 3:22–23 (WEB)",
       "nameLabel": "What should we call you?",
       "nameHint": "This is the name your groups will see. A first name or nickname is perfect. You can change it later."
@@ -1186,7 +1188,7 @@
       "todayTitle": "Today",
       "todayBody": "Check-ins for today will show here, at the level each member shares.",
       "leaderboardTitle": "Leaderboard",
-      "leaderboardBody": "The group's leaderboard arrives with check-ins and streaks.",
+      "leaderboardBody": "Your group’s leaderboard shows here.",
       "wallTitle": "Encouragement wall",
       "wallBody": "Encouragement, prayer requests and testimonies from your group.",
       "togetherTitle": "Together",
@@ -1478,7 +1480,7 @@
       "saving": "Saving…",
       "choicesLabel": "Your answer",
       "currentAnswer": "(your answer now)",
-      "honest": "Either answer earns the same reward. Honesty is what counts.",
+      "honest": "Either answer earns the same XP. An honest answer never costs you more than staying away.",
       "detailsSummary": "Add how it went (optional)",
       "detailsHint": "Fill in any of these, then choose your answer below.",
       "moodLegend": "Mood",
@@ -1530,14 +1532,14 @@
       "notFound": "There’s no check-in for that day yet.",
       "saveFailed": "That didn’t save. Please try again.",
       "rateLimited": "That’s a lot of changes in a short time. Please wait a little and try again.",
-      "syncTooOld": "This check-in was saved on your device too long ago to count. Today is a fresh start.",
+      "syncTooOld": "This check-in was saved on your device too long ago for us to add it now. Thank you for answering honestly. Today is a fresh start.",
       "alreadyAnswered": "That day already has an answer, so this one wasn’t needed."
     },
     "done": {
       "title": "Thank you for checking in",
       "status": "Saved: you stayed free {day}.",
       "lede": "One more day walked in freedom, one day at a time.",
-      "verseText": "Now thanks be to God, who always leads us in triumph in Christ.",
+      "verseText": "Now thanks be to God who always leads us in triumph in Christ.",
       "verseReference": "2 Corinthians 2:14 (WEB)",
       "homeLink": "Back to today"
     },
@@ -1545,7 +1547,7 @@
       "title": "His mercies are new every morning",
       "status": "Saved. Thank you for being honest.",
       "lede": "A slip resets a streak, never you. You are forgiven, and you are not alone.",
-      "verseText": "If we confess our sins, he is faithful and righteous to forgive us the sins, and to cleanse us from all unrighteousness.",
+      "verseText": "If we confess our sins, he is faithful and righteous to forgive us the sins and to cleanse us from all unrighteousness.",
       "verseReference": "1 John 1:9 (WEB)",
       "reflectionTitle": "What was going on?",
       "reflectionLede": "Optional, and private to you. Noticing what was happening can help you see the next hard moment coming.",
@@ -1578,7 +1580,7 @@
     },
     "kept": {
       "slipTitle": "Your streak starts again, but look at everything you kept",
-      "pausedTitle": "Your streak paused, but look at everything you’ve built",
+      "pausedTitle": "Welcome back. Look at everything you’ve built",
       "cleanDays": "{count, plural, one {# free day} other {# free days}}",
       "streaks": "{count, plural, one {# streak built} other {# streaks built}}",
       "longest": "{count, plural, one {longest streak: # day} other {longest streak: # days}}",
@@ -1664,8 +1666,9 @@
     "progressLabel": "Progress to the next level",
     "progress": "{done} of {total} days to {next}",
     "verseReference": "{reference} (WEB)",
-    "down": "You’re now {label}. Your longest streak and total free days are still yours.",
-    "clay": "Everyone starts as Clay. Each free day shapes you.",
+    "down": "You’re still here, and that matters. You’re now {label}, and your longest streak and every free day are still yours.",
+    "downMissed": "Welcome back. Days without a check-in moved your level back, just as a slip would. You’re now {label}, and your longest streak and every free day are still yours.",
+    "clay": "Everyone starts as Clay, in the Potter’s hands. Every free day is part of his shaping.",
     "upTitle": "You reached {label}",
     "upBody": "Every free day counted. Keep walking, one day at a time.",
     "eraTitle": "A new chapter: {era}",
@@ -1806,7 +1809,6 @@
     "hiddenFromMembers": "Hidden from members",
     "shareNote": "Members who share only that they checked in appear on Consistency and Encourager.",
     "notOnBoard": "You share only that you checked in with this group, so you appear on Consistency and Encourager.",
-    "encouragerSoon": "Encouragement arrives with the group wall. Until then, everyone starts here at 0.",
     "weekNote": "This week runs Monday to Sunday in the group's time zone.",
     "updatedNote": "Updated within a few seconds of each check-in. Ties go to whoever got there first.",
     "together": {
@@ -2027,7 +2029,7 @@
       "sentToday": "Nudged today",
       "kinds": {
         "praying": "Praying for you",
-        "check_in": "Check in today",
+        "check_in": "Thinking of you today",
         "got_this": "You've got this",
         "call_me": "Call me if you need",
         "pray_for_me": "Please pray for me"
