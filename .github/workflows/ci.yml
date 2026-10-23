@@ -137,6 +137,20 @@ jobs:
             # One annotation (GitHub shows at most ten per step), newlines as %0A.
             summary=$(sed "s/\x1b\[[0-9;]*m//g" lighthouse.log | sed -n '/Checking assertions/,$p' | grep -E "localhost|failure|found:" | tail -80 | awk '{printf "%s%%0A", $0}')
             echo "::error title=Lighthouse::${summary}"
+            # The metrics behind each score under 0.95 (from the saved reports).
+            node -e '
+              const fs = require("fs"), path = require("path");
+              const walk = (d) => fs.existsSync(d) ? fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]) : [];
+              const lines = [];
+              for (const f of walk(".lighthouseci").filter((f) => /lhr-.*\.json$/.test(f))) {
+                const r = JSON.parse(fs.readFileSync(f, "utf8"));
+                const score = r.categories.performance.score;
+                if (score >= 0.95) continue;
+                const m = (id) => `${id}=${r.audits[id].displayValue} (${r.audits[id].score})`;
+                lines.push(`${r.finalDisplayedUrl} ${score}: ` + ["first-contentful-paint", "largest-contentful-paint", "total-blocking-time", "cumulative-layout-shift", "speed-index"].map(m).join(", "));
+              }
+              console.log("::error title=Lighthouse metrics::" + (lines.join("%0A") || "no saved reports"));
+            ' 
             exit 1
           }
       - name: Upload reports
