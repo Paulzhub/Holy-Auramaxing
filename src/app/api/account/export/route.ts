@@ -6,6 +6,7 @@ import { exportCheckinsData } from "@/features/checkins";
 import { exportGamificationData } from "@/features/gamification";
 import { exportGroupsData } from "@/features/groups";
 import { exportProfileData } from "@/features/profile";
+import { exportRecoveryData } from "@/features/recovery";
 import { exportSocialData } from "@/features/social";
 import { exportNotificationData } from "@/features/notifications";
 import { buildExportArchive, exportFileName } from "@/lib/data-export";
@@ -21,7 +22,7 @@ export const dynamic = "force-dynamic";
  * "Download my data" (CLAUDE.md §7.1, §11; D-032): one zip with data.json,
  * a CSV per table and the profile photo. A form POST, so it works without
  * JavaScript. Each module supplies its own part; later phases add theirs
- * here (check-ins, journal…).
+ * here (check-ins, the journal, …).
  */
 export async function POST(request: NextRequest) {
   const origin = siteOrigin(new URL(request.url).origin);
@@ -55,6 +56,7 @@ export async function POST(request: NextRequest) {
       exportGamificationData(userId),
       exportSocialData(),
       exportNotificationData(),
+      exportRecoveryData(userId),
     ]);
     const archive = buildExportArchive({ generatedAt, parts, readmeIntro: t("readme") });
     await audit("account.exported", userId);

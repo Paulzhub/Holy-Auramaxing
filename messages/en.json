@@ -43,7 +43,11 @@
     "blocked": "Blocked people",
     "groupPartner": "Partner",
     "notificationSettings": "Notifications",
-    "unsubscribe": "Emails"
+    "unsubscribe": "Emails",
+    "journal": "Journal",
+    "journalEntry": "Journal entry",
+    "resources": "Resources",
+    "breathe": "Take a breath"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -70,19 +74,128 @@
     "button": "SOS",
     "title": "Take a breath",
     "description": "You reached out. That took courage. Stay here for a minute.",
-    "breathe": "Breathe in slowly for four counts, hold for four, and breathe out for six. Do it three times.",
+    "breathe": "Breathe in slowly for four counts, hold for four, and breathe out for six.",
     "verseText": "No temptation has taken you except what is common to man. God is faithful, who will not allow you to be tempted above what you are able, but will with the temptation also make the way of escape, that you may be able to endure it.",
     "verseReference": "1 Corinthians 10:13 (WEB)",
     "prayerHeading": "A short prayer",
     "prayer": "Lord, this moment is hard. Give me strength for the next minute, and show me the way out you promised. Amen.",
-    "comingSoon": "A breathing timer, Scripture cards and one-tap calls to your partner are coming soon.",
     "close": "Close",
     "done": "I’m okay for now",
+    "opening": "Opening…",
+    "openOffline": "Open breathing, Scripture and the timer",
     "afterSlip": "Already slipped? There’s grace for that too.",
     "afterSlipText": "If we confess our sins, he is faithful and righteous to forgive us the sins and to cleanse us from all unrighteousness.",
     "afterSlipReference": "1 John 1:9 (WEB)",
     "afterSlipNext": "When you’re ready, check in honestly. A slip resets a streak, never you.",
-    "afterSlipLink": "Go to your check-in"
+    "afterSlipLink": "Go to your check-in",
+    "breathing": {
+      "heading": "Breathe for a minute",
+      "body": "Follow the circle: in for four, hold for four, out for six. Four slow breaths take about a minute.",
+      "start": "Start breathing",
+      "pause": "Pause",
+      "resume": "Keep breathing",
+      "next": "Next step",
+      "in": "Breathe in",
+      "hold": "Hold",
+      "out": "Breathe out",
+      "round": "Breath {current} of {total}",
+      "done": "Well done. Notice how your body feels now.",
+      "again": "Breathe again"
+    },
+    "cards": {
+      "heading": "Words to hold on to",
+      "count": "Verse {current} of {total}",
+      "previous": "Previous verse",
+      "next": "Next verse",
+      "cor10": {
+        "text": "No temptation has taken you except what is common to man. God is faithful, who will not allow you to be tempted above what you are able, but will with the temptation also make the way of escape, that you may be able to endure it.",
+        "reference": "1 Corinthians 10:13 (WEB)"
+      },
+      "jas4": {
+        "text": "Be subject therefore to God. Resist the devil, and he will flee from you.",
+        "reference": "James 4:7 (WEB)"
+      },
+      "php4": {
+        "text": "Finally, brothers, whatever things are true, whatever things are honorable, whatever things are just, whatever things are pure, whatever things are lovely, whatever things are of good report: if there is any virtue and if there is anything worthy of praise, think about these things.",
+        "reference": "Philippians 4:8 (WEB)"
+      },
+      "psa119": {
+        "text": "How can a young man keep his way pure? By living according to your word. With my whole heart I have sought you. Don’t let me wander from your commandments. I have hidden your word in my heart, that I might not sin against you.",
+        "reference": "Psalm 119:9–11 (WEB)"
+      },
+      "gal5": {
+        "text": "But I say, walk by the Spirit, and you won’t fulfill the lust of the flesh.",
+        "reference": "Galatians 5:16 (WEB)"
+      }
+    },
+    "wave": {
+      "heading": "Ride the wave",
+      "body": "A strong feeling rises, peaks and fades, usually within minutes. Stay with it for ten minutes. You don’t have to do anything else.",
+      "start": "Start the ten minutes",
+      "pause": "Pause",
+      "resume": "Carry on",
+      "stop": "Stop",
+      "remaining": "{time} left",
+      "fiveLeft": "Five minutes left. You’re doing well.",
+      "oneLeft": "One minute left.",
+      "done": "You rode the wave. Well done.",
+      "stopped": "That’s okay. You reached out.",
+      "paused": "Paused. Carry on whenever you’re ready."
+    },
+    "tally": {
+      "made": "I made it through",
+      "count": "{count, plural, =0 {Every wave you ride out is counted here, just for you.} one {You’ve ridden out # wave. Only you can see this.} other {You’ve ridden out # waves. Only you can see this.}}",
+      "saved": "Counted. Thank you for staying.",
+      "offline": "You’re offline. Well done all the same: we’ll count it when you’re back online.",
+      "failed": "We couldn’t count that just now, but it still matters."
+    },
+    "actions": {
+      "heading": "Reach out",
+      "loading": "Getting your people…",
+      "offline": "You’re offline right now. Calling, asking for prayer and going for a walk still work, and the rest come back when you’re online.",
+      "callHeading": "Call your partner",
+      "call": "Call {name}",
+      "whatsapp": "Message {name} on WhatsApp",
+      "noNumber": "{name} hasn’t shared a number yet.",
+      "alertPartners": "Let my partners know",
+      "alertHint": "They get a quiet alert that you could use their support. It never says why.",
+      "alertNone": "To let a partner know, first allow alerts on your group’s partner page.",
+      "alerted": "Your partners know. Someone is with you.",
+      "noPartners": "An accountability partner can be one tap away. You can ask someone on your group’s partner page.",
+      "openGroups": "Open your groups",
+      "prayHeading": "Ask your group to pray",
+      "prayGroup": "Group",
+      "prayText": "What to share",
+      "prayHint": "You don’t have to explain anything.",
+      "prayDefault": "Please pray for me today.",
+      "praySend": "Ask for prayer",
+      "prayed": "Your prayer request is on your group’s wall.",
+      "noGroups": "When you’re in a group, you can ask them to pray from here.",
+      "walkHeading": "Go for a walk",
+      "walkBody": "Step outside for ten minutes, away from your screen. We’ll be here when you get back.",
+      "walkStart": "Start a ten-minute walk",
+      "errors": {
+        "rateLimited": "That’s a lot in a short time. Please wait a little and try again.",
+        "failed": "That didn’t go through. Please try again.",
+        "noAlerts": "None of your partners can be alerted yet. You can allow it on your group’s partner page.",
+        "invalidInput": "Please check what you wrote and try again.",
+        "signedOut": "Please sign in again to reach your people."
+      },
+      "moreHelp": "More help: crisis lines, counsellors and safer devices"
+    },
+    "crisis": {
+      "title": "You don’t have to carry this alone",
+      "body": "If things feel very heavy right now, please talk to someone today. These lines are free and confidential.",
+      "call": "Call {name}, {phone}",
+      "emergency": "If you are in danger right now, call your local emergency number (112 in India, 911 in the US).",
+      "more": "More help and lines in other countries",
+      "private": "Only you see this. Nothing you type is sent anywhere because of it."
+    },
+    "offlinePage": {
+      "title": "Take a breath",
+      "lede": "You’re offline, but you’re not alone. Everything on this page works without a connection.",
+      "home": "Back to the app"
+    }
   },
   "landing": {
     "title": "Freedom grows one day at a time",
@@ -120,7 +233,11 @@
       "settingsLink": "Settings",
       "settingsBody": "Theme, language and privacy",
       "progressBody": "Your streaks, calendar, charts, level and badges.",
-      "progressLink": "See your journey"
+      "progressLink": "See your journey",
+      "journalLink": "Journal",
+      "journalBody": "A private place to write. Only you can read it.",
+      "resourcesLink": "Resources",
+      "resourcesBody": "Crisis lines, safer devices, counsellors and books."
     },
     "settings": {
       "title": "Settings",
@@ -542,7 +659,7 @@
         },
         "whatWeCollectAndWhy": {
           "heading": "What we collect, and why",
-          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account. If you sign in with Google, we keep only your email address from Google, not your name or photo.\n\nYour profile: the photo, bio, testimony and favourite verse you add, shown only to the people you choose.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nYour progress: your level, XP and badges, worked out from your check-ins. A group sees your level and badges only if you share at least your streak with it, and your check-in details only at the level you choose for that group.\n\nEncouragement: the nudges you send and receive (kept for 90 days), and accountability partners you choose together. A partner sees your full check-ins in that group, and, only if you allow it, is told when you miss two days or ask for prayer.\n\nNotifications: what we have to tell you, kept for 90 days, and your choices about them. If you turn on push, your browser's push service (Google, Mozilla, Apple or Microsoft, depending on your browser) receives an encrypted message it can't read and the address of your device for it.\n\nSecurity records: sign-ins, password changes, exports and deletions, with a rough device name such as “Chrome on Android”, kept for one year to protect your account. We do not keep your IP address: our sign-in provider sees it while you sign in, and we clear it within the hour."
+          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account. If you sign in with Google, we keep only your email address from Google, not your name or photo.\n\nYour profile: the photo, bio, testimony and favourite verse you add, shown only to the people you choose.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nYour progress: your level, XP and badges, worked out from your check-ins. A group sees your level and badges only if you share at least your streak with it, and your check-in details only at the level you choose for that group.\n\nEncouragement: the nudges you send and receive (kept for 90 days), and accountability partners you choose together. A partner sees your full check-ins in that group, and, only if you allow it, is told when you miss two days or ask for prayer.\n\nRecovery tools, only if you use them: your journal, encrypted so only you can read it; how many times you rode out a hard moment with the SOS button (just the number); and a phone number you choose to share with your accountability partners, encrypted and shown only to them. Words you type are checked for signs of crisis on your device only, and never sent anywhere for it.\n\nNotifications: what we have to tell you, kept for 90 days, and your choices about them. If you turn on push, your browser's push service (Google, Mozilla, Apple or Microsoft, depending on your browser) receives an encrypted message it can't read and the address of your device for it.\n\nSecurity records: sign-ins, password changes, exports and deletions, with a rough device name such as “Chrome on Android”, kept for one year to protect your account. We do not keep your IP address: our sign-in provider sees it while you sign in, and we clear it within the hour."
         },
         "whatWeNeverDo": {
           "heading": "What we never do",
@@ -2203,6 +2320,134 @@
       "remove": "Remove",
       "removeFor": "Remove {device}",
       "none": "No devices yet."
+    }
+  },
+  "journal": {
+    "title": "Journal",
+    "lede": "A private place to put things into words. Only you can read it.",
+    "private": "Your entries are encrypted before they’re stored. Nobody else can read them, not your group, not your partner, and not us.",
+    "newHeading": "Write",
+    "promptLabel": "A question to start with (optional)",
+    "promptNone": "No question, just write",
+    "promptHint": "A new question each day. You can always write about something else.",
+    "bodyLabel": "Your entry",
+    "save": "Save entry",
+    "update": "Save changes",
+    "delete": "Delete this entry",
+    "deleteConfirm": "Delete it for good? This can’t be undone.",
+    "back": "Back to your journal",
+    "empty": "Nothing here yet. When you’re ready, write a line or two. There’s no right way to do it.",
+    "listHeading": "Your entries",
+    "open": "Open",
+    "older": "Older entries",
+    "newest": "Back to the newest",
+    "written": "Written {date}",
+    "edited": "Edited {date}",
+    "unreadable": "This entry couldn’t be opened.",
+    "notices": {
+      "journal": "Saved. Only you can read it.",
+      "journalDeleted": "Deleted.",
+      "journalInvalid": "Write something first (up to 5,000 characters).",
+      "journalFailed": "We couldn’t save that just now. Your words are still here, so please try again.",
+      "rateLimited": "That’s a lot of saves in a short time. Please wait a little and try again."
+    },
+    "prompts": {
+      "p01": "What gave you strength today?",
+      "p02": "Where did you notice God this week?",
+      "p03": "What are you grateful for right now?",
+      "p04": "What has been weighing on you lately?",
+      "p05": "When did you feel most like yourself today?",
+      "p06": "Who has been kind to you recently, and how?",
+      "p07": "What would you like to say to God today?",
+      "p08": "What does a good day look like for you?",
+      "p09": "What are you hoping for in the weeks ahead?",
+      "p10": "What helps you feel calm when things get hard?",
+      "p11": "What is one small thing you did well today?",
+      "p12": "What do you want to remember about this season?",
+      "p13": "Which verse or words have stayed with you lately?",
+      "p14": "Where do you need grace right now?",
+      "p15": "Who could you encourage this week?",
+      "p16": "What drains your energy, and what restores it?",
+      "p17": "What are you learning about yourself?",
+      "p18": "What would you tell a friend who felt the way you feel today?",
+      "p19": "What is one step you could take tomorrow?",
+      "p20": "When did you last feel truly at rest?",
+      "p21": "What are you carrying that you could hand over to God?",
+      "p22": "What brought you joy this week?",
+      "p23": "What does freedom mean to you right now?",
+      "p24": "What times of day are easiest for you, and which are hardest?",
+      "p25": "Who would you like to be honest with, and what would you say?",
+      "p26": "What has changed in you since you started?",
+      "p27": "What are you looking forward to?",
+      "p28": "What do you want your “why” to be today?",
+      "p29": "What is one promise of God you want to hold on to?",
+      "p30": "How are you, really?"
+    }
+  },
+  "resources": {
+    "title": "Resources",
+    "lede": "Help for the hard days, and for building a life you don’t want to escape from.",
+    "notMedical": "Holy Auramaxing is not a medical service and can’t replace a counsellor, doctor or pastor.",
+    "crisisHeading": "If you need someone to talk to now",
+    "crisisBody": "These lines are free and confidential. Your own country is first, if we could tell from your time zone.",
+    "crisisCall": "Call {phone}",
+    "crisisAllDay": "Open day and night",
+    "crisisVaries": "Check the opening hours",
+    "crisisOther": "Somewhere else? Find a line near you at findahelpline.com.",
+    "crisisEmergency": "If you are in danger right now, call your local emergency number (112 in India, 911 in the US).",
+    "filtersHeading": "Make your devices safer",
+    "filtersBody": "Filters don’t change a heart, but they buy you time in a weak moment. Set them up on a good day, and let someone you trust hold the password if you can.",
+    "filters": {
+      "dns": {
+        "title": "Family-safe DNS for your whole home",
+        "body": "On your Wi-Fi router, set the DNS servers to a family filter such as CleanBrowsing Family (185.228.168.168 and 185.228.169.168) or OpenDNS FamilyShield (208.67.222.123 and 208.67.220.123). Every device on that Wi-Fi is then filtered."
+      },
+      "android": {
+        "title": "Android",
+        "body": "Settings → Network & internet → Private DNS → “Private DNS provider hostname”, then enter family-filter-dns.cleanbrowsing.org. In Google Family Link or Digital Wellbeing you can also set app limits."
+      },
+      "iphone": {
+        "title": "iPhone and iPad",
+        "body": "Settings → Screen Time → Content & Privacy Restrictions → App Store, Media, Web & Games → Web Content → Limit Adult Websites. Ask someone you trust to set the Screen Time passcode."
+      },
+      "windows": {
+        "title": "Windows and Mac",
+        "body": "Use your router’s family DNS (above), or set the computer’s DNS to the same family servers in its network settings. Microsoft Family Safety (Windows) and Screen Time (Mac) can also limit websites."
+      }
+    },
+    "counsellorHeading": "Talk to a counsellor",
+    "counsellorBody": "There is no shame in getting help. A counsellor who understands compulsive behaviour, ideally one who shares your faith, can help with what lies underneath.",
+    "counsellor": {
+      "c1": "Ask your pastor or church leaders who they would recommend.",
+      "c2": "In India, Tele-MANAS (14416) can also connect you with a counsellor near you.",
+      "c3": "Look for a licensed counsellor or psychologist, and ask whether they have worked with people facing compulsive sexual behaviour."
+    },
+    "booksHeading": "Books worth reading",
+    "booksBody": "A few books many people have found helpful. We’re still asking pastors to review this list.",
+    "books": {
+      "b1": "Surfing for God, Michael John Cusick",
+      "b2": "Unwanted, Jay Stringer",
+      "b3": "Every Man’s Battle, Stephen Arterburn and Fred Stoeker",
+      "b4": "Closing the Window, Tim Chester"
+    },
+    "sosHeading": "In a hard moment",
+    "sosBody": "The SOS button is on every screen: breathing, Scripture, a ten-minute timer and your people, one tap away."
+  },
+  "recovery": {
+    "contact": {
+      "title": "A number your partners can call",
+      "body": "If you share a phone or WhatsApp number, your active accountability partners can call you from their SOS button. Only they see it, and it’s encrypted.",
+      "label": "Phone or WhatsApp number",
+      "hint": "Include your country code, for example +91 98765 43210.",
+      "save": "Save number",
+      "remove": "Remove my number",
+      "notices": {
+        "phoneSaved": "Saved. Your active partners can call you now.",
+        "phoneRemoved": "Removed. Your partners no longer see a number.",
+        "phoneInvalid": "That doesn’t look like a phone number. Please check it and include your country code.",
+        "phoneFailed": "We couldn’t save that just now. Please try again.",
+        "phoneRateLimited": "That’s a lot of changes in a short time. Please wait a little and try again."
+      }
     }
   }
 }

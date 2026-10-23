@@ -7,7 +7,7 @@ How to use:
 3. Check every "Done when" item yourself before moving on. Commit to Git after each phase.
 4. Run the review prompts (bottom of this file) in a fresh session after phases 4, 7 and 11, and before launch.
 
-Phases 1–7 give you a usable app for your friends; 8–12 make it ready for the public.
+Phases 1–7 give you a usable app for your friends; 8–12 make it ready for the public. Phase 13 is optional: store apps for Google Play and the App Store, on top of the PWA.
 
 ---
 
@@ -253,6 +253,44 @@ Done when:
 - Zero automated accessibility violations and a completed manual checklist.
 - The load test passes with p95 under 500 ms and no errors.
 - Every launch-checklist item is done.
+```
+
+## Phase 13 (optional) — Store apps for Android and iPhone
+
+Optional. The PWA from Phase 10 is the app; do this only if you want listings on Google Play and the App Store. Do it after Phase 10, once the final domain is live.
+
+```text
+Read CLAUDE.md. Phase 13 (optional): Store apps (section 13, "Keep the code ready for later Trusted Web Activity and Capacitor wrappers"). Plan first, and wait for my OK.
+
+In the plan, ask me:
+- Android only, or Android and iPhone;
+- the store name, short description and category, and how much the public listing may say about what the app is for (it is public and searchable, unlike the neutral home-screen name);
+- whether to add Sign in with Apple (check App Store Review Guideline 4.8 as it stands today, because the app offers Google sign-in);
+- which cloud Mac build service to use for iOS (I develop on Windows), and who owns the developer accounts (Google Play US$25 once, Apple US$99 a year).
+
+Build, Android (Trusted Web Activity):
+- A TWA package (Bubblewrap or PWABuilder) from the Phase 10 manifest: the neutral app name, maskable and monochrome icons, splash and theme colours, shortcuts (Check in, SOS).
+- /.well-known/assetlinks.json served from the final domain, with the release signing key's SHA-256 fingerprint (Play App Signing).
+- Notification delegation so Web Push shows as the app's own notifications.
+- A signed release AAB, a Play listing draft, the Data safety form answers taken from the Privacy Policy, an 18+ content rating, and a closed-testing track for the friends group (new personal accounts need a closed test with testers before production).
+
+Build, iPhone (Capacitor), only if I choose it:
+- A Capacitor iOS shell that loads the hosted site (the app needs its server, so nothing is bundled), with an allow-list limited to the app's own domain and Supabase.
+- Native push through APNs as a new channel next to Web Push: a device-token table (or a kind on push_subscriptions), the sender, preferences, quiet hours, discreet text and tests, all through the existing notification pipeline. Apply the security-review rules for push endpoints to the new channel.
+- Native features that make it more than a website in a box: Face ID / Touch ID for the Phase 8 app lock, haptics on check-in, the native share sheet for invites.
+- Sign in with Apple if required, linked to existing accounts by verified email.
+- App Store privacy labels, account deletion inside the app (already there), the 17+ age rating, and a TestFlight build for the friends group.
+
+Rules:
+- Discretion holds everywhere on the device: the home-screen name, app switcher title, notifications and lock-screen previews never reveal the topic. Only the store listing describes the app, and only as much as I approve.
+- One codebase: no store-only features that the PWA lacks, except native push and biometrics.
+- Keys and certificates live only in CI secrets, never in Git. Record every choice in docs/decisions.md.
+
+Done when:
+- The Android app installs from the Play closed track, opens full-screen with no browser bar, and gets push notifications.
+- (If iPhone) the TestFlight build signs in, checks in, unlocks with Face ID, and gets a native push that respects quiet hours and discreet mode.
+- The discretion test covers the new push channel and the app names.
+- Both store submissions are ready for my review; I press submit myself.
 ```
 
 ---

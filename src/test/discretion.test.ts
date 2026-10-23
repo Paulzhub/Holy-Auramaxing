@@ -283,6 +283,23 @@ describe("discretion: addresses in the browser history", () => {
     expect(code("src/app/[locale]/(app)/check-in/done/page.tsx")).not.toMatch(/query\.(saved|error|prayer)/);
   });
 
+  it("the journal and SOS never put a result in the address (Phase 8a, D-098)", () => {
+    const code = read("src/features/recovery/server/actions.ts").replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
+    const addresses = [...code.matchAll(/["`](\/[^"`]*)["`]/g)].map((m) => m[1]!);
+    expect(addresses.length).toBeGreaterThan(5);
+    for (const address of addresses) {
+      // Journal forms come back to the same page (the result is in the one-minute cookie);
+      // the partner number goes back to Settings, which says nothing about any answer.
+      expect(address).toMatch(
+        /^(\/journal(\/\$\{(id|rawId)\})?|\/settings\?(error=phone\w+|notice=\$\{[^}]+\})|\/\[locale\])$/,
+      );
+    }
+    // SOS actions answer the sheet itself and never redirect.
+    const sos = code.slice(code.indexOf("export async function sosContextAction"), code.indexOf("const today ="));
+    expect(sos.length).toBeGreaterThan(100);
+    expect(sos).not.toMatch(/\bgo\(/);
+  });
+
   it("leaderboard tabs go by number in the address, never by name (D-098)", () => {
     const group = "0199a000-0000-7000-8000-000000000001";
     expectDiscreet(BOARDS.flatMap((b) => [[`board ${b}`, boardHref(group, b, "week", 50)] as [string, string]]));

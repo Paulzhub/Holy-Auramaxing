@@ -15,6 +15,8 @@ export const appRoutes = [
   "/settings/data",
   "/settings/data/delete",
   "/settings/blocked",
+  "/journal",
+  "/resources",
 ] as const;
 export const allRoutes = ["/", ...appRoutes, "/dev/components", "/this-page-does-not-exist"] as const;
 /** Pages for signed-out visitors (axe, keyboard and password-manager checks in auth.spec.ts). */
@@ -29,6 +31,7 @@ export const authRoutes = [
   "/terms",
   "/your-data",
   "/join",
+  "/breathe",
 ] as const;
 /** A fresh, signed-out browser state. */
 export const signedOut = { cookies: [], origins: [] };
@@ -53,7 +56,7 @@ export async function expectNoAxeViolations(page: Page, label: string) {
 }
 
 /** A made-up client address per test, so the app's per-IP rate limits don't add up across the suite. */
-function testClientIp(): string {
+export function testClientIp(): string {
   const n = () => Math.floor(Math.random() * 254) + 1;
   return `10.${n()}.${n()}.${n()}`;
 }

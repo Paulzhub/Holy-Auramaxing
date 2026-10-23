@@ -7,6 +7,7 @@ import { BrandMark } from "@/components/shell/brand-mark";
 import { ThemeSwitcher } from "@/components/shell/theme-switcher";
 import { requireAccount } from "@/features/auth";
 import { SkipSetupButton } from "@/features/profile";
+import { SosButton } from "@/features/recovery";
 import { clientMessages } from "@/i18n/client-messages";
 import { redirect } from "@/i18n/navigation";
 import { getThemePreference } from "@/lib/server/theme";
@@ -40,9 +41,13 @@ export default async function OnboardingLayout({ children }: { children: ReactNo
           <SkipSetupButton />
         </div>
       </header>
-      <main id="main" className="auth-main" tabIndex={-1}>
-        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
-      </main>
+      <NextIntlClientProvider messages={messages}>
+        {/* SOS is one tap away on every signed-in screen, onboarding too (§7.9). */}
+        <SosButton placement="corner" />
+        <main id="main" className="auth-main auth-main--with-sos" tabIndex={-1}>
+          {children}
+        </main>
+      </NextIntlClientProvider>
     </>
   );
 }

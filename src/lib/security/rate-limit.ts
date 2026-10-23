@@ -80,6 +80,12 @@ export const rateLimitRules = {
   notificationReadByUser: { limit: 200, windowSeconds: 60 * 60 },
   /** The bell's unread count, fetched after each live ping. */
   notificationCountByUser: { limit: 600, windowSeconds: 60 * 60 },
+  /** SOS: a wave ridden out, and the partner alert (the database allows 30 and 5 an hour). */
+  sosByUser: { limit: 30, windowSeconds: 60 * 60 },
+  /** Journal saves and deletions (the database allows 60 an hour). */
+  journalByUser: { limit: 50, windowSeconds: 60 * 60 },
+  /** The number partners can call (the database allows 20 an hour). */
+  partnerContactByUser: { limit: 15, windowSeconds: 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;

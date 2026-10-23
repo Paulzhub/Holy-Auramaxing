@@ -10,6 +10,7 @@
 @import "../styles/gamification.css";
 @import "../styles/social.css";
 @import "../styles/notifications.css";
+@import "../styles/recovery.css";
 
 /*
  * Tailwind is used for layout utilities only. Colours always come from the

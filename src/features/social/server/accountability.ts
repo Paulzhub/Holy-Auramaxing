@@ -103,6 +103,8 @@ export interface ActivePartner {
   groupId: string;
   partnerId: string;
   name: string;
+  /** Whether I let this partner be alerted (missed days, SOS). */
+  iAllowAlerts: boolean;
 }
 
 /** My active partners in every group, for "ask my partner to pray". */
@@ -110,11 +112,15 @@ export async function getMyActivePartners(userId: string): Promise<ActivePartner
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("partnerships")
-    .select("group_id, user_a, user_b")
+    .select("group_id, user_a, user_b, a_allows_alerts, b_allows_alerts")
     .eq("status", "active")
     .or(`user_a.eq.${userId},user_b.eq.${userId}`);
   if (error) throw new Error(`partners: ${error.message}`);
-  const rows = (data ?? []).map((r) => ({ groupId: r.group_id, partnerId: r.user_a === userId ? r.user_b : r.user_a }));
+  const rows = (data ?? []).map((r) => ({
+    groupId: r.group_id,
+    partnerId: r.user_a === userId ? r.user_b : r.user_a,
+    iAllowAlerts: r.user_a === userId ? r.a_allows_alerts : r.b_allows_alerts,
+  }));
   const names = await namesFor(
     supabase,
     rows.map((r) => r.partnerId),

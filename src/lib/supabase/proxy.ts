@@ -5,7 +5,17 @@ import { sessionCookieOptions } from "./cookies";
 import type { Database } from "./database.types";
 
 /** App areas that need a signed-in account. Everything else is public. */
-const protectedPrefixes = ["/home", "/groups", "/check-in", "/alerts", "/me", "/settings", "/welcome"];
+const protectedPrefixes = [
+  "/home",
+  "/groups",
+  "/check-in",
+  "/alerts",
+  "/me",
+  "/settings",
+  "/welcome",
+  "/journal",
+  "/resources",
+];
 /** Sign-in and sign-up entry pages a signed-in person doesn't need to see. */
 const signedOutOnly = ["/sign-in", "/sign-up"];
 

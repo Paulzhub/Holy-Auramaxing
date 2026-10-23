@@ -294,6 +294,19 @@ A review of what people near the user could see, and of data we hold but don't n
 
 `Content-Security-Policy` (pages, per-request nonce), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` (production), `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, and no `X-Powered-By`.
 
+## Phase 8a additions
+
+| STRIDE                     | Threat                                                                | Mitigation                                                                                                                                                                                                                                                      |
+| -------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | Someone (an admin, the host, a database leak) reading journal entries | AES-256-GCM in server code with `APP_ENCRYPTION_KEY`, bound to the author and entry id, before the database sees it; the database accepts only `v1:` ciphertext; owner-only RLS, no write grants, no admin path, never audited (D-099, D-108); pgTAP `100`, e2e |
+| **I**nformation disclosure | A partner's phone number reaching strangers                           | Encrypted by the app, bound to its owner; handed out (still encrypted) only by `partner_contacts_for_me()` to active partners in a group the caller is still in, never across a block or to a closing account (D-107); pgTAP `100`                              |
+| **I**nformation disclosure | The tally revealing when someone struggles                            | Only a count is kept, no dates, read only by its owner (D-106)                                                                                                                                                                                                  |
+| **I**nformation disclosure | Self-harm detection leaking what someone typed                        | Matching runs in the browser only; no request, log or block; a test checks the code makes no network calls (D-109)                                                                                                                                              |
+| **I**nformation disclosure | The offline copy holding personal data                                | The service worker caches only `/breathe`, fetched without cookies, plus its static files; it answers a page load only when the network fails (D-106)                                                                                                           |
+| **I**nformation disclosure | SOS or journal results in the browser history                         | SOS actions answer the sheet directly (no address change); journal forms return to the same address with the result in the one-minute cookie (D-098); `discretion.test.ts`                                                                                      |
+| **D**enial of service      | Flooding the partner alert, the tally or the journal                  | `send_partner_sos` 5/hour; `count_wave` 30/hour; journal writes 60/hour; the partner number 20/hour (`private.throttle`), plus the app's own limits                                                                                                             |
+| **T**ampering              | Editing or deleting someone else's journal entry                      | `save_journal_entry` and `delete_journal_entry` touch only the caller's rows (`entry_not_found` otherwise); the GCM tag is bound to author and id, so a value can't be moved to another row                                                                     |
+
 ## Open items
 
 - `require-trusted-types-for 'script'` is not enabled yet; test Next.js and React compatibility in Phase 11.
@@ -321,8 +334,8 @@ A review of what people near the user could see, and of data we hold but don't n
 - A new browser push service (beyond FCM, Mozilla, Apple and WNS) must be added to both `util.push_endpoint_ok` and `src/lib/push/endpoints.ts`, or those browsers can't turn push on (D-094).
 - Owner, before launch (privacy review 1): a domain without "xxx" or the topic; the Google OAuth consent screen named "Holy Auramaxing"; keep `.env.local` out of OneDrive.
 - Phase 7 must add every notification, push and digest template to `src/test/discretion.test.ts`; Phase 9's manifest uses "Holy Auramaxing" and `start_url` `/home`; Phase 12's Sentry scrubs query strings and request bodies (D-055).
-- The app lock (Phase 10) is the main protection when someone else holds the unlocked phone; until then Home and Progress are one tap away.
+- The app lock (Phase 8b) is the main protection when someone else holds the unlocked phone; until then Home, Progress and the journal are one tap away.
 - A reported group owner (or a report about the only admin) has nobody to review it until the platform queue arrives in Phase 12 (D-079).
 - The automatic filter is a short, curated list (D-080); it will miss new spellings. Reports and admin removal are the backstop; revisit the list with real reports.
-- Post text matching self-harm language should gently show crisis resources on the device (§7.9, Phase 8).
-- Partner alerts (two missed days, SOS) are stored as each person's choice but sent only once notifications (Phase 7) and SOS (Phase 8) exist (D-083).
+- Partner alerts (two missed days, SOS) are sent only where the subject allowed them (D-083); the SOS sheet's "Let my partners know" uses them (D-107).
+- The crisis phrase list (D-109) will miss some ways people say it; it leans towards showing the card. Review it with a counsellor before launch.
