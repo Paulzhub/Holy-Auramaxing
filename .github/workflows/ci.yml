@@ -134,7 +134,9 @@ jobs:
         run: |
           set -o pipefail
           npm run lighthouse 2>&1 | tee lighthouse.log || {
-            grep -E "failure|expected|Error|✘|URL" lighthouse.log | tail -40 | sed 's/^/::error title=Lighthouse::/'
+            # One annotation (GitHub shows at most ten per step), newlines as %0A.
+            summary=$(sed "s/\x1b\[[0-9;]*m//g" lighthouse.log | sed -n '/Checking assertions/,$p' | grep -E "localhost|failure|found:" | tail -80 | awk '{printf "%s%%0A", $0}')
+            echo "::error title=Lighthouse::${summary}"
             exit 1
           }
       - name: Upload reports
