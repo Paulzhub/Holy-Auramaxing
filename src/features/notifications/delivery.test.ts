@@ -27,9 +27,12 @@ describe("one-click unsubscribe links (RFC 8058, D-092)", () => {
   it("can't be moved to another person or type, or forged", async () => {
     const { unsubscribeToken, verifyUnsubscribe } = await import("./server/unsubscribe");
     const k = unsubscribeToken(USER, "announcement");
-    // Any changed character fails the check.
+    // Any changed character fails the check. Flip each character's highest
+    // bit: the last character's lowest bits are only padding, so changing
+    // those could decode to the very same bytes (a flaky test before).
     for (const i of [0, 14, 30, k.length - 1]) {
-      const flipped = k.slice(0, i) + (k[i] === "A" ? "B" : "A") + k.slice(i + 1);
+      const B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+      const flipped = k.slice(0, i) + B64[B64.indexOf(k[i]!) ^ 32] + k.slice(i + 1);
       expect(verifyUnsubscribe(flipped)).toBeNull();
     }
     expect(verifyUnsubscribe(unsubscribeToken(OTHER, "announcement"))).toEqual({ userId: OTHER, kind: "announcement" });
@@ -74,7 +77,8 @@ describe("one-click unsubscribe links (RFC 8058, D-092)", () => {
           [`${type} text`, email.text],
           [`${type} List-Unsubscribe`, oneClick],
         ] as const) {
-          expect(text, where).not.toMatch(SENSITIVE_WORDS);
+          // The opaque ?k= value is random: it can spell "xXx" by chance, so only the words around it are checked.
+          expect(text.replace(/([?&]k=)[A-Za-z0-9_-]+/g, "$1…"), where).not.toMatch(SENSITIVE_WORDS);
           expect(text, where).not.toContain(USER);
           expect(text, where).not.toMatch(/[?&](u|t)=/);
         }

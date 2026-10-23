@@ -70,16 +70,46 @@ describe("levels match data/levels.csv (§7.6)", () => {
     expect(missing).toEqual([]);
   });
 
-  it("every tier has its World English Bible verse, seeded by the migration", () => {
-    const migration = read("supabase/migrations/20261014000100_gamification_levels.sql");
+  it("every tier has its World English Bible verse, seeded by the migrations", () => {
+    const migration = read("supabase/migrations/20261025000100_gamification_verses_web_current.sql");
     expect(levelsJson.tiers).toHaveLength(168);
     for (const t of levelsJson.tiers) {
       const verse = verses[t.reference];
       expect(verse, t.reference).toBeTruthy();
       expect(migration).toContain(
-        `(${t.tier}, '${t.era.replace(/'/g, "''")}', '${t.name.replace(/'/g, "''")}', '${t.reference}', '${(verse ?? "").replace(/'/g, "''")}')`,
+        `update public.level_tiers set reference = '${t.reference}', verse_text = '${(verse ?? "").replace(/'/g, "''")}' where tier = ${t.tier};`,
       );
     }
+  });
+});
+
+describe("partial verses follow one display rule (grace review 2, GS-2, D-105)", () => {
+  const badgeVerses = (JSON.parse(read("data/badge_verses.json")) as { verses: Record<string, string> }).verses;
+  const all = [...Object.entries(verses), ...Object.entries(badgeVerses)];
+  const count = (s: string, ch: string) => [...s].filter((c) => c === ch).length;
+
+  it("no verse starts mid-sentence or ends on a comma without “…”", () => {
+    for (const [ref, text] of all) {
+      expect(text, ref).not.toMatch(/^[a-z]/);
+      expect(text, ref).not.toMatch(/[,;:—]$/);
+    }
+  });
+
+  it("every opened quotation mark is closed", () => {
+    for (const [ref, text] of all) expect(count(text, "“"), ref).toBe(count(text, "”"));
+  });
+
+  it("the verses that wounded right after a level drop are cut or replaced (GR-4)", () => {
+    const tier = (n: number) => levelsJson.tiers[n]!;
+    expect(tier(45).reference).toBe("2 Samuel 6:14");
+    expect(tier(108).reference).toBe("Matthew 7:14");
+    const hard = /vile|worthless|trodden|unbelief|I can’t|perish|witness against you|sluggard/;
+    for (const t of levelsJson.tiers) expect(verses[t.reference], t.reference).not.toMatch(hard);
+  });
+
+  it("one edition everywhere: Lamentations 3:22 reads the same on the badge and on Home (GS-1)", () => {
+    expect(badgeVerses["Lamentations 3:22"]).toContain("his mercies don’t fail");
+    expect(en.pages.home.verseText).toContain(badgeVerses["Lamentations 3:22"]!.replace(/\.$/, ""));
   });
 });
 
@@ -187,5 +217,8 @@ describe("level copy: grace, not shame (§2.1)", () => {
     const all = JSON.stringify(en.levels);
     expect(all).not.toMatch(words);
     expect(en.levels.down).toContain("still yours");
+    expect(en.levels.down).toMatch(/^You’re still here/);
+    expect(en.levels.downMissed).toMatch(/^Welcome back/);
+    expect(en.levels.downMissed).toContain("still yours");
   });
 });

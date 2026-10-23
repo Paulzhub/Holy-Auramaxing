@@ -264,12 +264,12 @@ level,label,tier,tier_name,variant,era,reference,days_from_level_0
 262,Covenant Friend Max,44,Covenant Friend,Max,Kingdom,1 Samuel 18:3,2520
 263,Covenant Friend Ultra,44,Covenant Friend,Ultra,Kingdom,1 Samuel 18:3,2530
 264,Covenant Friend Ultra Pro Max,44,Covenant Friend,Ultra Pro Max,Kingdom,1 Samuel 18:3,2540
-265,Undignified Dancer,45,Undignified Dancer,,Kingdom,2 Samuel 6:22,2550
-266,Undignified Dancer Lite,45,Undignified Dancer,Lite,Kingdom,2 Samuel 6:22,2560
-267,Undignified Dancer Pro,45,Undignified Dancer,Pro,Kingdom,2 Samuel 6:22,2570
-268,Undignified Dancer Max,45,Undignified Dancer,Max,Kingdom,2 Samuel 6:22,2580
-269,Undignified Dancer Ultra,45,Undignified Dancer,Ultra,Kingdom,2 Samuel 6:22,2590
-270,Undignified Dancer Ultra Pro Max,45,Undignified Dancer,Ultra Pro Max,Kingdom,2 Samuel 6:22,2600
+265,Undignified Dancer,45,Undignified Dancer,,Kingdom,2 Samuel 6:14,2550
+266,Undignified Dancer Lite,45,Undignified Dancer,Lite,Kingdom,2 Samuel 6:14,2560
+267,Undignified Dancer Pro,45,Undignified Dancer,Pro,Kingdom,2 Samuel 6:14,2570
+268,Undignified Dancer Max,45,Undignified Dancer,Max,Kingdom,2 Samuel 6:14,2580
+269,Undignified Dancer Ultra,45,Undignified Dancer,Ultra,Kingdom,2 Samuel 6:14,2590
+270,Undignified Dancer Ultra Pro Max,45,Undignified Dancer,Ultra Pro Max,Kingdom,2 Samuel 6:14,2600
 271,Psalmist,46,Psalmist,,Kingdom,2 Samuel 23:1,2610
 272,Psalmist Lite,46,Psalmist,Lite,Kingdom,2 Samuel 23:1,2620
 273,Psalmist Pro,46,Psalmist,Pro,Kingdom,2 Samuel 23:1,2630
@@ -642,12 +642,12 @@ level,label,tier,tier_name,variant,era,reference,days_from_level_0
 640,Extra Miler Max,107,Extra Miler,Max,Gospels,Matthew 5:41,6300
 641,Extra Miler Ultra,107,Extra Miler,Ultra,Gospels,Matthew 5:41,6310
 642,Extra Miler Ultra Pro Max,107,Extra Miler,Ultra Pro Max,Gospels,Matthew 5:41,6320
-643,Narrow Gate,108,Narrow Gate,,Gospels,Matthew 7:13,6330
-644,Narrow Gate Lite,108,Narrow Gate,Lite,Gospels,Matthew 7:13,6340
-645,Narrow Gate Pro,108,Narrow Gate,Pro,Gospels,Matthew 7:13,6350
-646,Narrow Gate Max,108,Narrow Gate,Max,Gospels,Matthew 7:13,6360
-647,Narrow Gate Ultra,108,Narrow Gate,Ultra,Gospels,Matthew 7:13,6370
-648,Narrow Gate Ultra Pro Max,108,Narrow Gate,Ultra Pro Max,Gospels,Matthew 7:13,6380
+643,Narrow Gate,108,Narrow Gate,,Gospels,Matthew 7:14,6330
+644,Narrow Gate Lite,108,Narrow Gate,Lite,Gospels,Matthew 7:14,6340
+645,Narrow Gate Pro,108,Narrow Gate,Pro,Gospels,Matthew 7:14,6350
+646,Narrow Gate Max,108,Narrow Gate,Max,Gospels,Matthew 7:14,6360
+647,Narrow Gate Ultra,108,Narrow Gate,Ultra,Gospels,Matthew 7:14,6370
+648,Narrow Gate Ultra Pro Max,108,Narrow Gate,Ultra Pro Max,Gospels,Matthew 7:14,6380
 649,Rock Solid,109,Rock Solid,,Gospels,Matthew 7:24,6390
 650,Rock Solid Lite,109,Rock Solid,Lite,Gospels,Matthew 7:24,6400
 651,Rock Solid Pro,109,Rock Solid,Pro,Gospels,Matthew 7:24,6410
