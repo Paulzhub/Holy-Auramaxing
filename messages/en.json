@@ -230,14 +230,12 @@
       "lede": "Your profile and progress, visible only to people you choose.",
       "settingsLink": "Settings",
       "settingsBody": "Theme, language and privacy",
-      "progressBody": "Your streaks, calendar and charts. Levels and badges arrive soon.",
+      "progressBody": "Your streaks, calendar, charts, level and badges.",
       "progressLink": "See your journey",
       "journalLink": "Journal",
       "journalBody": "A private place to write. Only you can read it.",
       "resourcesLink": "Resources",
       "resourcesBody": "Crisis lines, safer devices, counsellors and books."
-      "progressBody": "Your streaks, calendar, charts, level and badges.",
-      "progressLink": "See your journey"
     },
     "settings": {
       "title": "Settings",

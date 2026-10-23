@@ -74,11 +74,11 @@ test.describe("SOS", () => {
     await sheet.getByRole("button", { name: "Start the ten minutes" }).click();
     await expect(sheet.getByTestId("wave-clock")).toContainText(/(10:00|9:5\d) left/);
     await sheet.getByRole("button", { name: "Stop" }).click();
-    await expect(sheet.getByText("That’s okay. You reached out.")).toBeVisible();
+    await expect(sheet.locator(".sos-gentle").getByText("That’s okay. You reached out.")).toBeVisible();
     await expect(sheet.locator("#sos-wave").getByText(/fail|reset|broke/i)).toHaveCount(0);
 
     await sheet.getByRole("button", { name: "I made it through" }).click();
-    await expect(sheet.getByText("Counted. Thank you for staying.")).toBeVisible();
+    await expect(sheet.locator(".sos-gentle").getByText("Counted. Thank you for staying.")).toBeVisible();
     await expect(sheet.getByTestId("sos-tally")).toHaveText("You’ve ridden out 1 wave. Only you can see this.");
     await sheet.getByRole("button", { name: "I made it through" }).click();
     await expect(sheet.getByTestId("sos-tally")).toHaveText("You’ve ridden out 2 waves. Only you can see this.");
@@ -138,11 +138,11 @@ test.describe("SOS", () => {
       "https://wa.me/919876543210",
     );
     await sheet.getByRole("button", { name: "Let my partners know" }).click();
-    await expect(sheet.getByText("Your partners know. Someone is with you.")).toBeVisible();
+    await expect(sheet.locator(".sos-gentle").getByText("Your partners know. Someone is with you.")).toBeVisible();
     const url = page.url();
 
     await sheet.getByRole("button", { name: "Ask for prayer" }).click();
-    await expect(sheet.getByText("Your prayer request is on your group’s wall.")).toBeVisible();
+    await expect(sheet.locator(".sos-gentle").getByText("Your prayer request is on your group’s wall.")).toBeVisible();
     // Nothing about it reached the address.
     expect(page.url()).toBe(url);
     const { data: posts } = await admin().from("posts").select("kind, body").eq("group_id", groupId);

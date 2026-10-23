@@ -913,6 +913,22 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Decision:** names wrap (`overflow-wrap: anywhere`), the "You" and "Hidden from members" tags drop under the name, and the score column may shrink and wrap. Rows grow taller rather than lose text. Headings may break inside a long word only when it can't fit (A2-2).
 - **Tests:** e2e `a11y-review-2.spec.ts` ("leaderboard names wrap", "320 px with wider text spacing").
 
+## D-105 · Grace review 2 · One edition of the World English Bible, and one rule for partial verses (GS-1, GS-2, GR-4)
+
+- **Finding:** the badge and level verses came from the `world-english-bible` npm package 1.0.1, an older WEB edition, while `messages/en.json` follows today's ebible.org text. The same verse could read two ways (Lamentations 3:22: "compassion" on First Step, "mercies" on Home). Some partial verses started mid-sentence, ended on a comma or opened a quotation mark they never closed. Eight level verses wounded someone who had just dropped to that tier.
+- **Decision:**
+  - **Edition:** every verse the app shows comes from the ebible.org `eng-web` USFM files, downloaded on 2026-10-22. That covers the badge and level verses now, and Phase 8's SOS cards, verse of the day and reading plans. `scripts/build-scripture.mjs <unzipped folder>` (with `scripts/lib/usfm.mjs`) rebuilds `data/level_verses.json`, `data/badge_verses.json` and the seed migration `20261025000100_gamification_verses_web_current.sql`, so the database always matches the data files. The app never reads USFM.
+  - **Display rule** (`scripts/lib/verse-display.mjs`):
+    - A quotation mark that opens or closes outside the verse is dropped, and one left open is closed.
+    - "…" marks a start mid-sentence, a cut start mid-sentence, a cut end mid-sentence, or an end on a comma, semicolon, colon or dash.
+  - **Kinder verses after a drop (GR-4):**
+    - Undignified Dancer is now 2 Samuel 6:14, and Narrow Gate is Matthew 7:14.
+    - Salt of the Earth, Mountain Mover, Fire in My Bones, Such a Time and Choose Life keep their references and lose the hard part.
+    - Ant Watcher keeps Proverbs 6:6 from "Consider her ways". That keeps the reference, unlike the review's suggestion of 6:8, which reads oddly on its own.
+  - **Levels:** names and days are unchanged, so `replay` and the Postgres function are untouched.
+- **Also (GR-2):** between check-ins, only missed days lower the level. The level card now says so ("Welcome back. Days without a check-in moved your level back, just as a slip would…"). After an honest slip, the check-in page shows the person-first line (GR-3).
+- **Tests:** Vitest `levels.test.ts` (every tier and badge row in the new migration; the display rule; GR-4; Lamentations 3:22 matches Home) and `badges.test.ts`; pgTAP `055_gamification_verses_current`; e2e `levels.spec.ts` ("days away get a welcome back").
+
 ## D-106 · Phase 8a · The SOS sheet, its tally, and SOS offline
 
 - **Sheet:** the shell's SOS button (now on onboarding too) opens one sheet: a guided breathing circle, five Scripture cards (current ebible.org WEB, D-105), the prayer, the ten-minute "ride the wave" timer, the tally, quick actions and the "Already slipped?" block, which stays.
@@ -940,18 +956,3 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Resources:** `/resources` (title "Resources") lists crisis lines first, with the person's own country (guessed from their time zone, on the server) at the top, then India and the US. It also covers family-safe DNS and device settings, finding a counsellor, books (pending pastoral review), and that the app is not a medical service. The numbers in `crisis-lines.ts` were checked on 2026-10-22; check again before launch and every six months.
 - **Detection:** `mentionsSelfHarm()` matches about 30 phrases (not single words, to avoid "this homework is killing me"), in the browser only, as someone types in the journal, a post or a comment. A match shows a calm card with two crisis lines, the emergency number and a link to Resources. Nothing is sent, logged or blocked, and saving works as before. A unit test checks the matcher and the card make no network calls.
 - **Alternatives:** server-side matching (would send the words somewhere, which §7.9 forbids); blocking the post (would punish honesty).
-## D-105 · Grace review 2 · One edition of the World English Bible, and one rule for partial verses (GS-1, GS-2, GR-4)
-
-- **Finding:** the badge and level verses came from the `world-english-bible` npm package 1.0.1, an older WEB edition, while `messages/en.json` follows today's ebible.org text. The same verse could read two ways (Lamentations 3:22: "compassion" on First Step, "mercies" on Home). Some partial verses started mid-sentence, ended on a comma or opened a quotation mark they never closed. Eight level verses wounded someone who had just dropped to that tier.
-- **Decision:**
-  - **Edition:** every verse the app shows comes from the ebible.org `eng-web` USFM files, downloaded on 2026-10-22. That covers the badge and level verses now, and Phase 8's SOS cards, verse of the day and reading plans. `scripts/build-scripture.mjs <unzipped folder>` (with `scripts/lib/usfm.mjs`) rebuilds `data/level_verses.json`, `data/badge_verses.json` and the seed migration `20261025000100_gamification_verses_web_current.sql`, so the database always matches the data files. The app never reads USFM.
-  - **Display rule** (`scripts/lib/verse-display.mjs`):
-    - A quotation mark that opens or closes outside the verse is dropped, and one left open is closed.
-    - "…" marks a start mid-sentence, a cut start mid-sentence, a cut end mid-sentence, or an end on a comma, semicolon, colon or dash.
-  - **Kinder verses after a drop (GR-4):**
-    - Undignified Dancer is now 2 Samuel 6:14, and Narrow Gate is Matthew 7:14.
-    - Salt of the Earth, Mountain Mover, Fire in My Bones, Such a Time and Choose Life keep their references and lose the hard part.
-    - Ant Watcher keeps Proverbs 6:6 from "Consider her ways". That keeps the reference, unlike the review's suggestion of 6:8, which reads oddly on its own.
-  - **Levels:** names and days are unchanged, so `replay` and the Postgres function are untouched.
-- **Also (GR-2):** between check-ins, only missed days lower the level. The level card now says so ("Welcome back. Days without a check-in moved your level back, just as a slip would…"). After an honest slip, the check-in page shows the person-first line (GR-3).
-- **Tests:** Vitest `levels.test.ts` (every tier and badge row in the new migration; the display rule; GR-4; Lamentations 3:22 matches Home) and `badges.test.ts`; pgTAP `055_gamification_verses_current`; e2e `levels.spec.ts` ("days away get a welcome back").
