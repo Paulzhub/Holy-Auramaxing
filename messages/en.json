@@ -199,12 +199,284 @@
       "home": "Back to the app"
     }
   },
-  "landing": {
-    "title": "Freedom grows one day at a time",
-    "lede": "A grace-centred space where friends check in each day, pray for each other and keep walking together.",
-    "cta": "Get started",
-    "graceLine": "A slip resets a streak, never a person.",
-    "signIn": "Sign in"
+  "marketing": {
+    "nav": {
+      "label": "Main",
+      "menu": "Menu",
+      "howItWorks": "How it works",
+      "scripture": "Scripture",
+      "articles": "Articles",
+      "faq": "FAQ",
+      "signIn": "Sign in",
+      "start": "Start your first day"
+    },
+    "footer": {
+      "label": "Site",
+      "about": "About",
+      "getHelp": "Get help",
+      "communityGuidelines": "Community guidelines",
+      "accessibility": "Accessibility",
+      "security": "Security",
+      "tagline": "Freedom grows one day at a time.",
+      "notMedical": "Holy Auramaxing is not a medical service and doesn’t replace a pastor, counsellor or doctor. If you’re in crisis, please get help now.",
+      "translation": "Scripture quotations are from the World English Bible, which is in the public domain."
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb",
+      "home": "Home"
+    },
+    "pages": {
+      "home": {
+        "title": "Holy Auramaxing: freedom in Christ, one day at a time",
+        "description": "A Christian, grace-centred app for walking in freedom together: daily check-ins, private groups, accountability partners, prayer and Scripture."
+      },
+      "howItWorks": {
+        "title": "How it works",
+        "description": "A daily honest check-in, grace when you slip, private groups and partners, help in the hard moment, and Scripture every day."
+      },
+      "about": {
+        "title": "About us",
+        "description": "Why Holy Auramaxing exists, what we believe, who is behind it, and what the app is and isn’t."
+      },
+      "faq": {
+        "title": "Questions and answers",
+        "description": "Answers about privacy, groups, check-ins, levels, slips, Scripture and your data."
+      },
+      "articles": {
+        "title": "Articles",
+        "description": "Answer-first articles on walking in freedom as a Christian, grounded in Scripture and grace."
+      },
+      "scripture": {
+        "title": "Scripture guides",
+        "description": "Today’s verse and three reading plans from the World English Bible: seven days, thirty days and the New Testament in ninety."
+      },
+      "scripturePlan": {
+        "title": "{plan}: a reading plan",
+        "description": "{body} A preview of day one and every day’s reading."
+      },
+      "getHelp": {
+        "title": "Get help",
+        "description": "Free, confidential helplines by country, how to find a counsellor, and ways to make your devices safer."
+      }
+    },
+    "home": {
+      "hero": {
+        "eyebrow": "From chains to freedom",
+        "title": "Freedom grows one day at a time",
+        "lede": "A grace-centred place to break free from porn with friends who check in, pray for each other and keep walking together.",
+        "cta": "Start your first day",
+        "secondary": "See how it works"
+      },
+      "weight": {
+        "title": "Many of us carry something we’ve never told anyone.",
+        "body": "Porn and compulsive habits promise relief and leave a weight. You are not the only one, and you don’t have to carry it alone."
+      },
+      "crack": {
+        "title": "You are not your worst day.",
+        "verse": "There is therefore now no condemnation to those who are in Christ Jesus…",
+        "reference": "Romans 8:1"
+      },
+      "checkIn": {
+        "title": "One honest answer a day",
+        "body": "Each day you tap one of two answers. Either earns the same XP, and an honest answer never costs more than staying away.",
+        "free": "I stayed free today",
+        "slipped": "I slipped",
+        "example": "The two answers in the app",
+        "grace": "A slip resets a streak, never a person."
+      },
+      "together": {
+        "title": "Together, not alone",
+        "body": "Start a private group with friends you trust. Check in, pray for each other, and lean on a partner when it’s hard.",
+        "groups": "Private groups",
+        "partners": "Accountability partners",
+        "prayer": "Prayer wall"
+      },
+      "dawn": {
+        "verse": "…his mercies don’t fail. They are new every morning. Great is your faithfulness.",
+        "reference": "Lamentations 3:22–23",
+        "cta": "Start your first day",
+        "secondary": "How it works",
+        "small": "Private by default. For adults (18+). Not a substitute for professional help."
+      },
+      "privacy": {
+        "title": "Private by default",
+        "body": "Nothing is public unless you choose it. Your notifications, emails and the app’s name never say what it’s for. Your journal and notes are encrypted so only you can read them. No ads, no trackers, and we never sell your data.",
+        "link": "What happens to your data"
+      },
+      "questions": {
+        "title": "Questions people ask",
+        "more": "All questions and answers"
+      },
+      "reading": {
+        "title": "Read and reflect",
+        "more": "All articles",
+        "scripture": "Scripture guides"
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "lede": "Small, honest steps, taken with others, every day.",
+      "sections": {
+        "checkIn": {
+          "heading": "A daily check-in",
+          "body": "Once a day, answer one question honestly: did you stay free today? If you like, add your mood, how strong the urges were and what set them off. Only you see those details, unless you choose an accountability partner."
+        },
+        "grace": {
+          "heading": "Grace when you slip",
+          "body": "A slip resets your streak, never you. You’ll see a verse of forgiveness, one gentle next step, and a way to ask a partner or your group to pray. Either answer earns the same XP, so honesty is never the costly choice."
+        },
+        "levels": {
+          "heading": "Levels from Genesis to Revelation",
+          "body": "Every free day fills your progress bar, and the levels follow the Bible’s story, starting as Clay in the Potter’s hands. A slip or a missed day moves you back 10 levels, the same either way, so telling the truth never costs more than staying silent. Your longest streak and every free day stay yours."
+        },
+        "groups": {
+          "heading": "Small, private groups",
+          "body": "Start a group with friends you trust, or join one with an invite link. Every group is completely separate from every other. You choose what each group sees: only that you checked in, your streak, or how your day went."
+        },
+        "partners": {
+          "heading": "Accountability partners",
+          "body": "Pair up with one or two people in a group. Partners see each other’s full check-ins and, if you allow it, get a discreet alert when you press SOS."
+        },
+        "sos": {
+          "heading": "Help in the hard moment",
+          "body": "The SOS button is one tap away on every screen: a breathing exercise, Scripture, a short prayer, a ten-minute timer to ride out the urge, and a quick way to reach your partner or ask your group to pray."
+        },
+        "scripture": {
+          "heading": "Scripture every day",
+          "body": "A verse each day, and seven-, thirty- and ninety-day reading plans from the World English Bible, with a private journal for what God shows you."
+        },
+        "privacy": {
+          "heading": "Private by default",
+          "body": "Nothing is public. Notifications, emails and the name on your home screen never mention what the app is for. Your journal and check-in notes are encrypted. You can download everything or delete your account at any time."
+        }
+      },
+      "cta": "Start your first day"
+    },
+    "about": {
+      "title": "About us",
+      "lede": "A place where honesty is safe and grace comes first.",
+      "sections": {
+        "why": {
+          "heading": "Why Holy Auramaxing exists",
+          "body": "Holy Auramaxing began with a few friends who wanted to stop hiding and start walking in freedom together. Many Christians fight pornography and compulsive sexual habits in secret, and secrecy makes the weight heavier. So we built a place where telling the truth is safe, grace comes first, and nobody walks alone."
+        },
+        "believe": {
+          "heading": "What we believe",
+          "body": "We follow Jesus Christ, who forgives completely and makes people new. We believe the Bible is God’s word and our guide, and that freedom is a gift of grace, lived out one day at a time, together. Christians from every church tradition are welcome here."
+        },
+        "isnt": {
+          "heading": "What the app is, and isn’t",
+          "body": "It’s a tool for encouragement and accountability among people who trust each other. It isn’t therapy or a medical service, and it doesn’t diagnose, treat or cure anything. It works best alongside your church, a pastor or a counsellor.",
+          "help": "If you’re struggling right now, please get help."
+        },
+        "who": {
+          "heading": "Who’s behind it",
+          "contact": "Questions, ideas or concerns? Write to <mail>{email}</mail>."
+        }
+      }
+    },
+    "faq": {
+      "title": "Questions and answers",
+      "lede": "Straight answers about how it works and how your privacy is protected.",
+      "items": {
+        "what": {
+          "q": "What is Holy Auramaxing?",
+          "a": "A Christian app that helps people break free from pornography and compulsive sexual habits through daily check-ins, small private groups, accountability partners and Scripture. It leads with grace: a slip resets a streak, never a person."
+        },
+        "who": {
+          "q": "Who is it for?",
+          "a": "Adults (18 and over) who want to walk in freedom with people they trust. You can use it with a small group, with one accountability partner, or on your own to begin with."
+        },
+        "private": {
+          "q": "Is it private?",
+          "a": "Yes. Nothing is public. Each group sees only what you choose to share with it, and notifications, emails and the app’s name never say what it’s for. Your journal and check-in notes are encrypted, so only you can read them."
+        },
+        "see": {
+          "q": "Who can see my check-ins?",
+          "a": "Only members of groups you belong to, and only at the level you choose for each group: that you checked in today, your streak, or how your day went. Accountability partners you accept can also see your mood and what set off the urges."
+        },
+        "slip": {
+          "q": "What happens if I slip?",
+          "a": "You tell the truth and receive grace. Your current streak starts again, but your longest streak and every free day stay yours. You’ll see a verse of forgiveness and a gentle next step, and you can ask a partner or your group to pray for you."
+        },
+        "levels": {
+          "q": "Why does a slip cost levels?",
+          "a": "Levels follow an unbroken run of free days. A reported slip and a missed day both move you back 10 levels, so staying silent is never safer than telling the truth. Either honest answer earns the same XP."
+        },
+        "therapy": {
+          "q": "Is this therapy or treatment?",
+          "a": "No. Holy Auramaxing isn’t a medical service and doesn’t diagnose, treat or cure anything. It works best alongside your church, a pastor or a counsellor. If you’re in crisis, please contact a helpline or your local emergency number."
+        },
+        "bible": {
+          "q": "Which Bible translation do you use?",
+          "a": "The World English Bible, a modern English translation in the public domain, for every verse, level and reading plan."
+        },
+        "alone": {
+          "q": "Can I use it without a group?",
+          "a": "Yes. You can check in, read, keep a journal and use the SOS tools on your own, then start or join a group whenever you’re ready."
+        },
+        "install": {
+          "q": "Is there an app to install?",
+          "a": "It’s a web app you can add to your home screen on Android, iPhone and computers. On an iPhone, add it to the Home Screen first to get notifications."
+        },
+        "delete": {
+          "q": "Can I take my data with me or delete it?",
+          "a": "Yes. You can download everything as JSON and CSV files and delete your account at any time. After a 14-day grace period, your personal data is permanently deleted."
+        }
+      }
+    },
+    "articles": {
+      "title": "Articles",
+      "lede": "Honest, answer-first help for walking in freedom, grounded in Scripture and grace.",
+      "readMore": "Read: {title}",
+      "updated": "Updated {date}",
+      "by": "By {name}",
+      "reviewedBy": "Reviewed by {name}, {role}",
+      "authorHeading": "About the author",
+      "reviewerHeading": "About the reviewer",
+      "scriptureHeading": "Scripture in this article",
+      "sourcesHeading": "Sources",
+      "helpHeading": "If you’re struggling right now",
+      "helpBody": "You don’t have to wait until you feel strong. Talk to someone you trust today, and if you’re in crisis, please reach out to a helpline.",
+      "helpLink": "Find a helpline",
+      "startLink": "Start your first day",
+      "person": "<b>{name}</b>, {role}. {bio}",
+      "source": "<a>{title}</a>, {publisher}",
+      "reviewPendingNote": "<b>Waiting for pastoral review.</b> A pastor or counsellor hasn’t reviewed this article yet. Please weigh it with your own church and Scripture."
+    },
+    "scripture": {
+      "title": "Scripture guides",
+      "lede": "Let God’s word shape the day. Every verse is from the World English Bible.",
+      "plansHeading": "Reading plans",
+      "days": "{count} days",
+      "preview": "Preview the {plan} plan",
+      "planLede": "{body}",
+      "dayOne": "Day 1",
+      "allDays": "Every day of the plan",
+      "dayLabel": "Day {day}",
+      "trackHeading": "Read along in the app",
+      "trackBody": "Create an account to mark days as read, pick up where you left off and keep a private journal.",
+      "track": "Start your first day",
+      "back": "All Scripture guides",
+      "unavailable": "The readings can’t be shown right now. Please try again in a little while."
+    },
+    "getHelp": {
+      "title": "Get help",
+      "lede": "You don’t have to face this alone. Here are people you can talk to, today.",
+      "pastorHeading": "Talk to someone you trust",
+      "pastorBody": "A pastor, a church leader or a mature Christian friend can listen, pray with you and walk with you. Telling one person is often the hardest and most freeing step.",
+      "breatheHeading": "In a hard moment",
+      "breatheBody": "Take a minute to slow down and breathe, with a verse and a short prayer. It works without an account.",
+      "breatheLink": "Take a breath",
+      "crisisBody": "These lines are free and confidential. India and the United States are first; find your own country below."
+    },
+    "quoted": "“{text}”",
+    "llms": {
+      "notMedical": "Holy Auramaxing is not a medical service and doesn’t diagnose, treat or cure anything. It works alongside churches, pastors and counsellors.",
+      "privacy": "Nothing is public by default. Notifications, emails and the app’s name never mention what it’s for, and journals and check-in notes are encrypted.",
+      "bible": "All Scripture is from the World English Bible, which is in the public domain.",
+      "adults": "For adults (18 and over): on your own, with an accountability partner, or in small private groups."
+    }
   },
   "pages": {
     "home": {
@@ -739,6 +1011,79 @@
         "protected": {
           "heading": "Protected",
           "body": "Your sign-in uses secure, encrypted cookies. Passwords are checked against known data breaches without ever sending your password anywhere. The most sensitive notes are encrypted before they are stored."
+        }
+      }
+    },
+    "communityGuidelines": {
+      "short": "Community guidelines",
+      "title": "Community guidelines",
+      "lede": "How we look after each other in every group.",
+      "sections": {
+        "graceFirst": {
+          "heading": "Grace first",
+          "body": "Encourage, pray and speak the truth in love. Never shame anyone for a slip, a question or a hard day. We’re all on the same road."
+        },
+        "keepItClean": {
+          "heading": "Keep it clean",
+          "body": "No sexual content of any kind, and no links to explicit sites. Describe struggles honestly without describing what you saw or did. We have zero tolerance for sexual content involving anyone under 18."
+        },
+        "keepConfidences": {
+          "heading": "Keep confidences",
+          "body": "What someone shares in a group stays in that group. Don’t screenshot, forward or repeat it elsewhere, and never try to find out who someone is outside the app."
+        },
+        "respect": {
+          "heading": "Respect and safety",
+          "body": "No harassment, threats, hate or pressure. You can report any post, comment or person, and block anyone. Blocked people can’t see you or contact you."
+        },
+        "whenWorried": {
+          "heading": "When you’re worried about someone",
+          "body": "If someone talks about hurting themselves, respond with care, point them to a helpline on our Get help page, and encourage them to talk to someone they trust today. If anyone is in immediate danger, contact local emergency services.\n\nIf we find material that sexually exploits a child, we remove it, keep what the law requires, and report it to the authorities, such as NCMEC in the US and cybercrime.gov.in in India."
+        },
+        "moderation": {
+          "heading": "How moderation works",
+          "body": "Group owners and admins can remove posts and comments in their own group. Our team reviews reports, can remove content and suspend accounts, and records every action. Nobody, including our team, can read your journal or private notes."
+        }
+      }
+    },
+    "accessibility": {
+      "short": "Accessibility",
+      "title": "Accessibility statement",
+      "lede": "Holy Auramaxing should work for everyone, however you use the web.",
+      "sections": {
+        "aim": {
+          "heading": "Our aim",
+          "body": "We aim to meet the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA across the app and this website."
+        },
+        "done": {
+          "heading": "What we’ve done",
+          "body": "Everything works with a keyboard, with a visible focus ring. Text and controls meet contrast requirements in light and dark themes. Pages work at 320 pixels wide and at 200% zoom, and honour reduced motion and forced colours. Every page is checked automatically for accessibility problems before each change goes live, and two full accessibility reviews have been carried out."
+        },
+        "limits": {
+          "heading": "Known limits",
+          "body": "Manual testing with the NVDA, VoiceOver and TalkBack screen readers is still to be completed. If something doesn’t work for you, please tell us and we’ll fix it."
+        },
+        "contact": {
+          "heading": "Tell us about a problem",
+          "body": "Write to paulangelogamer@gmail.com and tell us the page and what happened. We reply within 7 days."
+        }
+      }
+    },
+    "security": {
+      "short": "Security",
+      "title": "Security",
+      "lede": "How we protect what you share, and how to tell us about a problem.",
+      "sections": {
+        "protect": {
+          "heading": "How we protect you",
+          "body": "Every connection is encrypted. Your journal, check-in notes and partner contact details are encrypted again inside the app, so they can’t be read in the database. Each group’s data is walled off from every other group by the database itself. You can turn on two-step sign-in and passkeys, and see and sign out every device on your account."
+        },
+        "report": {
+          "heading": "Report a vulnerability",
+          "body": "If you think you’ve found a security problem, please email paulangelogamer@gmail.com with the steps to reproduce it. We’ll acknowledge your report within 7 days and keep you updated.\n\nPlease test only with your own accounts, never access or change other people’s data, and give us a reasonable time to fix the problem before you share it. We won’t take action against anyone who reports in good faith and follows these guidelines."
+        },
+        "machineReadable": {
+          "heading": "For security tools",
+          "body": "Our contact details are also published at /.well-known/security.txt."
         }
       }
     }

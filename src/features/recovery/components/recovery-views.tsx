@@ -233,8 +233,20 @@ export async function JournalEntryView({ entry, timeZone }: { entry: JournalEntr
 
 // ---------------------------------------------------------------- resources
 
-export async function ResourcesView({ timeZone }: { timeZone: string | null }) {
+/**
+ * `audience="public"` is the website's Get help page (§12, D-117): it has no
+ * SOS button, so that card points to someone to talk to and to /breathe,
+ * which works without an account.
+ */
+export async function ResourcesView({
+  timeZone,
+  audience = "app",
+}: {
+  timeZone: string | null;
+  audience?: "app" | "public";
+}) {
   const t = await getTranslations("resources");
+  const tHelp = await getTranslations("marketing.getHelp");
   const lines = orderedCrisisLines(timeZone);
   const filters = ["dns", "android", "iphone", "windows"] as const;
   const counsellor = ["c1", "c2", "c3"] as const;
@@ -246,7 +258,7 @@ export async function ResourcesView({ timeZone }: { timeZone: string | null }) {
           <CardTitle as="h2" id="crisis-title">
             {t("crisisHeading")}
           </CardTitle>
-          <p>{t("crisisBody")}</p>
+          <p>{audience === "public" ? tHelp("crisisBody") : t("crisisBody")}</p>
           <p className="crisis-emergency">{t("crisisEmergency")}</p>
           <ul className="crisis-lines">
             {lines.map((line) => (
@@ -274,14 +286,40 @@ export async function ResourcesView({ timeZone }: { timeZone: string | null }) {
         </div>
       </Card>
 
-      <Card as="section" aria-labelledby="sos-help-title">
-        <div className="grid gap-3">
-          <CardTitle as="h2" id="sos-help-title">
-            <LifeBuoy aria-hidden="true" className="inline-icon" /> {t("sosHeading")}
-          </CardTitle>
-          <p>{t("sosBody")}</p>
-        </div>
-      </Card>
+      {audience === "public" ? (
+        <>
+          <Card as="section" aria-labelledby="pastor-help-title">
+            <div className="grid gap-3">
+              <CardTitle as="h2" id="pastor-help-title">
+                {tHelp("pastorHeading")}
+              </CardTitle>
+              <p>{tHelp("pastorBody")}</p>
+            </div>
+          </Card>
+          <Card as="section" aria-labelledby="sos-help-title">
+            <div className="grid gap-3">
+              <CardTitle as="h2" id="sos-help-title">
+                <LifeBuoy aria-hidden="true" className="inline-icon" /> {tHelp("breatheHeading")}
+              </CardTitle>
+              <p>{tHelp("breatheBody")}</p>
+              <p>
+                <Link href="/breathe" className={buttonVariants({ variant: "secondary" })}>
+                  {tHelp("breatheLink")}
+                </Link>
+              </p>
+            </div>
+          </Card>
+        </>
+      ) : (
+        <Card as="section" aria-labelledby="sos-help-title">
+          <div className="grid gap-3">
+            <CardTitle as="h2" id="sos-help-title">
+              <LifeBuoy aria-hidden="true" className="inline-icon" /> {t("sosHeading")}
+            </CardTitle>
+            <p>{t("sosBody")}</p>
+          </div>
+        </Card>
+      )}
 
       <Card as="section" aria-labelledby="filters-title">
         <div className="grid gap-3">

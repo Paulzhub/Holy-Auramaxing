@@ -1,4 +1,4 @@
-import { appRoutes, expect, test } from "./fixtures";
+import { appRoutes, expect, publicRoutes, test } from "./fixtures";
 
 test("pages send a nonce-based CSP that matches the page's scripts", async ({ page }) => {
   const response = await page.goto("/home");
@@ -52,11 +52,13 @@ test("app pages are never indexed; the public page is", async ({ page }) => {
     await expect(page.locator('meta[name="robots"]'), route).toHaveAttribute("content", /noindex/);
   }
   await page.goto("/");
-  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index, follow");
 });
 
 test("tab titles stay neutral", async ({ page }) => {
-  for (const route of ["/", ...appRoutes]) {
+  // Articles are the one deliberate exception (D-115).
+  const neutralPublic = publicRoutes.filter((r) => !r.startsWith("/articles/"));
+  for (const route of [...neutralPublic, ...appRoutes]) {
     await page.goto(route);
     const title = (await page.title()).toLowerCase();
     expect(title, route).toMatch(/aura/);

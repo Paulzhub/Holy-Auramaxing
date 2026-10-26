@@ -1,4 +1,13 @@
-import { allRoutes, authRoutes, expectNoAxeViolations, setTheme, signedOut, test, themes } from "./fixtures";
+import {
+  allRoutes,
+  authRoutes,
+  expectNoAxeViolations,
+  publicRoutes,
+  setTheme,
+  signedOut,
+  test,
+  themes,
+} from "./fixtures";
 
 for (const theme of themes) {
   test.describe(`axe, ${theme} theme`, () => {
@@ -85,6 +94,30 @@ for (const theme of themes) {
       await page.getByRole("alert", { name: "Please check the following" }).waitFor();
       await page.getByText("Email me a sign-in link instead").click();
       await expectNoAxeViolations(page, `sign-in with errors (${theme})`);
+    });
+  });
+}
+
+for (const theme of themes) {
+  test.describe(`axe, the public website, ${theme} theme`, () => {
+    test.use({ storageState: signedOut });
+    test.beforeEach(async ({ context, baseURL }) => {
+      await setTheme(context, baseURL!, theme);
+    });
+
+    for (const route of publicRoutes) {
+      test(`${route} has no WCAG 2.2 AA violations`, async ({ page }) => {
+        await page.goto(route);
+        await page.waitForLoadState("networkidle");
+        await expectNoAxeViolations(page, `${route} (${theme})`);
+      });
+    }
+
+    test("the phone menu, open, has no violations", async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto("/faq");
+      await page.getByText("Menu", { exact: true }).click();
+      await expectNoAxeViolations(page, `phone menu (${theme})`);
     });
   });
 }

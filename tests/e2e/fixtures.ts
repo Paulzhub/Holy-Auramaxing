@@ -36,6 +36,27 @@ export const authRoutes = [
   "/join",
   "/breathe",
 ] as const;
+/** The public website (Phase 9, §12): axe, no-JS and indexing checks in public-site.spec.ts. */
+export const publicRoutes = [
+  "/",
+  "/how-it-works",
+  "/about",
+  "/faq",
+  "/articles",
+  "/articles/how-to-quit-porn-as-a-christian",
+  "/articles/what-does-the-bible-say-about-lust",
+  "/articles/how-to-help-a-friend-who-is-struggling",
+  "/scripture",
+  "/scripture/7-days",
+  "/scripture/90-days",
+  "/get-help",
+  "/privacy",
+  "/terms",
+  "/your-data",
+  "/community-guidelines",
+  "/accessibility",
+  "/security",
+] as const;
 /** A fresh, signed-out browser state. */
 export const signedOut = { cookies: [], origins: [] };
 export const themes = ["light", "dark"] as const;

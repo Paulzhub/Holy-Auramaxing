@@ -1,5 +1,6 @@
 import { fileURLToPath } from "node:url";
 
+import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
@@ -35,6 +36,11 @@ const nextConfig: NextConfig = {
         headers: securityHeaders(process.env.NODE_ENV === "production"),
       },
       {
+        // API responses are never search results (§12).
+        source: "/api/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
+      {
         // The service worker (push only for now, D-092; Phase 10 adds caching):
         // always fetched fresh, so an update reaches every device, and locked
         // down to its own origin.
@@ -49,4 +55,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+// Articles are MDX compiled at build time (D-116): nothing is evaluated at run
+// time, so the strict CSP is unchanged. No remark or rehype plugins.
+const withMDX = createMDX({});
+
+export default withNextIntl(withMDX(nextConfig));

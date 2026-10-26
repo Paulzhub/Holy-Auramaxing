@@ -1,6 +1,7 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { NextRequest } from "next/server";
 
+import { isIndexablePath } from "@/features/marketing/pages";
 import { routing } from "@/i18n/routing";
 import { buildCsp, createNonce } from "@/lib/security/csp";
 import { refreshSessionAndGate } from "@/lib/supabase/proxy";
@@ -28,8 +29,21 @@ export async function proxy(request: NextRequest) {
   response.headers.set("Content-Security-Policy", csp);
   // Pages that depend on who is signed in must never be stored by shared caches.
   response.headers.set("Cache-Control", "private, no-store");
+  // Only the public website is ever indexed (CLAUDE.md §12, D-119). Every
+  // other page also says noindex in its own metadata; this covers anything
+  // that forgets, including error pages.
+  if (!isIndexablePath(pathWithoutLocale(request.nextUrl.pathname))) {
+    response.headers.set("X-Robots-Tag", "noindex");
+  }
 
   return refreshSessionAndGate(forwarded, response, routing.locales);
+}
+
+/** "/hi/faq" → "/faq"; English addresses have no prefix. */
+function pathWithoutLocale(pathname: string): string {
+  const [, first, ...rest] = pathname.split("/");
+  if (first && (routing.locales as readonly string[]).includes(first)) return `/${rest.join("/")}`;
+  return pathname;
 }
 
 export const config = {

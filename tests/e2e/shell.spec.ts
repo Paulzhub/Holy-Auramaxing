@@ -1,4 +1,4 @@
-import { appRoutes, expect, test } from "./fixtures";
+import { appRoutes, expect, publicRoutes, test } from "./fixtures";
 
 test("the SOS button is visible on every app screen and opens the sheet", async ({ page }) => {
   for (const route of appRoutes) {
@@ -63,7 +63,7 @@ test("unknown pages return 404 with a way back", async ({ page }) => {
 test("reflows at 320px with no sideways scrolling", async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 320, height: 640 } });
   const page = await context.newPage();
-  for (const route of ["/", ...appRoutes, "/dev/components"]) {
+  for (const route of [...publicRoutes, ...appRoutes, "/dev/components"]) {
     await page.goto(route);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

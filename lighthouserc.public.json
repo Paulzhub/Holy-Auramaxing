@@ -3,7 +3,13 @@
     "collect": {
       "startServerCommand": "npx next start -p 3200",
       "startServerReadyPattern": "Ready",
-      "url": ["http://localhost:3200/"],
+      "url": [
+        "http://localhost:3200/",
+        "http://localhost:3200/how-it-works",
+        "http://localhost:3200/faq",
+        "http://localhost:3200/scripture",
+        "http://localhost:3200/get-help"
+      ],
       "numberOfRuns": 3,
       "settings": {
         "chromeFlags": "--no-sandbox --headless=new"
