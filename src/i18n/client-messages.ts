@@ -7,7 +7,7 @@ import { getMessages } from "next-intl/server";
  * (A test checks that every useTranslations() call in a client component
  * is covered.)
  */
-export const baseClientNamespaces = ["app", "meta", "errors", "theme", "nav", "shell", "sos", "ui"] as const;
+export const baseClientNamespaces = ["app", "meta", "errors", "theme", "nav", "shell", "sos", "ui", "lock"] as const;
 
 type Messages = Awaited<ReturnType<typeof getMessages>>;
 type Namespace = keyof Messages & string;

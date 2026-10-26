@@ -8,6 +8,7 @@ import { audit } from "@/lib/server/audit";
 import { devLog } from "@/lib/server/dev-log";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { forgetAppLockOnThisDevice } from "@/lib/server/app-lock";
 
 import { formatRecoveryCode, generateRecoveryCodes, hashRecoveryCode } from "../recovery-codes";
 import { fieldErrors } from "../schemas";
@@ -175,6 +176,7 @@ export async function signOutEverywhereAction(): Promise<void> {
   const { userId } = await requireAccount();
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut({ scope: "global" });
+  await forgetAppLockOnThisDevice();
   await audit("auth.signed_out_everywhere", userId);
   await go("/sign-in?notice=signed-out-everywhere");
 }

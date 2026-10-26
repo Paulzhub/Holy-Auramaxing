@@ -12,6 +12,7 @@ import {
   TwoStepOff,
 } from "@/features/auth";
 import { PasskeyAddButton, RecoveryCodesButton, TwoStepSetup } from "@/features/auth/ui-security";
+import { AppLockSettings, appLockOwner } from "@/features/recovery";
 import { clientMessages } from "@/i18n/client-messages";
 import { Link } from "@/i18n/navigation";
 
@@ -24,7 +25,7 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 /** Settings → Security: two-step sign-in, passkeys, devices and sessions (Phase 2d). */
 export default async function Page({ searchParams }: { searchParams: SearchParams }) {
-  const { profile } = await requireAccount();
+  const { profile, userId } = await requireAccount();
   const [overview, t, messages, params] = await Promise.all([
     getSecurityOverview(),
     getTranslations("security"),
@@ -71,6 +72,8 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
               <PasskeyAddButton />
             </section>
           ) : null}
+
+          <AppLockSettings owner={appLockOwner(userId)} />
 
           <section className="profile-section" aria-labelledby="sessions-title">
             <h2 id="sessions-title" className="profile-section__title">

@@ -15,6 +15,7 @@ const protectedPrefixes = [
   "/welcome",
   "/journal",
   "/resources",
+  "/reading",
 ];
 /** Sign-in and sign-up entry pages a signed-in person doesn't need to see. */
 const signedOutOnly = ["/sign-in", "/sign-up"];

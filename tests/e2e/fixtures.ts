@@ -17,6 +17,9 @@ export const appRoutes = [
   "/settings/blocked",
   "/journal",
   "/resources",
+  "/reading",
+  "/reading/7-days",
+  "/reading/90-days?day=45",
 ] as const;
 export const allRoutes = ["/", ...appRoutes, "/dev/components", "/this-page-does-not-exist"] as const;
 /** Pages for signed-out visitors (axe, keyboard and password-manager checks in auth.spec.ts). */

@@ -300,6 +300,28 @@ describe("discretion: addresses in the browser history", () => {
     expect(sos).not.toMatch(/\bgo\(/);
   });
 
+  it("reading plans come back to their own address, with a neutral slug and a day number only (Phase 8b, D-112)", () => {
+    const code = read("src/features/recovery/server/reading-actions.ts").replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "");
+    const addresses = [...code.matchAll(/["`](\/[^"`]*)["`]/g)].map((m) => m[1]!);
+    expect(addresses.length).toBeGreaterThan(2);
+    for (const address of addresses) {
+      expect(address).toMatch(/^(\/reading(\/\$\{plan\.slug\}(\?day=\$\{day\.data\})?)?|\/\[locale\]\/reading)$/);
+    }
+    // The slugs say how long a plan is, nothing more.
+    const plans = read("src/features/recovery/reading.ts");
+    const slugs = [...plans.matchAll(/slug: "([^"]+)"/g)].map((m) => m[1]!);
+    expect(slugs).toEqual(["7-days", "30-days", "90-days"]);
+    // Nothing about reading is ever audited or sent anywhere.
+    expect(code).not.toMatch(/audit\(/);
+  });
+
+  it("the app lock leaves only neutral names on the device and in cookies (Phase 8b, D-113)", () => {
+    const lock = read("src/lib/app-lock.ts");
+    const names = [...lock.matchAll(/export const \w+(?:_KEY|_COOKIE) = "([^"]+)"/g)].map((m) => m[1]!);
+    expect(names).toEqual(["ha-lock", "ha-lock-seen", "ha-lock-on", "ha-lock-fails", "ha-lock-clear"]);
+    expectDiscreet(names.map((n) => ["app-lock", n] as [string, string]));
+  });
+
   it("leaderboard tabs go by number in the address, never by name (D-098)", () => {
     const group = "0199a000-0000-7000-8000-000000000001";
     expectDiscreet(BOARDS.flatMap((b) => [[`board ${b}`, boardHref(group, b, "week", 50)] as [string, string]]));

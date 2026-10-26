@@ -24,6 +24,7 @@ import {
   safeNextPath,
 } from "../schemas";
 import { audit } from "@/lib/server/audit";
+import { forgetAppLockOnThisDevice } from "@/lib/server/app-lock";
 import { verifyEmailLink } from "./oauth";
 import { afterFirstStep, readAuthGate, recordSignIn } from "./security-events";
 import { syncThemeCookie } from "./theme-sync";
@@ -326,6 +327,7 @@ export async function signOutAction(): Promise<void> {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getClaims();
   await supabase.auth.signOut({ scope: "local" });
+  await forgetAppLockOnThisDevice();
   if (data?.claims.sub) await audit("auth.sign_out", data.claims.sub);
   await go("/?notice=signed-out");
 }

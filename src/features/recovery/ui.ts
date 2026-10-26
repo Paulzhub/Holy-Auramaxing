@@ -3,3 +3,4 @@
  * other modules' text fields can use (CLAUDE.md §7.9).
  */
 export { CrisisWatch } from "./components/crisis-watch";
+export { ForgetLockWatch } from "./components/forget-lock-watch";

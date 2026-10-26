@@ -2,10 +2,12 @@ import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/shell/app-shell";
+import { signOutAction } from "@/features/auth";
 import { getMyGroups } from "@/features/groups";
 import { GroupSwitcher } from "@/features/groups/ui";
 import { getAlertsTopic, getUnreadCounts } from "@/features/notifications";
 import { LiveAlerts } from "@/features/notifications/ui-live";
+import { AppLock, appLockOwner } from "@/features/recovery";
 import { getThemePreference } from "@/lib/server/theme";
 
 /**
@@ -36,6 +38,7 @@ export async function AppFrame({ userId, children }: { userId: string; children:
       theme={theme}
       switcher={switcher}
       alertCounts={counts}
+      lock={<AppLock owner={appLockOwner(userId)} signOut={signOutAction} />}
       live={
         <LiveAlerts topic={topic} labels={{ newOne: tLive("newOne"), newMany: tLive("newMany", { count: "#" }) }} />
       }

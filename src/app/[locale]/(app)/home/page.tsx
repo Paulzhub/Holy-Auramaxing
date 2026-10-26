@@ -7,6 +7,7 @@ import { getPushDevices, PushExplainer } from "@/features/notifications";
 import { requireAccount } from "@/features/auth";
 import { getMyLevel, getMyXpAndBadges, LevelCard, XpLine } from "@/features/gamification";
 import { getMyNudges, NudgesForYou } from "@/features/social";
+import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
@@ -44,6 +45,11 @@ export default async function Page() {
           </blockquote>
           <figcaption>{t("verseReference")}</figcaption>
         </figure>
+        <p>
+          <Link href="/reading" className="text-link">
+            {t("readingLink")}
+          </Link>
+        </p>
         {/* Only after a first check-in, before any browser prompt (§7.8, D-092). */}
         {overview.totalCheckins > 0 ? <PushExplainer hasDevice={devices.length > 0} /> : null}
       </div>

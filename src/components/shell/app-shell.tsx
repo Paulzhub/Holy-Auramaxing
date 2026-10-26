@@ -28,6 +28,7 @@ export function AppShell({
   switcher,
   alertCounts = { total: 0, byGroup: {} },
   live,
+  lock,
 }: {
   children: ReactNode;
   theme: ThemePreference;
@@ -37,40 +38,45 @@ export function AppShell({
   alertCounts?: AlertCounts;
   /** The live notifications client, supplied by the app layout. */
   live?: ReactNode;
+  /** The app lock's screen (D-113), supplied by the app layout; everything else sits under it. */
+  lock?: ReactNode;
 }) {
   const t = useTranslations();
 
   return (
     <ToastProvider regionLabel={t("ui.toastRegion")} dismissLabel={t("ui.dismiss")}>
       <AlertCountsProvider initial={alertCounts}>
-        <a href="#main" className="skip-link visually-hidden">
-          {t("shell.skipToContent")}
-        </a>
-        <div className="horizon" aria-hidden="true" />
-        <div className="shell">
-          <header className="shell-topbar">
-            <div className="shell-topbar__row">
+        <div data-lockable className="lockable">
+          <a href="#main" className="skip-link visually-hidden">
+            {t("shell.skipToContent")}
+          </a>
+          <div className="horizon" aria-hidden="true" />
+          <div className="shell">
+            <header className="shell-topbar">
+              <div className="shell-topbar__row">
+                <Brand />
+                <div className="shell-topbar__end">
+                  {switcher}
+                  <ThemeSwitcher initial={theme} />
+                </div>
+              </div>
+            </header>
+            <aside className="shell-sidebar">
               <Brand />
-              <div className="shell-topbar__end">
-                {switcher}
+              {switcher}
+              <SidebarNav />
+              <div className="shell-sidebar__footer">
                 <ThemeSwitcher initial={theme} />
               </div>
-            </div>
-          </header>
-          <aside className="shell-sidebar">
-            <Brand />
-            {switcher}
-            <SidebarNav />
-            <div className="shell-sidebar__footer">
-              <ThemeSwitcher initial={theme} />
-            </div>
-          </aside>
-          <SosButton />
-          <main id="main" className="shell-main" tabIndex={-1}>
-            {children}
-          </main>
-          <BottomNav />
+            </aside>
+            <SosButton />
+            <main id="main" className="shell-main" tabIndex={-1}>
+              {children}
+            </main>
+            <BottomNav />
+          </div>
         </div>
+        {lock}
         <FocusAfterAction />
         <OfflineReady />
         {live}
