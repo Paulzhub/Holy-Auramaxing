@@ -5,7 +5,7 @@ import { sessionCookieOptions } from "./cookies";
 import type { Database } from "./database.types";
 
 /** App areas that need a signed-in account. Everything else is public. */
-const protectedPrefixes = [
+export const protectedPrefixes = [
   "/home",
   "/groups",
   "/check-in",

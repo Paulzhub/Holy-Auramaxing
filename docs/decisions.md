@@ -988,3 +988,46 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **Before first paint:** a nonce'd inline script, like the theme's, sets `html[data-locked]` when the lock is due. CSS hides everything in `[data-lockable]` (the app shell and onboarding) and shows the lock screen, whose markup is always in the page. The page underneath is also `inert`. The lock screen shows the app's name, a PIN field, "Unlock", the fingerprint button if set, and "Forgot PIN? Sign out". There's no SOS on it (owner).
 - **Wrong tries:** five free, then 30 seconds, doubling up to 15 minutes. The wait survives a reload.
 - **Sign-out (owner, 2026-10-26):** any sign-out on this device forgets the lock. The sign-out actions set a one-minute `ha-lock-clear` cookie, and the boot script (on a full load) or `ForgetLockWatch` (after an in-app redirect) clears the device's record. "Forgot PIN?" signs out the same way.
+
+## D-114 · Phase 9a · The public website: one list, server-rendered, never reads the session
+
+- **Pages:** landing, how it works, about, FAQ, articles, Scripture guides, get help, and the legal pages (privacy, terms, your data, plus new drafts: community guidelines, accessibility statement, security), all in `src/app/[locale]/(public)` with one frame (`PublicFrame`: header, phone menu as a `<details>` disclosure, footer). Privacy, terms and your data moved there from `(auth)`; their addresses are unchanged.
+- **One list:** `src/features/marketing/pages.ts` holds every public path. The sitemap, robots.txt, llms.txt, the proxy's noindex header and the tests all read it.
+- **No session:** public pages never look at who is signed in, so they're identical for everyone and say nothing about the visitor. Published Scripture is read with a cookie-less anonymous client (`src/lib/supabase/anonymous.ts`).
+- **Rendering:** server-rendered with the per-request CSP nonce, like every page, so the theme and app-lock boot scripts are unchanged. Caching public HTML at the CDN (§14) needs static pages with a hash-based CSP and SRI for Next.js's scripts: **Phase 12 follow-up.** We chose the more secure option for now.
+- **The app lock:** public layouts never carry `data-lockable`; an e2e test checks it.
+- **No statement-of-faith page (owner, 2026-10-26).** About has a short "What we believe" paragraph instead (Jesus, grace, Scripture, open to every church tradition), for the owner to edit.
+
+## D-115 · Phase 9a · Discretion on the public site: only articles may name the topic in a title or address (owner, 2026-10-26)
+
+- **Why:** someone searching for help types the topic, so the site has to say it somewhere; but titles and addresses sit in tabs, history and bookmarks.
+- **Rule:** body text, headings and JSON-LD on public pages may name the topic. The titles, descriptions and addresses of the landing, how it works, about, FAQ, Scripture, get-help and legal pages stay neutral, and so does the site's one-line description (used everywhere, llms.txt included). Only articles may name it in their `<title>`, description, card picture and slug.
+- **Checks:** `seo.test.ts` ("discretion on the public site") and `headers.spec.ts` ("tab titles stay neutral", now covering every public page except articles). `discretion.test.ts` still covers `app.*` and `meta.*`.
+
+## D-116 · Phase 9a · Articles in MDX, noindex until reviewed (owner, 2026-10-26)
+
+- **Format:** `@next/mdx` (new packages: `@next/mdx`, `@mdx-js/loader`, `@mdx-js/react`, `@types/mdx`), compiled at build time with no plugins, so nothing is evaluated at run time and CSP is unchanged. Bodies live in `src/content/articles/<locale>/<slug>.mdx`; metadata (title, description, dates, author, reviewer, Scripture, sources) in `src/features/marketing/articles.ts`, validated by Zod, so the proxy and sitemap never compile MDX.
+- **Shape (§12):** each article opens with a two- or three-sentence answer, uses question-style H2s, quotes the current World English Bible (the same reader as D-105), links only sources that were opened and checked on 2026-10-26, and shows the author, the review state and the updated date. `seo.test.ts` checks the shape.
+- **Author:** "Paulz, Founder of Holy Auramaxing", whose bio says plainly he isn't a pastor or counsellor.
+- **Review:** until `reviewer` is set to a named pastor or counsellor, an article shows "Waiting for pastoral review", is `noindex` (meta and header), and is left out of the sitemap and llms.txt. Setting the reviewer is a one-line change.
+- **Starter articles:** "How do I quit porn as a Christian?", "What does the Bible say about lust?", "How do I help a friend who is struggling with porn?".
+
+## D-117 · Phase 9a · Scripture guides and Get help without an account
+
+- **Scripture guides:** `/scripture` shows the verse for today (by UTC date, since a visitor's time zone is unknown) and the three plans; `/scripture/<plan>` shows day one in full and every day's chapters. Read as the anonymous role from the published tables (D-112). There's no link into `/reading`; the call to action is to create an account.
+- **Get help:** `/get-help` reuses the Resources view (`audience="public"`): crisis lines (India and the US first), counsellors, safer devices and books, plus "talk to someone you trust" and a link to `/breathe` in place of the in-app SOS card. Someone in crisis shouldn't need an account.
+
+## D-118 · Phase 9a · The scroll story's static version
+
+- **Storyboard (approved with the plan):** night (hero) → the weight → the first crack (Romans 8:1) → one honest answer a day → together → dawn (Lamentations 3:22–23). 9a ships it as six server-rendered sections, each with a small inline SVG still and its own fixed night-to-dawn palette (the scene re-declares the colour tokens, so buttons and focus rings stay readable in either theme).
+- **This is the fallback 9b keeps:** for crawlers, JavaScript off, reduced motion, no WebGL, low memory, Save-Data and the kill switch. 9b's three.js, GSAP and Lenis enhance `[data-story]` without changing a word.
+- **Partial verses** get an ellipsis (grace review GS-2): Romans 8:1 ends at "in Christ Jesus…".
+
+## D-119 · Phase 9a · Indexing, crawling, cards and structured data
+
+- **noindex twice:** the proxy adds `X-Robots-Tag: noindex` to every page that isn't indexable (app, auth, invites, unreviewed articles, 404s), and `/api/*` gets `noindex, nofollow` from `next.config.ts`; private layouts keep their `robots` metadata.
+- **robots.txt:** everyone, GPTBot, ClaudeBot, PerplexityBot and Google-Extended included, may crawl the public site and `/api/og/`, and never the app's protected prefixes, `/progress`, `/join`, `/api` or `/dev`. Sign-in, sign-up and `/breathe` stay crawlable on purpose so crawlers see their noindex instead of listing a bare address.
+- **Cards:** `/api/og/site` (neutral) and `/api/og/<article>` are PNGs from `next/og` (built in), generated at build time. They're under `/api` so the address never goes through locale redirects.
+- **JSON-LD:** Organization, WebSite and WebApplication (landing), WebApplication (how it works), FAQPage, BlogPosting (author; `reviewedBy` on the page once reviewed) and BreadcrumbList, with `<` escaped. Known limit: Google's "Software app" rich result wants a rating or review, and we won't invent one, so the Rich Results Test may list WebApplication as not eligible; it's still valid schema.org.
+- **llms.txt and security.txt:** `/llms.txt` (name, the one-line description, what it is and isn't, links to indexable pages) and RFC 9116 `/.well-known/security.txt` (contact, a one-year expiry from each build, the policy page).
+- **Lighthouse:** `lighthouserc.public.json` now covers `/`, `/how-it-works`, `/faq`, `/scripture` and `/get-help`. Articles are left out while they're noindex, because Lighthouse's SEO score counts "blocked from indexing" as a failure.

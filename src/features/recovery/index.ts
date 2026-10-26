@@ -36,7 +36,15 @@ export {
   type PlanProgress,
   type VerseOfDay,
 } from "./server/reading";
-export { CurrentPlanCard, PlanChoices, PlanDaysView, ReadingNotice, VerseOfDayCard } from "./components/reading-views";
+export { getPublishedPlanDay, getPublishedPlanOutline, getPublishedVerseOfDay } from "./server/published";
+export {
+  CurrentPlanCard,
+  PassageText,
+  PlanChoices,
+  PlanDaysView,
+  ReadingNotice,
+  VerseOfDayCard,
+} from "./components/reading-views";
 export {
   JournalEntryView,
   JournalList,

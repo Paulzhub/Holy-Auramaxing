@@ -28,6 +28,9 @@
     "bench:notify": "node scripts/bench-notify.mjs"
   },
   "dependencies": {
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@next/mdx": "^16.4.2",
     "@radix-ui/react-tabs": "^1.1.21",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.1.0",
@@ -56,6 +59,7 @@
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
+    "@types/mdx": "^2.0.14",
     "@types/node": "^22.20.4",
     "@types/nodemailer": "^8.0.2",
     "@types/qrcode": "^1.5.6",

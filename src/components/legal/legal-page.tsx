@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import type en from "../../../messages/en.json";
 
-type Doc = "privacy" | "terms" | "yourData";
+type Doc = "privacy" | "terms" | "yourData" | "communityGuidelines" | "accessibility" | "security";
 type SectionKey<D extends Doc> = keyof (typeof en)["legal"][D]["sections"] & string;
 
 /** Section order for each document; keys live in messages/<locale>.json under legal.<doc>.sections. */
@@ -20,6 +20,9 @@ const order: { [D in Doc]: SectionKey<D>[] } = {
   ],
   terms: ["whoCanUseTheApp", "notAMedicalService", "lookingAfterEachOther", "yourAccount", "changes"],
   yourData: ["privateByDefault", "discreetEverywhere", "yoursToTakeOrDelete", "protected"],
+  communityGuidelines: ["graceFirst", "keepItClean", "keepConfidences", "respect", "whenWorried", "moderation"],
+  accessibility: ["aim", "done", "limits", "contact"],
+  security: ["protect", "report", "machineReadable"],
 };
 
 /**

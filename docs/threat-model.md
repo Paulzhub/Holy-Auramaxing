@@ -319,11 +319,23 @@ A review of what people near the user could see, and of data we hold but don't n
 | **E**levation of privilege | Earning XP repeatedly from one plan day                         | `mark_day_read` queues one job per new day read; the ledger's per-person key (`devotional:<user>:plan:<slug>:<day>`) makes it once ever; pgTAP `101`                                                                              |
 | **D**enial of service      | Flooding reading writes                                         | `start_reading_plan`, `mark_day_read` and `unmark_day_read` share 60/hour (`private.throttle`), plus the app's own 50/hour                                                                                                        |
 
+## Phase 9a additions
+
+| STRIDE                     | Threat                                                                | Mitigation                                                                                                                                                                                          |
+| -------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | A private page (app, invite, auth) showing up in search or AI answers | One indexable list (`pages.ts`); `X-Robots-Tag: noindex` from the proxy on everything else; robots.txt keeps crawlers out of the app, invites and the API; sitemap built from the same list (D-119) |
+| **I**nformation disclosure | The public site revealing who is signed in                            | Public pages never read the session; Scripture is read with a cookie-less anonymous client (D-114)                                                                                                  |
+| **I**nformation disclosure | A visitor's tab, history or bookmark naming the topic                 | Neutral titles and addresses on every public page except articles, which the reader chose to open (D-115); `seo.test.ts`, `headers.spec.ts`                                                         |
+| **T**ampering              | Script injection through structured data                              | JSON-LD built only from our own copy, `<` escaped, rendered as a data block that never runs (D-119); unit test                                                                                      |
+| **T**ampering              | MDX running code in visitors' browsers                                | Articles compiled at build time from files in the repo, no plugins, no runtime evaluation; CSP unchanged (D-116)                                                                                    |
+| **S**poofing               | A forged security report channel                                      | `/.well-known/security.txt` (RFC 9116) and `/security` give one contact; it expires a year after each build                                                                                         |
+
 ## Open items
 
 - `require-trusted-types-for 'script'` is not enabled yet; test Next.js and React compatibility in Phase 11.
 - There is no CSP violation reporting endpoint yet; add it alongside Sentry (Phase 12).
-- `security.txt` and the disclosure page come in Phase 11.
+- `security.txt` and the disclosure page shipped in Phase 9a (D-119); refresh its expiry by redeploying at least once a year.
+- Public HTML isn't cached at the CDN yet: it needs static pages with a hash-based CSP and SRI (Phase 12, D-114).
 - Turnstile is not exercised by automated tests (off in CI); verify it by hand on the first preview deploy (D-018).
 - Supabase Auth applies its per-IP limits to our server's IP for server-side calls; set dashboard limits generously before launch (D-019).
 - Back up `APP_ENCRYPTION_KEY` securely: without it, encrypted text can't be read (D-025).
