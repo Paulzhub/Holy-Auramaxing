@@ -1,7 +1,7 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { NextRequest } from "next/server";
 
-import { isIndexablePath } from "@/features/marketing/pages";
+import { isIndexablePath } from "@/features/marketing/data";
 import { routing } from "@/i18n/routing";
 import { buildCsp, createNonce } from "@/lib/security/csp";
 import { refreshSessionAndGate } from "@/lib/supabase/proxy";

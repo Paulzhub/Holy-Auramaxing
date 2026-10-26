@@ -13,6 +13,7 @@ const featureModules = [
   "recovery",
   "profile",
   "admin",
+  "marketing",
 ];
 
 export default defineConfig([
@@ -40,9 +41,11 @@ export default defineConfig([
                 `@/features/${m}/*`,
                 `!@/features/${m}/ui`,
                 `!@/features/${m}/ui-*`,
+                `!@/features/${m}/data`,
+                `!@/features/${m}/public-site`,
               ]),
               message:
-                "Import a feature module through its public entry points: '@/features/<module>' (server API), '@/features/<module>/ui' or a page-specific '@/features/<module>/ui-<page>' (components).",
+                "Import a feature module through its public entry points: '@/features/<module>' (server API), '@/features/<module>/ui' or a page-specific '@/features/<module>/ui-<page>' (components), '@/features/<module>/data' (plain data, no React) or '@/features/<module>/public-site' (server code for the public website, no client components).",
             },
           ],
         },

@@ -1,6 +1,5 @@
 import en from "../../../../../messages/en.json";
-import { ARTICLES, articleBySlug } from "@/features/marketing";
-import { ogImage } from "@/features/marketing/seo/og-image";
+import { ARTICLES, articleBySlug, ogImage } from "@/features/marketing";
 
 /**
  * Card pictures for Open Graph and Twitter (CLAUDE.md §12): "site" for every

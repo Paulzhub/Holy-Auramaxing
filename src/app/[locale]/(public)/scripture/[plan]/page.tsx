@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { publicMetadata, ScripturePlan } from "@/features/marketing";
-import { planBySlug } from "@/features/recovery";
+import { planBySlug } from "@/features/recovery/public-site";
 
 type Params = Promise<{ plan: string }>;
 

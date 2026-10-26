@@ -1,8 +1,13 @@
 import type { MetadataRoute } from "next";
 
-import { ARTICLES } from "@/features/marketing/articles";
-import { articlePath, isIndexablePath, PUBLIC_PAGES, SCRIPTURE_PLAN_PATHS } from "@/features/marketing/pages";
-import { absoluteUrl } from "@/features/marketing/site";
+import {
+  absoluteUrl,
+  ARTICLES,
+  articlePath,
+  isIndexablePath,
+  PUBLIC_PAGES,
+  SCRIPTURE_PLAN_PATHS,
+} from "@/features/marketing/data";
 
 /**
  * The XML sitemap (CLAUDE.md §12): indexable public pages only. Nothing

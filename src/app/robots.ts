@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { AI_CRAWLERS, NEVER_CRAWLED } from "@/features/marketing/pages";
-import { absoluteUrl } from "@/features/marketing/site";
+import { absoluteUrl, AI_CRAWLERS, NEVER_CRAWLED } from "@/features/marketing/data";
 
 /**
  * robots.txt (CLAUDE.md §12, D-119): public pages may be crawled by everyone,

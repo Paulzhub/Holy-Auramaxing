@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { Breadcrumbs, PageIntro, publicMetadata } from "@/features/marketing";
-import { ResourcesView } from "@/features/recovery";
+import { ResourcesView } from "@/features/recovery/public-site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("marketing.pages.getHelp");

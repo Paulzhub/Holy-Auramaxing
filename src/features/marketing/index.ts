@@ -15,6 +15,7 @@ export {
 } from "./pages";
 export { absoluteUrl, CONTACT_EMAIL, SITE_NAME, siteUrl } from "./site";
 export { publicMetadata } from "./seo/metadata";
+export { ogImage } from "./seo/og-image";
 export { ArticlesHub, ArticleView } from "./components/article-pages";
 export { Breadcrumbs, PageIntro } from "./components/breadcrumbs";
 export { About, Faq, HowItWorks } from "./components/info-pages";

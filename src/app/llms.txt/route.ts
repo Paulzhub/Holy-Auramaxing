@@ -1,4 +1,4 @@
-import { llmsText } from "@/features/marketing/llms";
+import { llmsText } from "@/features/marketing/data";
 
 /** /llms.txt (CLAUDE.md §12 GEO): a plain summary of the site for AI tools. */
 export const dynamic = "force-static";

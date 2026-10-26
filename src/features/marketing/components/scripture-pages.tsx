@@ -11,7 +11,7 @@ import {
   READING_PLANS,
   VerseOfDayCard,
   type PlanSlug,
-} from "@/features/recovery";
+} from "@/features/recovery/public-site";
 import { Link } from "@/i18n/navigation";
 
 import { Breadcrumbs, PageIntro } from "./breadcrumbs";
