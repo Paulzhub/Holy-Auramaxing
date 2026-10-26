@@ -962,3 +962,9 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 
 - **Why:** on 2026-10-22, npm audit started reporting three critical advisories against Next.js 16.0.0 to 16.4.0 (GHSA-2464-fhr4-w9xw, GHSA-p3m5-59mp-jv5r, GHSA-673q-mjm6-r5xr), which failed CI's dependency audit. `next` and `eslint-config-next` are now pinned to 16.4.2.
 - **Titles:** after the upgrade, CI's axe check sometimes ran before a sign-up step's `<title>` arrived, because Next.js streams metadata into `<body>` for full browsers. `htmlLimitedBots: /.*/` puts metadata in `<head>` for everyone. Our metadata is only translated strings, so nothing waits on it, and tab titles and screen readers get the page title at once (WCAG 2.4.2).
+
+## D-111 · Phase 8a · Lighthouse performance bar for signed-in pages: 0.90 (owner, 2026-10-26)
+
+- **Finding:** in CI, signed-in app pages score 0.93–0.94 for performance, and so does `main` without Phase 8a. Their LCP is plain server-rendered text, but Lighthouse's simulated slow phone counts every script requested before the first paint (about 200 KB of JavaScript, above the §14 budget of 170 KB), which puts LCP near 3 s. Local runs swing between 0.94 and 0.99 on the same code.
+- **Decision (owner):** `lighthouserc.app.json` asserts performance at 0.90 for signed-in pages. Public and sign-in pages keep 0.95, as §12 requires, and every other category stays at 0.95 everywhere. The CI step's name is unchanged, so branch protection still finds it.
+- **Follow-up (Phase 12):** bring app-route JavaScript under the 170 KB budget, then raise the bar back to 0.95. When Lighthouse fails, CI annotations now list FCP, LCP, TBT, CLS and Speed Index for each page below 0.95.
