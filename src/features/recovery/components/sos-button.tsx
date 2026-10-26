@@ -2,23 +2,78 @@
 
 import { LifeBuoy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { Component, lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Link } from "@/i18n/navigation";
+
+type Body = ComponentType<{ onClose: () => void }>;
+/** Set once the code has loaded, so opening the sheet later needs no network at all. */
+let loadedBody: Body | null = null;
+const loadBody = () =>
+  import("./sos-sheet-body").then((m) => {
+    loadedBody = m.SosSheetBody;
+    return m;
+  });
+const LazyBody = lazy(() => loadBody().then((m) => ({ default: m.SosSheetBody })));
+
+/** If the code can't load (offline before it was ever fetched), point to the offline page. */
+class BodyFallback extends Component<{ children: ReactNode; fallback: ReactNode }, { failed: boolean }> {
+  override state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  override render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
+
+/** Warm the sheet's code once the page is idle, so it's ready (offline too) before anyone needs it. */
+function useWarmSheet(): boolean {
+  const [ready, setReady] = useState(() => loadedBody !== null);
+  useEffect(() => {
+    let cancelled = false;
+    const warm = () => {
+      if (cancelled) return;
+      loadBody()
+        .then(() => {
+          if (!cancelled) setReady(true);
+        })
+        .catch(() => undefined);
+    };
+    // Safari has no requestIdleCallback; a timer alone is fine there.
+    const idle = () => ("requestIdleCallback" in window ? window.requestIdleCallback(warm, { timeout: 3000 }) : warm());
+    const timer = window.setTimeout(idle, 4000);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, []);
+  return ready;
+}
 
 /**
- * Always visible, one tap away. Phase 8 replaces the placeholder content
- * with the breathing timer, Scripture cards and quick actions.
+ * Always visible, one tap away on every signed-in screen (CLAUDE.md §7.9,
+ * D-106). The button is tiny; the sheet's code loads a few seconds after the
+ * page settles (or at once if SOS is tapped first), so pages stay fast. Once
+ * loaded, everything except reaching out works without a connection; the
+ * offline page (/breathe) has the same tools.
  */
-export function SosButton() {
+export function SosButton({ placement = "shell" }: { placement?: "shell" | "corner" }) {
   const t = useTranslations("sos");
   const [open, setOpen] = useState(false);
+  const ready = useWarmSheet();
 
   return (
     <>
-      <button type="button" className="sos-button" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={placement === "corner" ? "sos-button sos-button--corner" : "sos-button"}
+        aria-haspopup="dialog"
+        // "ready" once the sheet's code is here, so it opens even offline.
+        data-ready={ready ? "true" : undefined}
+        onClick={() => setOpen(true)}
+      >
         <LifeBuoy aria-hidden="true" />
         {t("button")}
       </button>
@@ -29,41 +84,38 @@ export function SosButton() {
         title={t("title")}
         description={t("description")}
         closeLabel={t("close")}
+        className="sos-sheet"
         footer={
           <Button variant="primary" onClick={() => setOpen(false)}>
             {t("done")}
           </Button>
         }
       >
-        <p>{t("breathe")}</p>
-        <figure className="verse">
-          <blockquote>
-            <p>{t("verseText")}</p>
-          </blockquote>
-          <figcaption>{t("verseReference")}</figcaption>
-        </figure>
-        <section className="grid gap-1">
-          <h3 className="font-display text-(length:--text-lg)">{t("prayerHeading")}</h3>
-          <p>{t("prayer")}</p>
-        </section>
-        {/* Someone may open SOS after a slip, out of shame rather than temptation (grace review 1, G-7). */}
-        <details className="sos-after-slip">
-          <summary>{t("afterSlip")}</summary>
-          <figure className="verse">
-            <blockquote>
-              <p>{t("afterSlipText")}</p>
-            </blockquote>
-            <figcaption>{t("afterSlipReference")}</figcaption>
-          </figure>
-          <p>{t("afterSlipNext")}</p>
-          <p>
-            <Link href="/check-in" className="text-link" onClick={() => setOpen(false)}>
-              {t("afterSlipLink")}
-            </Link>
-          </p>
-        </details>
-        <p className="text-muted text-(length:--text-sm)">{t("comingSoon")}</p>
+        {open ? <SheetBody onClose={() => setOpen(false)} /> : null}
       </Dialog>
     </>
+  );
+}
+
+function SheetBody({ onClose }: { onClose: () => void }) {
+  const t = useTranslations("sos");
+  const Loaded = loadedBody;
+  if (Loaded) return <Loaded onClose={onClose} />;
+  return (
+    <BodyFallback
+      fallback={
+        <p>
+          {/* A full page load on purpose: offline, the service worker answers it with its copy of /breathe. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a className="text-link" href="/breathe">
+            {t("openOffline")}
+          </a>
+        </p>
+      }
+    >
+      <Suspense fallback={<p className="text-muted">{t("opening")}</p>}>
+        <LazyBody onClose={onClose} />
+      </Suspense>
+    </BodyFallback>
   );
 }

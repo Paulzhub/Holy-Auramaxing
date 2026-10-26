@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { FocusAfterAction } from "@/components/ui/focus-after-action";
 import { ToastProvider } from "@/components/ui/toast";
-import { SosButton } from "@/features/recovery";
+import { OfflineReady, SosButton } from "@/features/recovery";
 import { Link } from "@/i18n/navigation";
 import type { ThemePreference } from "@/lib/theme/theme";
 
@@ -72,6 +72,7 @@ export function AppShell({
           <BottomNav />
         </div>
         <FocusAfterAction />
+        <OfflineReady />
         {live}
       </AlertCountsProvider>
     </ToastProvider>

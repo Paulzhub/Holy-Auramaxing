@@ -621,6 +621,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      journal_entries: {
+        Row: {
+          body_encrypted: string;
+          created_at: string;
+          id: string;
+          prompt_key: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          body_encrypted: string;
+          created_at?: string;
+          id?: string;
+          prompt_key?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          body_encrypted?: string;
+          created_at?: string;
+          id?: string;
+          prompt_key?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "journal_entries_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "journal_entries_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       leaderboard_entries: {
         Row: {
           encourager: number;
@@ -1028,6 +1070,39 @@ export type Database = {
           },
         ];
       };
+      partner_contacts: {
+        Row: {
+          phone_encrypted: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          phone_encrypted: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          phone_encrypted?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "partner_contacts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "partner_contacts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       partnerships: {
         Row: {
           a_allows_alerts: boolean;
@@ -1421,6 +1496,39 @@ export type Database = {
           },
         ];
       };
+      recovery_tallies: {
+        Row: {
+          updated_at: string;
+          user_id: string;
+          waves: number;
+        };
+        Insert: {
+          updated_at?: string;
+          user_id: string;
+          waves?: number;
+        };
+        Update: {
+          updated_at?: string;
+          user_id?: string;
+          waves?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "recovery_tallies_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "recovery_tallies_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       reports: {
         Row: {
           created_at: string;
@@ -1798,6 +1906,7 @@ export type Database = {
       complete_oauth_signup: { Args: { p_token: string; p_user_id: string }; Returns: boolean };
       complete_onboarding: { Args: Record<PropertyKey, never>; Returns: undefined };
       complete_storage_purge: { Args: { p_id: string }; Returns: undefined };
+      count_wave: { Args: Record<PropertyKey, never>; Returns: number };
       create_comment: { Args: { p_body: string; p_post: string }; Returns: string };
       create_group: {
         Args: {
@@ -1835,6 +1944,7 @@ export type Database = {
       decline_join_request: { Args: { p_group: string; p_user: string }; Returns: undefined };
       delete_comment: { Args: { p_comment: string }; Returns: undefined };
       delete_group: { Args: { p_confirm_name: string; p_group: string }; Returns: undefined };
+      delete_journal_entry: { Args: { p_id: string }; Returns: undefined };
       delete_post: { Args: { p_post: string }; Returns: undefined };
       edit_comment: { Args: { p_body: string; p_comment: string }; Returns: undefined };
       edit_post: { Args: { p_body: string; p_post: string }; Returns: undefined };
@@ -2044,6 +2154,13 @@ export type Database = {
       notify_configure: { Args: { p_secret: string; p_url: string }; Returns: undefined };
       notify_finish: { Args: { p_results: Json }; Returns: number };
       notify_unsubscribe: { Args: { p_type: string; p_user: string }; Returns: boolean };
+      partner_contacts_for_me: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          partner_id: string;
+          phone_encrypted: string;
+        }[];
+      };
       pin_post: { Args: { p_pinned: boolean; p_post: string }; Returns: undefined };
       post_comments: {
         Args: { p_post: string };
@@ -2094,6 +2211,10 @@ export type Database = {
         Args: { p_local_date: string; p_note_encrypted?: string; p_triggers?: string[] };
         Returns: undefined;
       };
+      save_journal_entry: {
+        Args: { p_body_encrypted: string; p_id: string; p_new: boolean; p_prompt_key: string };
+        Returns: string;
+      };
       save_push_subscription: {
         Args: { p_auth: string; p_endpoint: string; p_label: string; p_p256dh: string };
         Returns: undefined;
@@ -2107,6 +2228,7 @@ export type Database = {
       set_group_picture_pending: { Args: { p_group: string; p_path: string }; Returns: string };
       set_notification_preferences: { Args: { p_prefs: Json }; Returns: undefined };
       set_partner_alerts: { Args: { p_allow: boolean; p_partnership: string }; Returns: undefined };
+      set_partner_contact: { Args: { p_phone_encrypted: string }; Returns: undefined };
       set_reaction: {
         Args: { p_kind: string; p_on: boolean; p_target: string; p_target_type: string };
         Returns: undefined;

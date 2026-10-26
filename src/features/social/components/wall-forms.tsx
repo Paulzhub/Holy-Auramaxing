@@ -6,6 +6,7 @@ import { useActionState, useEffect, useId, useRef } from "react";
 import { useFormStatus } from "react-dom";
 
 import { Button } from "@/components/ui/button";
+import { CrisisWatch } from "@/features/recovery/ui";
 
 import { POST_KINDS, SOCIAL_LIMITS, type PostKind } from "../constants";
 import { idleSocialFormState, type SocialFormState } from "../form-state";
@@ -117,6 +118,8 @@ function TextForm({
           aria-describedby={[`${id}-hint`, error ? `${idBase}-error` : null].filter(Boolean).join(" ")}
         />
       </div>
+      {/* On-device only: gently shows crisis lines if the words sound like self-harm (§7.9, D-109). */}
+      <CrisisWatch fieldId={id} />
       <div className="wall-form__actions">
         <Submit label={submit} pendingLabel={t("form.posting")} />
       </div>

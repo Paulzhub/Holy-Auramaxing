@@ -1,4 +1,4 @@
-import { ChevronRight, CircleCheck, Pencil, Settings, Sprout } from "lucide-react";
+import { BookHeart, ChevronRight, CircleCheck, LifeBuoy, Pencil, Settings, Sprout } from "lucide-react";
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
 
@@ -88,6 +88,24 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
           <span className="grid flex-1">
             <span className="ui-card__title">{t("pages.me.progressLink")}</span>
             <span className="text-muted">{t("pages.me.progressBody")}</span>
+          </span>
+          <ChevronRight aria-hidden="true" className="h-5 w-5 flex-none" />
+        </Link>
+
+        <Link href="/journal" className="ui-card flex items-center gap-4">
+          <BookHeart aria-hidden="true" className="h-6 w-6 flex-none" />
+          <span className="grid flex-1">
+            <span className="ui-card__title">{t("pages.me.journalLink")}</span>
+            <span className="text-muted">{t("pages.me.journalBody")}</span>
+          </span>
+          <ChevronRight aria-hidden="true" className="h-5 w-5 flex-none" />
+        </Link>
+
+        <Link href="/resources" className="ui-card flex items-center gap-4">
+          <LifeBuoy aria-hidden="true" className="h-6 w-6 flex-none" />
+          <span className="grid flex-1">
+            <span className="ui-card__title">{t("pages.me.resourcesLink")}</span>
+            <span className="text-muted">{t("pages.me.resourcesBody")}</span>
           </span>
           <ChevronRight aria-hidden="true" className="h-5 w-5 flex-none" />
         </Link>
