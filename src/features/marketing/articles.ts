@@ -44,7 +44,7 @@ export type Article = z.infer<typeof articleSchema>;
 export const FOUNDER = {
   name: "Paulz",
   role: "Founder of Holy Auramaxing",
-  bio: "Paulz started Holy Auramaxing so a few friends could walk towards freedom together, with grace and Scripture at the centre. He isn't a pastor or a counsellor, which is why every article waits for one to review it.",
+  bio: "Paulz started Holy Auramaxing so a few friends could walk towards freedom together, with grace and Scripture at the centre.",
 } as const;
 
 const data: Article[] = [

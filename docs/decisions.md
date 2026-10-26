@@ -996,7 +996,8 @@ Departures from, or interpretations of, `CLAUDE.md`. Newest last. Each entry: co
 - **No session:** public pages never look at who is signed in, so they're identical for everyone and say nothing about the visitor. Published Scripture is read with a cookie-less anonymous client (`src/lib/supabase/anonymous.ts`).
 - **Rendering:** server-rendered with the per-request CSP nonce, like every page, so the theme and app-lock boot scripts are unchanged. Caching public HTML at the CDN (§14) needs static pages with a hash-based CSP and SRI for Next.js's scripts: **Phase 12 follow-up.** We chose the more secure option for now.
 - **The app lock:** public layouts never carry `data-lockable`; an e2e test checks it.
-- **No statement-of-faith page (owner, 2026-10-26).** About has a short "What we believe" paragraph instead (Jesus, grace, Scripture, open to every church tradition), for the owner to edit.
+- **No statement-of-faith page (owner, 2026-10-26).** About has a short "What we believe" paragraph instead. **Owner (2026-10-26):** it is for everyone, whatever they believe, built on Christian morals and ethics, with no pressure to become a Christian.
+- **Contact (owner, 2026-10-26):** every public contact (privacy policy grievance officer, About, accessibility, security, security.txt) is the app's own address, holyauramaxing@gmail.com, never a personal one. "Who's behind it" stays on About because articles name their author and link there; the founder's bio no longer says he isn't a pastor or counsellor.
 
 ## D-115 · Phase 9a · Discretion on the public site: only articles may name the topic in a title or address (owner, 2026-10-26)
 
