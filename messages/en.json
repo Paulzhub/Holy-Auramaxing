@@ -47,7 +47,9 @@
     "journal": "Journal",
     "journalEntry": "Journal entry",
     "resources": "Resources",
-    "breathe": "Take a breath"
+    "breathe": "Take a breath",
+    "reading": "Daily reading",
+    "readingPlan": "Reading plan"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -209,7 +211,8 @@
       "title": "Today",
       "lede": "Every morning is a fresh start.",
       "verseText": "It is because of Yahweh’s loving kindnesses that we are not consumed, because his mercies don’t fail. They are new every morning. Great is your faithfulness.",
-      "verseReference": "Lamentations 3:22–23 (WEB)"
+      "verseReference": "Lamentations 3:22–23 (WEB)",
+      "readingLink": "Today’s verse and reading"
     },
     "groups": {
       "title": "Groups",
@@ -237,7 +240,9 @@
       "journalLink": "Journal",
       "journalBody": "A private place to write. Only you can read it.",
       "resourcesLink": "Resources",
-      "resourcesBody": "Crisis lines, safer devices, counsellors and books."
+      "resourcesBody": "Crisis lines, safer devices, counsellors and books.",
+      "readingLink": "Daily reading",
+      "readingBody": "A verse for today, and plans to read at your own pace."
     },
     "settings": {
       "title": "Settings",
@@ -1002,6 +1007,48 @@
       "signed-out-others": "All your other devices are signed out.",
       "rate-limited": "That’s a lot of changes in a short time. Please wait a few minutes and try again.",
       "failed": "That didn’t work. Please try again."
+    },
+    "appLock": {
+      "title": "App lock",
+      "on": "On",
+      "off": "Off",
+      "body": "Cover the app with a PIN on this device after you’ve been away. It’s a privacy screen for this device only, and your account is still protected by signing in.",
+      "noStorage": "This browser isn’t keeping data for this site (a private window, perhaps), so the lock can’t be set up here.",
+      "isOn": "The lock is on for this device.",
+      "setUp": "Set up the lock",
+      "newPin": "New PIN ({length} digits)",
+      "pinAgain": "Enter the new PIN again",
+      "currentPin": "Current PIN",
+      "after": {
+        "legend": "Lock after being away for",
+        "now": "Any time I leave the app",
+        "minutes": "{count, plural, one {# minute} other {# minutes}}"
+      },
+      "forgotHint": "If you forget the PIN, choose “Forgot PIN? Sign out” on the lock screen and sign in again. Signing out on this device always removes the lock.",
+      "turnOn": "Turn on the lock",
+      "cancel": "Cancel",
+      "lockNow": "Lock now",
+      "addDevice": "Also unlock with fingerprint or face",
+      "removeDevice": "Stop using fingerprint or face",
+      "change": "Change PIN",
+      "saveChange": "Save the new PIN",
+      "turnOff": "Turn off the lock",
+      "confirmOff": "Turn it off",
+      "notices": {
+        "on": "The lock is on. It covers the app after you’ve been away.",
+        "changed": "Your new PIN is saved.",
+        "off": "The lock is off for this device.",
+        "afterSaved": "Saved.",
+        "deviceAdded": "You can now unlock with your fingerprint or face.",
+        "deviceRemoved": "Fingerprint or face is off. Your PIN still works."
+      },
+      "errors": {
+        "format": "Use exactly {length} digits.",
+        "mismatch": "The two PINs don’t match. Please try again.",
+        "current": "That isn’t the current PIN.",
+        "device": "Your device didn’t finish setting that up. You can try again.",
+        "failed": "That didn’t work just now. Please try again."
+      }
     }
   },
   "accountData": {
@@ -2449,5 +2496,75 @@
         "phoneRateLimited": "That’s a lot of changes in a short time. Please wait a little and try again."
       }
     }
+  },
+  "reading": {
+    "title": "Daily reading",
+    "lede": "A verse for today, and a plan to read at your own pace.",
+    "source": "Scripture from the World English Bible (public domain).",
+    "verse": {
+      "heading": "Verse for today",
+      "reference": "{reference} (WEB)"
+    },
+    "plans": {
+      "p7": {
+        "title": "Free in Christ",
+        "body": "Seven chapters about the new life and freedom Christ gives. One a day."
+      },
+      "p30": {
+        "title": "John, Ephesians and Philippians",
+        "body": "The Gospel of John, then two letters full of hope. About a chapter a day for 30 days."
+      },
+      "p90": {
+        "title": "The New Testament",
+        "body": "From Matthew to Revelation in 90 days, about three chapters a day."
+      }
+    },
+    "current": {
+      "heading": "Your plan",
+      "dayOf": "Day {day} of {length}",
+      "readCount": "{count, plural, =0 {No days read yet} one {# of {length} days read} other {# of {length} days read}}",
+      "markRead": "Mark day {day} as read",
+      "seeAll": "See every day",
+      "finished": "You’ve read every day of this plan. Well done.",
+      "finishedBody": "Read any day again, or start another plan below."
+    },
+    "choices": {
+      "heading": "Choose a plan",
+      "otherHeading": "Other plans",
+      "body": "There’s no schedule to keep, so you can never fall behind. Read a day whenever you’re ready.",
+      "start": "Start this plan",
+      "continue": "Continue this plan",
+      "pickUp": "Pick up where you left off: day {day}.",
+      "seeDays": "See the days",
+      "startNamed": "Start this plan: {title}",
+      "continueNamed": "Continue this plan: {title}",
+      "seeDaysNamed": "See the days: {title}"
+    },
+    "plan": {
+      "days": "Days",
+      "dayLink": "Day {day}",
+      "dayRead": "Read",
+      "dayHeading": "Day {day}",
+      "isRead": "You’ve read this day.",
+      "unmark": "Mark as not read",
+      "back": "Back to daily reading"
+    },
+    "notices": {
+      "planStarted": "Your plan is ready. Read a day whenever you like.",
+      "dayRead": "Marked as read.",
+      "dayUnread": "Marked as not read.",
+      "readingFailed": "That didn’t save just now. Please try again.",
+      "rateLimited": "That’s a lot in a short time. Please wait a little and try again."
+    }
+  },
+  "lock": {
+    "pinLabel": "PIN",
+    "unlock": "Unlock",
+    "deviceCheck": "Use fingerprint or face",
+    "format": "Enter your {length}-digit PIN.",
+    "wrong": "That PIN didn’t match. Please try again.",
+    "wait": "Too many tries for now. You can try again at {time}.",
+    "deviceFailed": "That didn’t work. You can use your PIN instead.",
+    "forgot": "Forgot PIN? Sign out"
   }
 }

@@ -11,6 +11,8 @@
 @import "../styles/social.css";
 @import "../styles/notifications.css";
 @import "../styles/recovery.css";
+@import "../styles/reading.css";
+@import "../styles/app-lock.css";
 
 /*
  * Tailwind is used for layout utilities only. Colours always come from the

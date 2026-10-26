@@ -1,4 +1,4 @@
-import { BookHeart, ChevronRight, CircleCheck, LifeBuoy, Pencil, Settings, Sprout } from "lucide-react";
+import { BookHeart, BookOpen, ChevronRight, CircleCheck, LifeBuoy, Pencil, Settings, Sprout } from "lucide-react";
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
 
@@ -88,6 +88,15 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
           <span className="grid flex-1">
             <span className="ui-card__title">{t("pages.me.progressLink")}</span>
             <span className="text-muted">{t("pages.me.progressBody")}</span>
+          </span>
+          <ChevronRight aria-hidden="true" className="h-5 w-5 flex-none" />
+        </Link>
+
+        <Link href="/reading" className="ui-card flex items-center gap-4">
+          <BookOpen aria-hidden="true" className="h-6 w-6 flex-none" />
+          <span className="grid flex-1">
+            <span className="ui-card__title">{t("pages.me.readingLink")}</span>
+            <span className="text-muted">{t("pages.me.readingBody")}</span>
           </span>
           <ChevronRight aria-hidden="true" className="h-5 w-5 flex-none" />
         </Link>

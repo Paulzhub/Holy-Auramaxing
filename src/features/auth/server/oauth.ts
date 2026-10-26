@@ -6,6 +6,7 @@ import { THEME_COOKIE, THEME_MAX_AGE_SECONDS } from "@/lib/theme/theme";
 
 import { safeNextPath } from "../schemas";
 import { audit } from "@/lib/server/audit";
+import { forgetAppLockOnThisDevice } from "@/lib/server/app-lock";
 import { afterFirstStep, readAuthGate, recordSignIn } from "./security-events";
 import { clearSignupCookies, readSignupTicket } from "./tickets";
 
@@ -92,6 +93,7 @@ export async function signOutIncompleteAccount(): Promise<string> {
   const gate = await readAuthGate(supabase);
   if (!gate.sessionActive) {
     await supabase.auth.signOut({ scope: "local" });
+    await forgetAppLockOnThisDevice();
     return "/sign-in?notice=session-ended";
   }
   if (gate.mfaPending) return "/sign-in/verify";

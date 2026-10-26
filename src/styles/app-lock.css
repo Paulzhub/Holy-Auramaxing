@@ -1,0 +1,131 @@
+/* ---------- recovery: the app lock (CLAUDE.md §7.10, Phase 8b, D-113) ----------
+   html[data-locked] is set by the boot script before first paint, so the
+   page is covered before any of it shows. Everything that belongs to the
+   person sits in [data-lockable] and is hidden (and so unreachable by
+   keyboard or screen reader); the lock screen shows only the app's name.
+   Nothing animates, reduced motion or not. */
+@layer components {
+  html:not([data-locked]) .app-lock {
+    display: none;
+  }
+
+  html[data-locked] [data-lockable],
+  html[data-locked] .ui-toast-region {
+    visibility: hidden;
+  }
+
+  html[data-locked],
+  html[data-locked] body {
+    overflow: hidden;
+  }
+
+  .app-lock {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    overflow-y: auto;
+    padding: var(--space-5) var(--space-4);
+    background: var(--color-bg);
+    color: var(--color-ink);
+  }
+
+  .app-lock__panel {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    inline-size: min(100%, 22rem);
+    text-align: center;
+  }
+
+  .app-lock__panel > svg {
+    inline-size: 3rem;
+    block-size: 3rem;
+  }
+
+  .app-lock__name {
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--text-2xl);
+    overflow-wrap: anywhere;
+  }
+
+  .app-lock__field {
+    inline-size: 100%;
+    text-align: start;
+  }
+
+  .app-lock__input,
+  .app-lock-settings__pin {
+    font-size: var(--text-lg);
+    letter-spacing: 0.3em;
+    max-inline-size: 14rem;
+  }
+
+  .app-lock__input {
+    max-inline-size: none;
+    inline-size: 100%;
+    text-align: center;
+  }
+
+  .app-lock__actions,
+  .app-lock-settings__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .app-lock-settings__actions {
+    justify-content: flex-start;
+  }
+
+  .app-lock__message,
+  .app-lock-settings__message {
+    margin: 0;
+    min-block-size: 1.5em;
+  }
+
+  .app-lock-settings__message:empty {
+    min-block-size: 0;
+  }
+
+  .app-lock-settings__state {
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .app-lock-settings__form {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .app-lock-settings__after {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .app-lock-settings__choice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: 44px;
+  }
+
+  .app-lock-settings__choice input {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    accent-color: var(--color-primary);
+  }
+
+  @media (forced-colors: active) {
+    .app-lock {
+      background: Canvas;
+      color: CanvasText;
+    }
+  }
+}

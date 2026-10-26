@@ -5,9 +5,11 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { ForgetLockWatch } from "@/features/recovery/ui";
 import { clientMessages } from "@/i18n/client-messages";
 import { routing } from "@/i18n/routing";
 import { getThemePreference } from "@/lib/server/theme";
+import { appLockBootScript } from "@/lib/app-lock";
 import { colorSchemeContent, themeAttribute, themeBootScript } from "@/lib/theme/theme";
 
 import { display, sans } from "../fonts";
@@ -70,9 +72,12 @@ export default async function LocaleLayout({ children, params }: { children: Rea
       <head>
         {/* Runs before first paint; see src/lib/theme/theme.ts. */}
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeBootScript }} />
+        {/* The app lock, before first paint too; see src/lib/app-lock.ts (D-113). */}
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: appLockBootScript }} />
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <ForgetLockWatch />
       </body>
     </html>
   );

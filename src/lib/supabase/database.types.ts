@@ -262,6 +262,139 @@ export type Database = {
         };
         Relationships: [];
       };
+      devotional_active_plan: {
+        Row: {
+          plan: string;
+          started_on: string;
+          user_id: string;
+        };
+        Insert: {
+          plan: string;
+          started_on: string;
+          user_id: string;
+        };
+        Update: {
+          plan?: string;
+          started_on?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "devotional_active_plan_plan_fkey";
+            columns: ["plan"];
+            isOneToOne: false;
+            referencedRelation: "devotional_plans";
+            referencedColumns: ["slug"];
+          },
+          {
+            foreignKeyName: "devotional_active_plan_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "devotional_active_plan_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      devotional_plans: {
+        Row: {
+          length: number;
+          slug: string;
+          sort: number;
+          title_key: string;
+        };
+        Insert: {
+          length: number;
+          slug: string;
+          sort: number;
+          title_key: string;
+        };
+        Update: {
+          length?: number;
+          slug?: string;
+          sort?: number;
+          title_key?: string;
+        };
+        Relationships: [];
+      };
+      devotional_progress: {
+        Row: {
+          day: number;
+          plan: string;
+          read_at: string;
+          user_id: string;
+        };
+        Insert: {
+          day: number;
+          plan: string;
+          read_at?: string;
+          user_id: string;
+        };
+        Update: {
+          day?: number;
+          plan?: string;
+          read_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "devotional_progress_plan_day_fkey";
+            columns: ["plan", "day"];
+            isOneToOne: false;
+            referencedRelation: "devotionals";
+            referencedColumns: ["plan", "day"];
+          },
+          {
+            foreignKeyName: "devotional_progress_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profile_cards";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "devotional_progress_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      devotionals: {
+        Row: {
+          day: number;
+          passages: NonNullable<Json>;
+          plan: string;
+          refs: string[];
+        };
+        Insert: {
+          day: number;
+          passages: NonNullable<Json>;
+          plan: string;
+          refs: string[];
+        };
+        Update: {
+          day?: number;
+          passages?: NonNullable<Json>;
+          plan?: string;
+          refs?: string[];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "devotionals_plan_fkey";
+            columns: ["plan"];
+            isOneToOne: false;
+            referencedRelation: "devotional_plans";
+            referencedColumns: ["slug"];
+          },
+        ];
+      };
       group_covenant_agreements: {
         Row: {
           agreed_at: string;
@@ -1748,6 +1881,24 @@ export type Database = {
           },
         ];
       };
+      verses_of_day: {
+        Row: {
+          day_of_year: number;
+          reference: string;
+          verse_text: string;
+        };
+        Insert: {
+          day_of_year: number;
+          reference: string;
+          verse_text: string;
+        };
+        Update: {
+          day_of_year?: number;
+          reference?: string;
+          verse_text?: string;
+        };
+        Relationships: [];
+      };
       xp_config: {
         Row: {
           cap: number | null;
@@ -2054,6 +2205,7 @@ export type Database = {
         }[];
       };
       leave_group: { Args: { p_group: string }; Returns: undefined };
+      mark_day_read: { Args: { p_day: number; p_plan: string }; Returns: boolean };
       mark_notifications_read: { Args: { p_ids?: string[] }; Returns: number };
       mark_session_mfa_verified: { Args: { p_session_id: string; p_user_id: string }; Returns: boolean };
       my_audit_events: {
@@ -2234,6 +2386,7 @@ export type Database = {
         Returns: undefined;
       };
       snooze_notifications: { Args: { p_for: string }; Returns: string };
+      start_reading_plan: { Args: { p_plan: string }; Returns: undefined };
       submit_checkin: {
         Args: {
           p_local_date: string;
@@ -2260,6 +2413,7 @@ export type Database = {
       transfer_group_ownership: { Args: { p_group: string; p_new_owner: string }; Returns: undefined };
       unarchive_group: { Args: { p_group: string }; Returns: undefined };
       unblock_member: { Args: { p_user: string }; Returns: undefined };
+      unmark_day_read: { Args: { p_day: number; p_plan: string }; Returns: undefined };
       update_group_challenge: {
         Args: {
           p_challenge_days: number;

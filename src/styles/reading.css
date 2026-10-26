@@ -1,0 +1,169 @@
+/* ---------- recovery: daily reading (CLAUDE.md §7.9, Phase 8b, D-112) ----------
+   Long text set for reading: a comfortable measure, generous leading, and
+   verse numbers that stay small without being the only cue. Nothing moves.
+   A read day is marked by a tick and the word "Read", never by colour alone. */
+@layer components {
+  .reading-section-title {
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--text-xl);
+    overflow-wrap: anywhere;
+  }
+
+  .reading-verse {
+    margin: 0;
+  }
+
+  .reading-day-label {
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .reading-text {
+    display: grid;
+    gap: var(--space-4);
+    max-inline-size: 68ch;
+    min-inline-size: 0;
+  }
+
+  .reading-text > section {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .reading-text__ref {
+    margin: 0;
+    font-family: var(--font-display-stack);
+    font-size: var(--text-lg);
+  }
+
+  .reading-text p {
+    margin: 0;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  .reading-text__num {
+    margin-inline-end: 0.2em;
+    color: var(--color-ink-muted);
+    font-size: 0.7em;
+    font-weight: 650;
+  }
+
+  .reading-text__source {
+    font-size: var(--text-sm);
+  }
+
+  .reading-mark {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .reading-mark__done {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-weight: 650;
+  }
+
+  .reading-mark__done svg {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    flex: none;
+    color: var(--color-success);
+  }
+
+  .reading-plans {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+  }
+
+  .reading-plan__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .reading-plan__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-block-start: var(--space-2);
+  }
+
+  .reading-days {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+  }
+
+  .reading-days__link {
+    display: grid;
+    grid-template-columns: minmax(4.5rem, auto) 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-block-size: 44px;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-line-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .reading-days__link:hover {
+    border-color: var(--color-line);
+  }
+
+  .reading-days__link[aria-current="page"] {
+    border-color: var(--color-primary);
+    border-width: 2px;
+    background: var(--color-sunken);
+  }
+
+  .reading-days__day {
+    font-weight: 650;
+  }
+
+  .reading-days__refs {
+    min-inline-size: 0;
+    color: var(--color-ink-muted);
+    overflow-wrap: anywhere;
+  }
+
+  .reading-days__read {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    font-weight: 650;
+  }
+
+  @media (max-width: 359px) {
+    .reading-days__link {
+      grid-template-columns: 1fr auto;
+    }
+
+    .reading-days__refs {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .reading-days__link {
+      border-color: CanvasText;
+    }
+
+    .reading-days__link[aria-current="page"] {
+      border-color: Highlight;
+      border-width: 3px;
+    }
+  }
+}

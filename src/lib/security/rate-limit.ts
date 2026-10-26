@@ -86,6 +86,8 @@ export const rateLimitRules = {
   journalByUser: { limit: 50, windowSeconds: 60 * 60 },
   /** The number partners can call (the database allows 20 an hour). */
   partnerContactByUser: { limit: 15, windowSeconds: 60 * 60 },
+  /** Reading plans: start, mark and unmark (the database allows 60 an hour). */
+  readingByUser: { limit: 50, windowSeconds: 60 * 60 },
 } as const;
 
 export type RateLimitRule = keyof typeof rateLimitRules;

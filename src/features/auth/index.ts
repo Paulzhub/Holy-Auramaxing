@@ -30,5 +30,6 @@ export { hasAdultAnswer, readSignupTicket } from "./server/tickets";
 export { AuthHeading } from "./components/auth-heading";
 export { AuthNotice } from "./components/auth-notice";
 export { SignOutButton } from "./components/sign-out-button";
+export { signOutAction } from "./server/actions";
 export { PasskeyList, SecurityNotice, SessionList, TwoStepOff } from "./components/security-sections";
 export { AccountDataNotice, DeleteAccountForm, ExportDataForm, KeepAccountForm } from "./components/account-data";

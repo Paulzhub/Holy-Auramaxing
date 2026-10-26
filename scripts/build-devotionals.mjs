@@ -1,0 +1,161 @@
+// Builds the verse of the day and the reading plans (Phase 8b, D-112) from the
+// current World English Bible (ebible.org eng-web USFM, the same edition as
+// scripts/build-scripture.mjs), then writes the data files and the seed
+// migration that keeps the database identical to them.
+//
+//   unzip eng-web_usfm.zip -d web-usfm
+//   node scripts/build-devotionals.mjs web-usfm
+//
+// The verse-of-the-day references live in data/verses_of_day.csv (day,
+// date, reference, theme, text). Edit the reference column, then run this
+// again: it rewrites the text column, data/verses_of_day.json and the seed.
+import { readFileSync, writeFileSync } from "node:fs";
+import { readingPlans } from "./lib/reading-plans.mjs";
+import { loadBible, passage } from "./lib/usfm.mjs";
+import { displayVerse, EDITION } from "./lib/verse-display.mjs";
+
+const dir = process.argv[2];
+if (!dir) {
+  console.error("Usage: node scripts/build-devotionals.mjs <folder with the unzipped eng-web USFM files>");
+  process.exit(1);
+}
+const bible = loadBible(dir);
+
+// ---------------------------------------------------------------- CSV
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') {
+        cell += '"';
+        i++;
+      } else if (c === '"') quoted = false;
+      else cell += c;
+    } else if (c === '"') quoted = true;
+    else if (c === ",") {
+      row.push(cell);
+      cell = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cell);
+      if (row.some((x) => x !== "")) rows.push(row);
+      row = [];
+      cell = "";
+    } else cell += c;
+  }
+  row.push(cell);
+  if (row.some((x) => x !== "")) rows.push(row);
+  return rows;
+}
+const csvCell = (s) => (/[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s);
+
+/**
+ * The verse of the day stands alone, so its double quotation marks must pair
+ * up even when the speech starts or ends outside the verse: a closing mark with
+ * nothing open gets an opening mark at the start, and one left open is closed.
+ * (Level and badge verses keep their own rule, D-105.)
+ */
+export function pairQuotes(s) {
+  let open = 0;
+  let missing = 0;
+  for (const c of s) {
+    if (c === "“") open++;
+    else if (c === "”") {
+      if (open) open--;
+      else missing++;
+    }
+  }
+  let out = s;
+  if (missing) out = out.startsWith("…") ? `…${"“".repeat(missing)}${out.slice(1)}` : `${"“".repeat(missing)}${out}`;
+  if (open) out = /…$/.test(out) ? `${out.slice(0, -1)}${"”".repeat(open)}…` : `${out}${"”".repeat(open)}`;
+  return out;
+}
+
+// ---------------------------------------------------------------- verse of the day
+
+const csvPath = "data/verses_of_day.csv";
+const [header, ...rows] = parseCsv(readFileSync(csvPath, "utf8"));
+if (header.join(",") !== "day,date,reference,theme,text") throw new Error("Unexpected CSV header");
+if (rows.length !== 366) throw new Error(`Expected 366 verses, found ${rows.length}`);
+const seen = new Set();
+const votd = rows.map(([day, date, reference, theme], i) => {
+  if (Number(day) !== i + 1) throw new Error(`Row ${i + 1}: day is ${day}`);
+  if (seen.has(reference)) throw new Error(`Repeated verse: ${reference}`);
+  seen.add(reference);
+  return { day: i + 1, date, reference, theme, text: pairQuotes(displayVerse(passage(bible, reference))) };
+});
+writeFileSync(
+  csvPath,
+  "day,date,reference,theme,text\n" +
+    votd.map((v) => [String(v.day), v.date, v.reference, v.theme, v.text].map(csvCell).join(",")).join("\n") +
+    "\n",
+);
+const source = `World English Bible (public domain), ${EDITION}.`;
+writeFileSync(
+  "data/verses_of_day.json",
+  JSON.stringify({ source, verses: votd.map(({ day, reference, text }) => ({ day, reference, text })) }, null, 1) +
+    "\n",
+);
+
+// ---------------------------------------------------------------- reading plans
+
+function chapter(ref) {
+  const m = /^(.+) (\d+)$/.exec(ref);
+  const verses = bible[m[1]]?.[Number(m[2])];
+  if (!verses) throw new Error(`Missing chapter: ${ref}`);
+  return Object.keys(verses)
+    .map(Number)
+    .sort((a, b) => a - b)
+    .filter((v) => verses[v])
+    .map((v) => [v, verses[v]]);
+}
+const plans = readingPlans(bible).map((p) => ({
+  slug: p.slug,
+  titleKey: p.titleKey,
+  length: p.days.length,
+  days: p.days.map((refs, i) => ({ day: i + 1, passages: refs.map((ref) => ({ ref, verses: chapter(ref) })) })),
+}));
+writeFileSync("data/reading_plans.json", JSON.stringify({ source, plans }) + "\n");
+
+// ---------------------------------------------------------------- seed migration
+
+const sql = (s) => `'${s.replace(/'/g, "''")}'`;
+const json = (v) => {
+  const s = JSON.stringify(v);
+  if (s.includes("$j$")) throw new Error("Text contains the dollar-quote tag");
+  return `$j$${s}$j$::jsonb`;
+};
+const out = [
+  "-- recovery: the verse of the day and the reading plans (Phase 8b, D-112).",
+  "-- Generated by scripts/build-devotionals.mjs from data/verses_of_day.csv and",
+  "-- scripts/lib/reading-plans.mjs; do not edit by hand.",
+  `-- Edition: ${EDITION}.`,
+  "",
+  "insert into public.verses_of_day (day_of_year, reference, verse_text) values",
+  votd.map((v) => `  (${v.day}, ${sql(v.reference)}, ${sql(v.text)})`).join(",\n") + ";",
+  "",
+  "insert into public.devotional_plans (slug, length, title_key, sort) values",
+  plans.map((p, i) => `  (${sql(p.slug)}, ${p.length}, ${sql(p.titleKey)}, ${i + 1})`).join(",\n") + ";",
+  "",
+];
+for (const p of plans) {
+  out.push(`insert into public.devotionals (plan, day, refs, passages) values`);
+  out.push(
+    p.days
+      .map(
+        (d) =>
+          `  (${sql(p.slug)}, ${d.day}, array[${d.passages.map((x) => sql(x.ref)).join(", ")}], ${json(d.passages)})`,
+      )
+      .join(",\n") + ";",
+    "",
+  );
+}
+writeFileSync("supabase/migrations/20261027000200_recovery_devotionals_text.sql", out.join("\n"));
+console.log(
+  `Wrote ${votd.length} verses of the day and ${plans.map((p) => `${p.slug} (${p.length} days)`).join(", ")}.`,
+);

@@ -6,11 +6,12 @@ import { contactContext, journalContext } from "./queries";
 
 /**
  * "Download my data" (§7.1, §11): the journal (decrypted, for its author
- * only), the waves-ridden-out tally and the number shared with partners.
+ * only), the waves-ridden-out tally, the number shared with partners, and
+ * the reading plan days read (D-112).
  */
 export async function exportRecoveryData(userId: string): Promise<ExportPart> {
   const supabase = await createSupabaseServerClient();
-  const [journal, tally, contact] = await Promise.all([
+  const [journal, tally, contact, reading, activePlan] = await Promise.all([
     supabase
       .from("journal_entries")
       .select("id, prompt_key, body_encrypted, created_at, updated_at")
@@ -18,6 +19,12 @@ export async function exportRecoveryData(userId: string): Promise<ExportPart> {
       .order("created_at", { ascending: true }),
     supabase.from("recovery_tallies").select("waves, updated_at").eq("user_id", userId).maybeSingle(),
     supabase.from("partner_contacts").select("phone_encrypted, updated_at").eq("user_id", userId).maybeSingle(),
+    supabase
+      .from("devotional_progress")
+      .select("plan, day, read_at")
+      .eq("user_id", userId)
+      .order("read_at", { ascending: true }),
+    supabase.from("devotional_active_plan").select("plan, started_on").eq("user_id", userId).maybeSingle(),
   ]);
   if (journal.error) throw new Error(`journal export: ${journal.error.message}`);
   const open = (stored: string, context: string): string | null => {
@@ -52,6 +59,16 @@ export async function exportRecoveryData(userId: string): Promise<ExportPart> {
         rows: contact.data
           ? [{ phone: open(contact.data.phone_encrypted, contactContext(userId)), updated_at: contact.data.updated_at }]
           : [],
+      },
+      {
+        name: "reading_plan_days",
+        description: "The reading plan days you marked as read.",
+        rows: (reading.data ?? []).map((r) => ({ plan: r.plan, day: r.day, read_at: r.read_at })),
+      },
+      {
+        name: "reading_plan_current",
+        description: "The reading plan you are on now, if any.",
+        rows: activePlan.data ? [{ plan: activePlan.data.plan, started_on: activePlan.data.started_on }] : [],
       },
     ],
     files: [],
