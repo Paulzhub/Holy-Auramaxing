@@ -149,7 +149,7 @@ test.describe("SOS", () => {
     expect(posts).toContainEqual({ kind: "prayer_request", body: "Please pray for me today." });
   });
 
-  test("works offline: a page that can't load shows the SOS tools", async ({ page, context }) => {
+  test("works offline: a page that can't load leads to the SOS tools", async ({ page, context }) => {
     test.skip(test.info().project.name === "mobile", "One run is enough for the service worker");
     await signInNewMember(page, "sos-offline");
     await page.goto("/home");
@@ -161,8 +161,8 @@ test.describe("SOS", () => {
           page.evaluate(async () => {
             const reg = await navigator.serviceWorker.getRegistration("/");
             if (!reg?.active) return false;
-            const cache = await caches.open("ha-offline-v1");
-            return Boolean(await cache.match("/breathe"));
+            // Phase 10: kept per version with /offline (D-124).
+            return Boolean(await caches.match("/breathe"));
           }),
         { timeout: 30_000 },
       )
@@ -176,8 +176,10 @@ test.describe("SOS", () => {
     await expect(sheet.getByTestId("breath-words")).toContainText("Breathe in");
     await expect(sheet.getByText(/You’re offline right now/)).toBeVisible();
     await page.keyboard.press("Escape");
-    // ...and a page that can't load shows the offline copy.
+    // ...and a page that can't load shows the offline page (Phase 10, D-124), one tap from the SOS tools.
     await page.goto("/groups");
+    await expect(page.getByRole("heading", { level: 1, name: "You’re offline" })).toBeVisible();
+    await page.getByRole("link", { name: "Take a breath" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Take a breath" })).toBeVisible();
     await expect(page.getByText("You’re offline, but you’re not alone.", { exact: false })).toBeVisible();
     await page.getByRole("button", { name: "Start breathing" }).click();

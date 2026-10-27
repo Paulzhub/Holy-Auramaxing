@@ -36,7 +36,8 @@ const SENSITIVE =
 const email = `screens-${randomBytes(4).toString("hex")}@example.test`;
 const password = `Quiet morning ${randomBytes(6).toString("hex")} by the river`;
 const zone = "Asia/Kolkata";
-const day = (offset) => new Intl.DateTimeFormat("en-CA", { timeZone: zone }).format(new Date(Date.now() + offset * 86_400_000));
+const day = (offset) =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: zone }).format(new Date(Date.now() + offset * 86_400_000));
 
 async function demoAccount() {
   const token = randomBytes(32).toString("base64url");
@@ -131,7 +132,8 @@ for (const size of sizes) {
         }
       };
       hide(main);
-      for (const t of document.querySelectorAll(".ui-toast-region, [data-testid=update-banner]")) t.setAttribute("hidden", "");
+      for (const t of document.querySelectorAll(".ui-toast-region, [data-testid=update-banner]"))
+        t.setAttribute("hidden", "");
       window.scrollTo(0, 0);
       return document.body.innerText;
     }, shot.keep);

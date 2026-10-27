@@ -176,7 +176,7 @@ test.describe("Offline check-ins sent later", () => {
       data: { date: twoDaysAgo, recordedAt, outcome: "clean", note: "on the train" },
     });
     expect(late.status()).toBe(200);
-    expect(await late.json()).toEqual({ status: "synced_late" });
+    expect(await late.json()).toEqual({ status: "synced_late", noteLost: false });
     const { data: row } = await admin()
       .from("checkins")
       .select("outcome, note_encrypted")

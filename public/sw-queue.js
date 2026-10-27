@@ -33,9 +33,12 @@
     db.close();
     await new Promise(function (resolve) {
       var request = indexedDB.deleteDatabase(DB_NAME);
-      request.onsuccess = request.onerror = request.onblocked = function () {
-        resolve();
-      };
+      request.onsuccess =
+        request.onerror =
+        request.onblocked =
+          function () {
+            resolve();
+          };
     });
     return openOnce();
   }
@@ -135,9 +138,12 @@
         .slice(-10);
       store.put(next, "notices");
       await new Promise(function (resolve) {
-        tx.oncomplete = tx.onerror = tx.onabort = function () {
-          resolve();
-        };
+        tx.oncomplete =
+          tx.onerror =
+          tx.onabort =
+            function () {
+              resolve();
+            };
       });
     } finally {
       db.close();

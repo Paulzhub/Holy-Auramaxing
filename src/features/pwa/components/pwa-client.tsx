@@ -24,7 +24,6 @@ export interface PwaClientLabels {
   later: string;
 }
 
-
 const CHECK_EVERY_MS = 60 * 60 * 1000;
 const RECHECK_AFTER_MS = 5 * 60 * 1000;
 
@@ -139,11 +138,12 @@ export function PwaClient({
       registration.current?.active?.postMessage(SW_MESSAGES.refreshOffline);
       await flushQueue(registration.current);
     };
-    // After the page has settled, so none of this competes with the page itself (D-106).
+    // About eight seconds after the page settles, like D-106: none of this competes with the page
+    // itself (the SOS sheet warms at about four).
     const timer = window.setTimeout(() => {
       if ("requestIdleCallback" in window) window.requestIdleCallback(() => void start(), { timeout: 5000 });
       else void start();
-    }, 4000);
+    }, 8000);
     return () => {
       stopped = true;
       window.clearTimeout(timer);

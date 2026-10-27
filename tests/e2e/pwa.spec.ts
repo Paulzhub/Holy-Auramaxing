@@ -52,13 +52,12 @@ async function deviceReady(page: Page, userId: string) {
       timeout: 30_000,
     })
     .toBe(userId);
-  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)), { timeout: 15_000 }).toBe(true);
+  await expect
+    .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)), { timeout: 15_000 })
+    .toBe(true);
   // The offline page is kept for this version.
   await expect
-    .poll(
-      () => page.evaluate(async () => Boolean(await caches.match("/offline"))),
-      { timeout: 15_000 },
-    )
+    .poll(() => page.evaluate(async () => Boolean(await caches.match("/offline"))), { timeout: 15_000 })
     .toBe(true);
 }
 
@@ -151,7 +150,9 @@ test.describe("PWA (Phase 10)", () => {
       return true;
     });
     expect(sends).toBe(true);
-    await expect.poll(async () => ((await deviceRecord(page, "queue")) as unknown[]).length, { timeout: 15_000 }).toBe(0);
+    await expect
+      .poll(async () => ((await deviceRecord(page, "queue")) as unknown[]).length, { timeout: 15_000 })
+      .toBe(0);
     const again = await page.request.post("/api/checkins/sync", {
       data: {
         forUser: me.userId,
@@ -300,13 +301,17 @@ test.describe("PWA (Phase 10)", () => {
     await expectNoAxeViolations(page, "update banner");
     // The new worker was fetched and waits for Refresh.
     await expect
-      .poll(() => page.evaluate(async () => (await navigator.serviceWorker.getRegistration("/"))?.waiting?.scriptURL ?? ""))
+      .poll(() =>
+        page.evaluate(async () => (await navigator.serviceWorker.getRegistration("/"))?.waiting?.scriptURL ?? ""),
+      )
       .toContain("v=newer1");
     const reloaded = page.waitForEvent("load");
     await banner.getByRole("button", { name: "Refresh" }).click();
     await reloaded;
     await expect
-      .poll(() => page.evaluate(async () => (await navigator.serviceWorker.getRegistration("/"))?.active?.scriptURL ?? ""))
+      .poll(() =>
+        page.evaluate(async () => (await navigator.serviceWorker.getRegistration("/"))?.active?.scriptURL ?? ""),
+      )
       .toContain("v=newer1");
   });
 
