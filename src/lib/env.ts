@@ -71,6 +71,19 @@ const serverEnvSchema = z.object({
     .string()
     .regex(/^(mailto:\S+@\S+|https:\/\/\S+)$/)
     .optional(),
+  /**
+   * Opens notes sealed on a device while offline (D-123): an ECDH P-256 private key, the 32-byte scalar in
+   * base64url (the same shape as a VAPID private key, but never the same key). Unset: no note offline.
+   */
+  OFFLINE_NOTE_PRIVATE_KEY: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{43}$/)
+    .optional(),
+  /** The previous key while a new one is rolled out, so notes sealed with the old one still open. */
+  OFFLINE_NOTE_PREVIOUS_PRIVATE_KEY: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{43}$/)
+    .optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -97,6 +110,8 @@ export function readServerEnv(): ServerEnv {
     CRON_SECRET: process.env.CRON_SECRET || undefined,
     VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY || undefined,
     VAPID_SUBJECT: process.env.VAPID_SUBJECT || undefined,
+    OFFLINE_NOTE_PRIVATE_KEY: process.env.OFFLINE_NOTE_PRIVATE_KEY || undefined,
+    OFFLINE_NOTE_PREVIOUS_PRIVATE_KEY: process.env.OFFLINE_NOTE_PREVIOUS_PRIVATE_KEY || undefined,
   });
 }
 

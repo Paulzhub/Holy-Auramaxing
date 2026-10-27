@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { isSealedNote } from "@/lib/offline/sealed-note";
+
 import { NOTE_MAX, OUTCOMES, TRIGGERS } from "./constants";
 
 /**
@@ -85,5 +87,11 @@ export const offlineCheckinSchema = z.object({
     .default("")
     .transform((v) => v.replace(/\r\n/g, "\n").trim())
     .pipe(z.string().max(NOTE_MAX)),
+  /** The private note, sealed on the device so only the server can open it (D-123). */
+  sealedNote: z
+    .string()
+    .refine((v) => isSealedNote(v))
+    .nullable()
+    .default(null),
 });
 export type OfflineCheckinInput = z.infer<typeof offlineCheckinSchema>;

@@ -25,7 +25,8 @@
     "notify:fire": "node scripts/notify-fire.mjs",
     "notify:configure": "node scripts/notify-configure.mjs",
     "notify:doctor": "node scripts/notify-doctor.mjs",
-    "bench:notify": "node scripts/bench-notify.mjs"
+    "bench:notify": "node scripts/bench-notify.mjs",
+    "keys:offline-note": "node scripts/offline-note-key.mjs"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
