@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
+import { type ReactNode, ViewTransition } from "react";
 
 import { BrandMark } from "@/components/shell/brand-mark";
 import { ThemeSwitcher } from "@/components/shell/theme-switcher";
@@ -7,12 +7,17 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { Link } from "@/i18n/navigation";
 import { getThemePreference } from "@/lib/server/theme";
 
-const navLinks = [
+import { ARTICLES } from "../articles";
+
+const allNavLinks = [
   { href: "/how-it-works", key: "howItWorks" },
   { href: "/scripture", key: "scripture" },
   { href: "/articles", key: "articles" },
   { href: "/faq", key: "faq" },
 ] as const;
+
+/** "Articles" appears only while one is published (D-120). */
+const navLinks = allNavLinks.filter((l) => l.key !== "articles" || ARTICLES.length > 0);
 
 const footerLinks = [
   { href: "/about", key: "about" },
@@ -33,6 +38,9 @@ const footerLinks = [
  *
  * On phones the links sit in a <details> disclosure, which works without
  * JavaScript.
+ *
+ * Moving between public pages cross-fades the main content with the View
+ * Transitions API, where the browser has it and motion is allowed (D-121).
  */
 export async function PublicFrame({ children }: { children: ReactNode }) {
   const t = await getTranslations();
@@ -82,9 +90,11 @@ export async function PublicFrame({ children }: { children: ReactNode }) {
           </Link>
         </div>
       </header>
-      <main id="main" className="public-main" tabIndex={-1}>
-        {children}
-      </main>
+      <ViewTransition>
+        <main id="main" className="public-main" tabIndex={-1}>
+          {children}
+        </main>
+      </ViewTransition>
       <footer className="public-footer">
         <p className="public-footer__tagline">{t("marketing.footer.tagline")}</p>
         <nav aria-label={t("marketing.footer.label")}>

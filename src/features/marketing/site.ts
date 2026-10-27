@@ -15,5 +15,5 @@ export function absoluteUrl(path: string): string {
   return path === "/" ? `${siteUrl()}/` : `${siteUrl()}${path}`;
 }
 
-/** The public contact for privacy, grievances and security reports (legal.privacy, §11). */
-export const CONTACT_EMAIL = "paulangelogamer@gmail.com";
+/** The app's public contact for privacy, grievances and security reports (§11). Never a personal address (owner, 2026-10-26). */
+export const CONTACT_EMAIL = "holyauramaxing@gmail.com";

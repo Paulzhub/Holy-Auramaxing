@@ -32,7 +32,7 @@ export interface PublicPage {
   changeFrequency: "weekly" | "monthly" | "yearly";
 }
 
-export const PUBLIC_PAGES: readonly PublicPage[] = [
+const ALL_PUBLIC_PAGES: readonly PublicPage[] = [
   { key: "home", path: "/", priority: 1, changeFrequency: "monthly" },
   { key: "howItWorks", path: "/how-it-works", priority: 0.9, changeFrequency: "monthly" },
   { key: "about", path: "/about", priority: 0.7, changeFrequency: "yearly" },
@@ -48,8 +48,13 @@ export const PUBLIC_PAGES: readonly PublicPage[] = [
   { key: "security", path: "/security", priority: 0.3, changeFrequency: "yearly" },
 ];
 
-export function publicPage(key: PublicPageKey): PublicPage {
-  return PUBLIC_PAGES.find((p) => p.key === key)!;
+/** The articles hub exists only while at least one article is published (D-120). */
+export const PUBLIC_PAGES: readonly PublicPage[] = ALL_PUBLIC_PAGES.filter(
+  (p) => p.key !== "articles" || ARTICLES.length > 0,
+);
+
+export function publicPage(key: PublicPageKey): PublicPage | undefined {
+  return PUBLIC_PAGES.find((p) => p.key === key);
 }
 
 /** Reading plan previews (the Scripture guides), e.g. /scripture/7-days. */
@@ -64,7 +69,7 @@ export function articlePath(slug: string): string {
  * (owner, 2026-10-26, D-116). Until then they're public but `noindex`.
  */
 export function indexableArticlePaths(): string[] {
-  return ARTICLES.filter((a) => a.reviewer !== null).map((a) => articlePath(a.slug));
+  return ARTICLES.map((a) => articlePath(a.slug));
 }
 
 /** Every path a search engine may index, without a locale prefix. */

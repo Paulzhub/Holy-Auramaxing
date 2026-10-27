@@ -3,7 +3,8 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { AuthNotice } from "@/features/auth";
-import { Landing, publicMetadata } from "@/features/marketing";
+import { publicMetadata } from "@/features/marketing";
+import { Landing } from "@/features/marketing/ui-landing";
 import { routing } from "@/i18n/routing";
 
 type Params = Promise<{ locale: string }>;

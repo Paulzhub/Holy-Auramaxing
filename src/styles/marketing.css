@@ -5,7 +5,9 @@
  * whatever the theme: each scene re-declares the colour tokens it needs, so
  * buttons, links and focus rings inside it stay readable (every pair below
  * is at least 4.5:1). The rest of the site follows the theme as usual.
- * Nothing here animates; Phase 9b adds motion only where it's allowed.
+ * The static story never animates. Phase 9b (D-121) adds the 3D state
+ * (`.story--3d`), set by `story-enhancer.tsx` only where motion is allowed,
+ * and View Transitions between public pages.
  */
 @layer components {
   /* ---------- frame ---------- */
@@ -488,6 +490,117 @@
     }
   }
 
+  /* ---------- the scroll story, enhanced (Phase 9b, D-121) ---------- */
+
+  /* Until the story is enhanced, the pinned group is just its four scenes. */
+  .story-pin {
+    display: contents;
+  }
+
+  /* Reduced motion: scenes below the fold fade in, opacity only. */
+  .story-scene {
+    transition: opacity 600ms ease-out;
+  }
+
+  .story-scene--waiting {
+    opacity: 0;
+  }
+
+  /*
+   * 3D: one canvas behind the whole story (sticky, so it leaves with it),
+   * the scenes' own skies replaced by the shader, and scenes 2–5 stacked
+   * on one pinned screen. Nothing is hidden from assistive technology: the
+   * scenes stay in the page and only their opacity changes.
+   */
+  .story--3d {
+    display: block;
+    /* The sticky canvas must never paint past the story's end. */
+    overflow: clip;
+    background-color: #0b0a1f;
+  }
+
+  .story-canvas {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100vh;
+    margin-block-end: -100vh;
+    opacity: 0;
+    transition: opacity 900ms ease-out;
+    pointer-events: none;
+  }
+
+  .story--lit .story-canvas {
+    opacity: 1;
+  }
+
+  .story--3d .story-scene {
+    z-index: 1;
+    background: none;
+    transition: none;
+  }
+
+  /* The still pictures give way to the scene (dawn keeps its sun). */
+  .story--3d .story-scene:not(.story-scene--dawn) .story-art {
+    opacity: 0;
+    transition: opacity 900ms ease-out;
+  }
+
+  /* Light words over a moving sky: a soft shadow keeps every line crisp. */
+  .story--3d .story-scene:not(.story-scene--dawn) {
+    text-shadow: 0 1px 14px rgb(11 10 31 / 70%);
+  }
+
+  .story--3d .story-pin {
+    display: grid;
+  }
+
+  .story--3d .story-pin > .story-scene {
+    grid-area: 1 / 1;
+    align-content: start;
+    min-block-size: 100svh;
+    padding-block-start: max(14svh, var(--space-7));
+  }
+
+  /* Dawn rises over the canvas: transparent at its top edge, then its own light sky. */
+  .story--3d .story-scene--dawn {
+    background: linear-gradient(
+      180deg,
+      rgb(245 243 250 / 0%) 0,
+      rgb(245 243 250 / 55%) 5rem,
+      #f5f3fa 11rem,
+      #fbeee0 60%,
+      #f9e2b0 100%
+    );
+    padding-block-start: max(var(--space-8), 12rem);
+  }
+
+  /* Lenis (landing page only, when motion is allowed). */
+  html.lenis,
+  html.lenis body {
+    block-size: auto;
+  }
+
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  @media (forced-colors: active) {
+    .story-canvas {
+      display: none;
+    }
+
+    .story--3d .story-scene {
+      text-shadow: none;
+    }
+  }
+
   /* ---------- lists of things ---------- */
   .faq-list {
     display: grid;
@@ -669,5 +782,21 @@
     padding: var(--space-4) var(--space-5);
     border: 2px solid var(--color-line-subtle);
     border-radius: var(--radius-lg);
+  }
+}
+
+/*
+ * View Transitions between public pages (D-121): the main content cross-fades
+ * (React's <ViewTransition> in PublicFrame). Off under reduced motion.
+ */
+::view-transition-group(*) {
+  animation-duration: 260ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

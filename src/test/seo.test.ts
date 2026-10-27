@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import en from "../../messages/en.json";
 import robots from "../app/robots";
 import sitemap from "../app/sitemap";
-import { ARTICLES } from "../features/marketing/articles";
+import { ALL_ARTICLES, ARTICLES, articleSchema, checkArticle } from "../features/marketing/articles";
 import { FAQ_KEYS } from "../features/marketing/faq";
 import { llmsText } from "../features/marketing/llms";
 import {
@@ -65,11 +65,20 @@ describe("what may be indexed", () => {
     expect(isIndexablePath("/faq/")).toBe(true);
   });
 
-  it("an article waiting for review is public but not indexable (D-116)", () => {
-    for (const a of ARTICLES) {
-      expect(publicPaths()).toContain(articlePath(a.slug));
-      expect(isIndexablePath(articlePath(a.slug))).toBe(a.reviewer !== null);
+  it("a draft article is neither public nor indexable; a published one is both (D-120)", () => {
+    for (const a of ALL_ARTICLES) {
+      const live = a.status === "published";
+      expect(publicPaths().includes(articlePath(a.slug)), a.slug).toBe(live);
+      expect(isIndexablePath(articlePath(a.slug)), a.slug).toBe(live);
     }
+    expect(PUBLIC_PAGES.some((p) => p.path === "/articles")).toBe(ARTICLES.length > 0);
+  });
+
+  it("an article can't be published without a reviewer", () => {
+    const draft = ALL_ARTICLES[0]!;
+    expect(() => checkArticle(articleSchema.parse({ ...draft, status: "published", reviewer: null }))).toThrow(
+      /without a reviewer/,
+    );
   });
 
   it("the sitemap lists exactly the indexable pages", () => {
@@ -110,8 +119,8 @@ describe("discretion on the public site (D-115)", () => {
   });
 });
 
-describe("articles (§12)", () => {
-  for (const article of ARTICLES) {
+describe("articles, drafts included (§12)", () => {
+  for (const article of ALL_ARTICLES) {
     describe(article.slug, () => {
       const file = join(root, "src/content/articles/en", `${article.slug}.mdx`);
       const body = existsSync(file) ? readFileSync(file, "utf8") : "";
@@ -169,7 +178,7 @@ describe("structured data (JSON-LD)", () => {
   });
 
   it("BlogPosting has a headline under 110 characters, an image, dates and an author", () => {
-    for (const a of ARTICLES) {
+    for (const a of ALL_ARTICLES) {
       const ld = blogPostingLd(a, articlePath(a.slug), `/api/og/${a.slug}`) as Record<string, unknown>;
       expect(String(ld.headline).length).toBeLessThanOrEqual(110);
       expect((ld.image as string[])[0]).toMatch(/^https?:\/\/.+\/api\/og\//);
@@ -202,6 +211,6 @@ describe("llms.txt", () => {
     const links = [...text.matchAll(/\]\((https?:\/\/[^)]+)\)/g)].map((m) => new URL(m[1]!).pathname);
     expect(links.length).toBeGreaterThan(5);
     for (const path of links) expect(publicPaths(), path).toContain(path);
-    for (const a of ARTICLES.filter((x) => x.reviewer === null)) expect(text).not.toContain(articlePath(a.slug));
+    for (const a of ALL_ARTICLES.filter((x) => x.status === "draft")) expect(text).not.toContain(articlePath(a.slug));
   });
 });
