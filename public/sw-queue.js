@@ -26,7 +26,21 @@
   var QUEUE_MAX_AGE_DAYS = 7;
   var SYNC_URL = "/api/checkins/sync";
 
-  function openDb() {
+  /** Opens the store; one made without our stores (by anything else) is replaced once. */
+  async function openDb() {
+    var db = await openOnce();
+    if (db.objectStoreNames.contains(QUEUE_STORE) && db.objectStoreNames.contains(META_STORE)) return db;
+    db.close();
+    await new Promise(function (resolve) {
+      var request = indexedDB.deleteDatabase(DB_NAME);
+      request.onsuccess = request.onerror = request.onblocked = function () {
+        resolve();
+      };
+    });
+    return openOnce();
+  }
+
+  function openOnce() {
     return new Promise(function (resolve, reject) {
       var request = indexedDB.open(DB_NAME, DB_VERSION);
       request.onupgradeneeded = function () {
@@ -100,6 +114,36 @@
     }
   }
 
+  /**
+   * What was saved, kept for the app to say so the next time a page of it is
+   * open (the person may be on the offline page, or not in the app at all,
+   * when the browser sends the queue). The day only, never the answer.
+   */
+  async function keepNotices(sent) {
+    if (!sent.length) return;
+    var db = await openDb();
+    try {
+      var tx = db.transaction(META_STORE, "readwrite");
+      var store = tx.objectStore(META_STORE);
+      var before = (await req(store.get("notices"))) || [];
+      var next = before
+        .concat(
+          sent.map(function (s) {
+            return { localDate: s.localDate, noteLost: s.noteLost };
+          }),
+        )
+        .slice(-10);
+      store.put(next, "notices");
+      await new Promise(function (resolve) {
+        tx.oncomplete = tx.onerror = tx.onabort = function () {
+          resolve();
+        };
+      });
+    } finally {
+      db.close();
+    }
+  }
+
   var running = null;
 
   /**
@@ -168,6 +212,7 @@
           if (response.status === 401 || response.status === 429 || response.status >= 500) stop = true;
         }
       }
+      await keepNotices(result.sent).catch(function () {});
       return result;
     })().finally(function () {
       running = null;

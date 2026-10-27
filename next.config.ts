@@ -19,9 +19,20 @@ const withNextIntl = createNextIntlPlugin({
 // every deploy installs a new worker and the app can offer "Refresh".
 const appVersion = (process.env.VERCEL_GIT_COMMIT_SHA ?? "").slice(0, 12) || `b${Date.now().toString(36)}`;
 
+// On a Vercel preview with no site address set, the branch's own stable
+// address (<project>-git-<branch>-<team>.vercel.app), so links in emails and
+// sign-in redirects point at the preview (D-128, docs/hosting-preview.md).
+const previewSiteUrl =
+  !process.env.NEXT_PUBLIC_SITE_URL && process.env.VERCEL_ENV === "preview" && process.env.VERCEL_BRANCH_URL
+    ? `https://${process.env.VERCEL_BRANCH_URL}`
+    : undefined;
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  env: { NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || appVersion },
+  env: {
+    NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || appVersion,
+    ...(previewSiteUrl ? { NEXT_PUBLIC_SITE_URL: previewSiteUrl } : {}),
+  },
   reactStrictMode: true,
   // Pin the project root, so a stray package-lock.json in a parent folder
   // (e.g. the user's home directory) is never mistaken for this project's.

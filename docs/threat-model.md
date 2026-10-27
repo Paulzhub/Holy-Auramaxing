@@ -338,6 +338,19 @@ A review of what people near the user could see, and of data we hold but don't n
 | **D**enial of service      | The 3D scene draining a phone's battery or freezing it      | Loads only on intent and only when the gates allow; draws only while on screen and visible; a frame-time watchdog lowers resolution, then falls back to the static story (D-121)              |
 | **I**nformation disclosure | The 3D reaching the app (§8: no WebGL in the app shell)     | Only `ui-landing` imports the story; `story.spec.ts` checks every app route's scripts for three.js, GSAP and Lenis                                                                            |
 
+## Phase 10 additions
+
+| STRIDE                     | Threat                                                                | Mitigation                                                                                                                                                                                                                                |
+| -------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I**nformation disclosure | Signed-in pages kept in the service worker's cache on a shared device | No page's HTML is ever cached except `/offline` and `/breathe`, fetched without cookies; e2e lists every cache entry after visiting app pages (D-124)                                                                                     |
+| **I**nformation disclosure | A check-in waiting offline read from the device                       | Only until it's sent (7 days at most); the private note is sealed with the server's public key, so the device can't read it back (D-123); the offline page shows only how many are waiting; sign-out deletes the queue and caches (D-126) |
+| **S**poofing               | A queued check-in sent to whoever signs in next on the device         | Each item carries who made it; the worker sends only with that person's session and the route refuses `forUser` mismatches (409, kept on the device) (D-126)                                                                              |
+| **T**ampering              | A stale offline answer overwriting a newer one, or one sent twice     | The server keeps an answer saved at or after the moment the offline one was made, and refuses a repeat (D-122, pgTAP `052`)                                                                                                               |
+| **T**ampering              | A sealed note moved to another day or person, or changed              | AES-GCM with the person and the day as additional data; the server drops a note that won't open and still saves the check-in (D-123)                                                                                                      |
+| **E**levation of privilege | A cached offline page reusing its CSP nonce                           | The two kept pages hold no user content; their nonce matches only their own scripts; every other page gets a fresh nonce from the network                                                                                                 |
+| **D**enial of service      | Old code kept running after a fix is deployed                         | Every deploy is a new worker; open pages ask `/api/version` and offer Refresh; HTML is never cached (D-125)                                                                                                                               |
+| **I**nformation disclosure | The install sheet, shortcuts or screenshots naming the topic          | Neutral names and labels; screenshots are made by a script that refuses topic words on screen; the discretion test covers the manifest (D-127)                                                                                            |
+
 ## Open items
 
 - `require-trusted-types-for 'script'` is not enabled yet; test Next.js and React compatibility in Phase 11.
@@ -346,7 +359,7 @@ A review of what people near the user could see, and of data we hold but don't n
 - Public HTML isn't cached at the CDN yet: it needs static pages with a hash-based CSP and SRI (Phase 12, D-114).
 - Turnstile is not exercised by automated tests (off in CI); verify it by hand on the first preview deploy (D-018).
 - Supabase Auth applies its per-IP limits to our server's IP for server-side calls; set dashboard limits generously before launch (D-019).
-- Back up `APP_ENCRYPTION_KEY` securely: without it, encrypted text can't be read (D-025).
+- Back up `APP_ENCRYPTION_KEY` securely: without it, encrypted text can't be read (D-025). `OFFLINE_NOTE_PRIVATE_KEY` matters only for notes waiting on devices: losing it loses those notes, never a check-in (D-123).
 - Per-network limits trust one header (D-052): on Vercel leave `TRUSTED_IP_HEADER` unset; behind Cloudflare's proxy set it to `cf-connecting-ip`. Anywhere else, check which header the platform overwrites before launch.
 - Turn on Turnstile in the Supabase dashboard before launch: the per-address password lock-out (5 wrong tries) lives in the app, so someone calling Supabase Auth directly meets only Supabase's per-IP limit and the captcha (D-018).
 - Sign Google Cloud's data processing terms and name Google as a processor before launch; avatars are screened by Cloud Vision (D-026).

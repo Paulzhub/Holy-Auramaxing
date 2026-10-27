@@ -7,7 +7,8 @@ import type { PwaClientLabels } from "../components/pwa-client";
 export async function pwaClientLabels(): Promise<PwaClientLabels> {
   const t = await getTranslations("pwa");
   return {
-    synced: t.raw("synced.one") as string,
+    // Precompiled messages have no raw text: the placeholder goes through as itself.
+    synced: t("synced.one", { day: "{day}" }),
     noteLost: t("synced.noteLost"),
     updateTitle: t("update.title"),
     updateBody: t("update.body"),

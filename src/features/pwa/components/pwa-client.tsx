@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import type { NoteKey } from "@/lib/offline/sealed-note";
 import { SW_MESSAGES, SYNC_TAG } from "@/lib/pwa/constants";
-import { listQueue, saveSession } from "@/lib/pwa/store";
+import { listQueue, saveSession, takeNotices } from "@/lib/pwa/store";
 import { APP_VERSION, isVersion, serviceWorkerUrl } from "@/lib/pwa/version";
 
 // Loaded with the shell, so `beforeinstallprompt` is caught however early it comes.
@@ -24,10 +24,6 @@ export interface PwaClientLabels {
   later: string;
 }
 
-interface SyncedMessage {
-  type: typeof SW_MESSAGES.synced;
-  sent: { localDate: string; status: string; noteLost: boolean }[];
-}
 
 const CHECK_EVERY_MS = 60 * 60 * 1000;
 const RECHECK_AFTER_MS = 5 * 60 * 1000;
@@ -172,24 +168,29 @@ export function PwaClient({
     };
   }, [checkVersion]);
 
-  // What the worker sent.
+  // What the worker sent (it keeps a note when no page of the app was open to hear it).
+  const showNotices = useCallback(async () => {
+    const notices = await takeNotices();
+    for (const notice of notices) {
+      show({
+        title: labels.synced.replace("{day}", dayLabel(notice.localDate, locale)),
+        description: notice.noteLost ? labels.noteLost : undefined,
+        tone: "success",
+      });
+    }
+    if (notices.length) router.refresh();
+  }, [labels, locale, router, show]);
+
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
     const onMessage = (event: MessageEvent) => {
-      const data = event.data as Partial<SyncedMessage> | null;
-      if (!data || data.type !== SW_MESSAGES.synced || !Array.isArray(data.sent)) return;
-      for (const item of data.sent) {
-        show({
-          title: labels.synced.replace("{day}", dayLabel(item.localDate, locale)),
-          description: item.noteLost ? labels.noteLost : undefined,
-          tone: "success",
-        });
-      }
-      if (data.sent.length) router.refresh();
+      const data = event.data as { type?: unknown } | null;
+      if (data?.type === SW_MESSAGES.synced) void showNotices();
     };
     navigator.serviceWorker.addEventListener("message", onMessage);
+    void showNotices();
     return () => navigator.serviceWorker.removeEventListener("message", onMessage);
-  }, [labels, locale, router, show]);
+  }, [showNotices]);
 
   const refresh = () => {
     const waiting = registration.current?.waiting;

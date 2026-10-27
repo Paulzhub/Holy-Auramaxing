@@ -14,7 +14,20 @@ import { isExpired, type DeviceSession, type QueuedCheckin } from "./queue";
  * Sign-out clears it all (forgetDevice).
  */
 
-function open(): Promise<IDBDatabase> {
+function hasStores(db: IDBDatabase): boolean {
+  return db.objectStoreNames.contains(QUEUE_STORE) && db.objectStoreNames.contains(META_STORE);
+}
+
+/** Opens the store; one made without our stores (by anything else) is replaced once. */
+async function open(): Promise<IDBDatabase> {
+  const db = await openOnce();
+  if (hasStores(db)) return db;
+  db.close();
+  await forgetDevice();
+  return openOnce();
+}
+
+function openOnce(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (typeof indexedDB === "undefined") return reject(new Error("no-indexeddb"));
     const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -130,4 +143,22 @@ export function forgetDevice(): Promise<boolean> {
       resolve(false);
     }
   });
+}
+
+/** A check-in the worker sent, for the app to say so once (the day only, never the answer). */
+export interface SyncNotice {
+  localDate: string;
+  noteLost: boolean;
+}
+
+/** Takes the worker's notes of what it sent, so each is shown once. */
+export function takeNotices(): Promise<SyncNotice[]> {
+  return withDb(async (db) => {
+    const tx = db.transaction(META_STORE, "readwrite");
+    const store = tx.objectStore(META_STORE);
+    const notices = ((await read(store.get("notices"))) as SyncNotice[] | undefined) ?? [];
+    store.delete("notices");
+    await done(tx);
+    return notices;
+  }, []);
 }

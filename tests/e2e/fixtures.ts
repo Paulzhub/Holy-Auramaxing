@@ -35,6 +35,7 @@ export const authRoutes = [
   "/your-data",
   "/join",
   "/breathe",
+  "/offline",
 ] as const;
 /** The public website (Phase 9, §12): axe, no-JS and indexing checks in public-site.spec.ts. */
 export const publicRoutes = [
