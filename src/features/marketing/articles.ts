@@ -4,6 +4,10 @@
  * as plain data, so the sitemap, the proxy, llms.txt and the tests can read
  * it without compiling MDX.
  *
+ * Drafts (owner, 2026-10-26, D-120): an article is published only once it
+ * has been reviewed. Until then it stays here as a draft, with its body in
+ * the repo, and the site shows no articles, hub or link at all.
+ *
  * Discretion (owner, 2026-10-26, D-115): articles are the only public pages
  * whose title, description and address may name the topic, because that's
  * what someone searching for help types. Every other public title and
@@ -24,6 +28,8 @@ const sourceSchema = z.object({
 });
 
 export const articleSchema = z.object({
+  /** Drafts are kept for review and never shown (D-120). */
+  status: z.enum(["draft", "published"]),
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   /** The question the article answers; also its <title> and H1. */
   title: z.string().min(10).max(70),
@@ -41,14 +47,21 @@ export const articleSchema = z.object({
 
 export type Article = z.infer<typeof articleSchema>;
 
+/** A published article must name its reviewer (D-120). */
+export function checkArticle(a: Article): Article {
+  if (a.status === "published" && a.reviewer === null) throw new Error(`${a.slug}: published without a reviewer`);
+  return a;
+}
+
 export const FOUNDER = {
   name: "Paulz",
   role: "Founder of Holy Auramaxing",
-  bio: "Paulz started Holy Auramaxing so a few friends could walk towards freedom together, with grace and Scripture at the centre. He isn't a pastor or a counsellor, which is why every article waits for one to review it.",
+  bio: "Paulz started Holy Auramaxing so a few friends could walk towards freedom together, with grace and Scripture at the centre.",
 } as const;
 
 const data: Article[] = [
   {
+    status: "draft",
     slug: "how-to-quit-porn-as-a-christian",
     title: "How do I quit porn as a Christian?",
     description:
@@ -84,6 +97,7 @@ const data: Article[] = [
     ],
   },
   {
+    status: "draft",
     slug: "what-does-the-bible-say-about-lust",
     title: "What does the Bible say about lust?",
     description:
@@ -115,6 +129,7 @@ const data: Article[] = [
     ],
   },
   {
+    status: "draft",
     slug: "how-to-help-a-friend-who-is-struggling",
     title: "How do I help a friend who is struggling with porn?",
     description:
@@ -139,7 +154,11 @@ const data: Article[] = [
   },
 ];
 
-export const ARTICLES: readonly Article[] = data.map((a) => articleSchema.parse(a));
+/** Every article, drafts included: for the tests that check their shape. */
+export const ALL_ARTICLES: readonly Article[] = data.map((a) => checkArticle(articleSchema.parse(a)));
+
+/** The published articles: the only ones the site shows. */
+export const ARTICLES: readonly Article[] = ALL_ARTICLES.filter((a) => a.status === "published");
 
 export function articleBySlug(slug: string): Article | null {
   return ARTICLES.find((a) => a.slug === slug) ?? null;

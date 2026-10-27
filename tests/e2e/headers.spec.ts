@@ -56,7 +56,7 @@ test("app pages are never indexed; the public page is", async ({ page }) => {
 });
 
 test("tab titles stay neutral", async ({ page }) => {
-  // Articles are the one deliberate exception (D-115).
+  // Published articles would be the one deliberate exception (D-115); none are published yet.
   const neutralPublic = publicRoutes.filter((r) => !r.startsWith("/articles/"));
   for (const route of [...neutralPublic, ...appRoutes]) {
     await page.goto(route);

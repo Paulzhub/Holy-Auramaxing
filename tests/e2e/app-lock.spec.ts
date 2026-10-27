@@ -135,7 +135,9 @@ test.describe("app lock", () => {
     await page.getByRole("button", { name: "Lock now" }).click();
     await lockScreen(page).getByRole("button", { name: "Forgot PIN? Sign out" }).click();
     await expect(page).toHaveURL(/\/\?notice=signed-out$/);
-    expect(await storage(page, "ha-lock")).toBeNull();
+    // ForgetLockWatch runs once the new page commits, after the public pages'
+    // view transition (about 260 ms, D-121).
+    await expect.poll(() => storage(page, "ha-lock")).toBeNull();
     // Sign in again: no lock.
     await page.goto("/sign-in");
     await page.locator("#email").fill(me.email);
@@ -152,7 +154,9 @@ test.describe("app lock", () => {
     await page.goto("/settings");
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/\?notice=signed-out$/);
-    expect(await storage(page, "ha-lock")).toBeNull();
+    // ForgetLockWatch runs once the new page commits, after the public pages'
+    // view transition (about 260 ms, D-121).
+    await expect.poll(() => storage(page, "ha-lock")).toBeNull();
   });
 
   test("another account on the same device never meets someone else's lock", async ({ page, context }) => {

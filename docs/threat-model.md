@@ -330,6 +330,14 @@ A review of what people near the user could see, and of data we hold but don't n
 | **T**ampering              | MDX running code in visitors' browsers                                | Articles compiled at build time from files in the repo, no plugins, no runtime evaluation; CSP unchanged (D-116)                                                                                    |
 | **S**poofing               | A forged security report channel                                      | `/.well-known/security.txt` (RFC 9116) and `/security` give one contact; it expires a year after each build                                                                                         |
 
+## Phase 9b additions
+
+| STRIDE                     | Threat                                                      | Mitigation                                                                                                                                                                                    |
+| -------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **T**ampering              | Third-party motion code (three.js, GSAP, Lenis) in the page | Exact versions in the lockfile, Dependabot and `npm audit`; bundled and served from our origin under the unchanged nonce CSP; no network calls, no `eval`, shaders are static strings (D-121) |
+| **D**enial of service      | The 3D scene draining a phone's battery or freezing it      | Loads only on intent and only when the gates allow; draws only while on screen and visible; a frame-time watchdog lowers resolution, then falls back to the static story (D-121)              |
+| **I**nformation disclosure | The 3D reaching the app (§8: no WebGL in the app shell)     | Only `ui-landing` imports the story; `story.spec.ts` checks every app route's scripts for three.js, GSAP and Lenis                                                                            |
+
 ## Open items
 
 - `require-trusted-types-for 'script'` is not enabled yet; test Next.js and React compatibility in Phase 11.

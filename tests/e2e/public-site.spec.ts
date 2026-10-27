@@ -8,7 +8,12 @@ import { appRoutes, authRoutes, expect, publicRoutes, signedOut, test, testClien
 
 test.use({ storageState: signedOut });
 
-const articles = publicRoutes.filter((r) => r.startsWith("/articles/"));
+/** Draft articles (D-120): kept in the repo for review, never on the site. */
+const draftArticles = [
+  "/articles/how-to-quit-porn-as-a-christian",
+  "/articles/what-does-the-bible-say-about-lust",
+  "/articles/how-to-help-a-friend-who-is-struggling",
+];
 
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
@@ -49,13 +54,17 @@ test.describe("without JavaScript", () => {
     await expect(page).toHaveURL(/\/faq$/);
   });
 
-  test("the FAQ and an article are complete", async ({ page }) => {
+  test("the FAQ is complete", async ({ page }) => {
     await page.goto("/faq");
     await expect(page.getByRole("heading", { level: 2 })).toHaveCount(11);
-    await page.goto(articles[0]!);
-    await expect(page.locator(".answer")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: "Sources" })).toBeVisible();
-    await expect(page.getByText("Waiting for pastoral review.")).toBeVisible();
+  });
+
+  test("draft articles aren't published anywhere (D-120)", async ({ page, request }) => {
+    for (const path of ["/articles", ...draftArticles]) {
+      expect((await request.get(path)).status(), path).toBe(404);
+    }
+    await page.goto("/");
+    await expect(page.locator('a[href^="/articles"]')).toHaveCount(0);
   });
 
   test("the Scripture guides show today’s verse and day one of a plan", async ({ page }) => {
@@ -70,19 +79,14 @@ test.describe("without JavaScript", () => {
 });
 
 test.describe("indexing", () => {
-  test("public pages are indexable; articles wait for review", async ({ request }) => {
+  test("public pages are indexable", async ({ request }) => {
     for (const route of publicRoutes) {
       const response = await request.get(route);
       const header = response.headers()["x-robots-tag"];
       const html = await response.text();
-      if (route.startsWith("/articles/")) {
-        expect(header, route).toBe("noindex");
-        expect(html, route).toContain('<meta name="robots" content="noindex, follow"/>');
-      } else {
-        expect(header, route).toBeUndefined();
-        expect(html, route).toContain('<meta name="robots" content="index, follow"/>');
-        expect(html, route).toMatch(/<link rel="canonical" href="https?:\/\/[^"]+"\/>/);
-      }
+      expect(header, route).toBeUndefined();
+      expect(html, route).toContain('<meta name="robots" content="index, follow"/>');
+      expect(html, route).toMatch(/<link rel="canonical" href="https?:\/\/[^"]+"\/>/);
       expect(html, route).toMatch(/<meta property="og:image" content="https?:\/\/[^"]+\/api\/og\/[a-z0-9-]+"\/>/);
     }
   });
@@ -113,7 +117,7 @@ test.describe("indexing", () => {
       expect(response.status(), path).toBe(200);
       expect(response.headers()["x-robots-tag"], path).toBeUndefined();
     }
-    for (const article of articles) expect(urls).not.toContain(article);
+    for (const article of ["/articles", ...draftArticles]) expect(urls).not.toContain(article);
   });
 
   test("robots.txt, llms.txt and security.txt", async ({ request }) => {
@@ -135,7 +139,7 @@ test.describe("indexing", () => {
   });
 
   test("card pictures are PNGs", async ({ request }) => {
-    for (const name of ["site", "how-to-quit-porn-as-a-christian"]) {
+    for (const name of ["site"]) {
       const response = await request.get(`/api/og/${name}`);
       expect(response.status()).toBe(200);
       expect(response.headers()["content-type"]).toBe("image/png");
@@ -149,7 +153,6 @@ test.describe("structured data", () => {
     "/how-it-works": ["WebApplication", "BreadcrumbList"],
     "/faq": ["FAQPage", "BreadcrumbList"],
     "/scripture/7-days": ["BreadcrumbList"],
-    [articles[0]!]: ["BlogPosting", "BreadcrumbList"],
   };
 
   for (const [route, types] of Object.entries(expected)) {
