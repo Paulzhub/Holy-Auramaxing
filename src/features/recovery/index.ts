@@ -8,7 +8,6 @@
  */
 export { AppLock } from "./components/app-lock";
 export { AppLockSettings } from "./components/app-lock-settings";
-export { OfflineReady } from "./components/offline-ready";
 export { SosButton } from "./components/sos-button";
 export { SosOffline } from "./components/sos-offline";
 export { CRISIS_LINES, FIND_A_HELPLINE, orderedCrisisLines, type CrisisLine } from "./crisis-lines";

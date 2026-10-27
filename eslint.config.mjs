@@ -14,6 +14,7 @@ const featureModules = [
   "profile",
   "admin",
   "marketing",
+  "pwa",
 ];
 
 export default defineConfig([

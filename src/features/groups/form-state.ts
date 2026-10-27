@@ -46,6 +46,8 @@ export interface CreatedInvite {
   link: string;
   code: string;
   qrSvg: string;
+  /** The same code as a PNG (data: URL): WhatsApp and most phones don't take SVG (D-127). Null if it couldn't be drawn. */
+  qrPng: string | null;
   expiresAt: string;
   maxUses: number | null;
 }

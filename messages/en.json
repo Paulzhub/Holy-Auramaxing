@@ -49,7 +49,8 @@
     "resources": "Resources",
     "breathe": "Take a breath",
     "reading": "Daily reading",
-    "readingPlan": "Reading plan"
+    "readingPlan": "Reading plan",
+    "offline": "Offline"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -1646,6 +1647,8 @@
       "share": "Share",
       "shareText": "Join my group on Holy Auramaxing",
       "downloadQr": "Download QR code",
+      "downloadQrPng": "Save QR code as an image",
+      "shareQr": "Share the QR code",
       "listTitle": "Invites",
       "listEmpty": "No invites yet.",
       "created": "Made {date}",
@@ -2910,6 +2913,58 @@
     "wrong": "That PIN didn’t match. Please try again.",
     "wait": "Too many tries for now. You can try again at {time}.",
     "deviceFailed": "That didn’t work. You can use your PIN instead.",
-    "forgot": "Forgot PIN? Sign out"
+    "forgot": "Forgot PIN? Sign out",
+    "forgotOffline": "Forgot your PIN? Once you’re back online, signing out removes it from this device."
+  },
+  "pwa": {
+    "offline": {
+      "title": "You’re offline",
+      "lede": "You can still check in. Your answer is kept on this device and sent as soon as you’re back online.",
+      "noSession": "To check in without a connection, open the app once while you’re online. Until then, everything on Take a breath works offline.",
+      "dayLegend": "Which day is this for?",
+      "savedTitle": "Kept on this device",
+      "savedBody": "It will be sent as soon as you’re back online, and it will count for {day}.",
+      "noteSealed": "Your note is sealed on this device: only the app’s server can open it, when it’s sent. You can’t read it here, and you can change it once it’s saved.",
+      "noteOffline": "You can add a private note once you’re back online.",
+      "change": "Change this answer",
+      "breathe": "Take a breath",
+      "retry": "Try the app again",
+      "saveFailed": "This device couldn’t keep your check-in. Please try again when you’re back online.",
+      "noDay": "There’s no day open to answer right now. Your next check-in opens tomorrow.",
+      "waitingOne": "1 check-in is waiting to be sent.",
+      "waitingMany": "{count} check-ins are waiting to be sent."
+    },
+    "synced": {
+      "one": "Your check-in for {day} was saved.",
+      "noteLost": "Your private note couldn’t be opened, so only your answer was saved."
+    },
+    "update": {
+      "title": "A new version is ready",
+      "body": "Refresh to get the latest. Anything you’ve typed on this page stays until you choose.",
+      "refresh": "Refresh",
+      "later": "Later"
+    },
+    "install": {
+      "title": "Add the app to this device",
+      "body": "It opens full-screen from your Home Screen, keeps working offline, and shows the same neutral name everywhere.",
+      "install": "Install",
+      "notNow": "Not now",
+      "iosTitle": "Add the app to your Home Screen",
+      "iosBody": "On iPhone and iPad this takes three taps, and it’s needed before notifications can reach you.",
+      "iosShow": "Show me how",
+      "iosStep1": "In Safari, tap the Share button (a square with an arrow pointing up).",
+      "iosStep2": "Scroll down and choose “Add to Home Screen”.",
+      "iosStep3": "Tap Add, then open the app from your Home Screen.",
+      "close": "Close",
+      "settingsTitle": "This device",
+      "installed": "The app is installed on this device.",
+      "unavailable": "This browser can’t install apps. You can keep using it here, or open the app in Chrome, Edge or Safari.",
+      "installedNow": "Installed. You’ll find it on your Home Screen."
+    },
+    "screenshots": {
+      "breathe": "Take a breath, one minute at a time",
+      "reading": "Today’s verse and reading plan",
+      "together": "Walking together with your group"
+    }
   }
 }

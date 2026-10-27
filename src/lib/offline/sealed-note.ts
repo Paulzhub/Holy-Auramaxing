@@ -64,15 +64,25 @@ export async function keyId(rawPublicKey: Uint8Array<ArrayBuffer>): Promise<stri
 
 async function aesKey(shared: ArrayBuffer, salt: Uint8Array<ArrayBuffer>, usage: KeyUsage): Promise<CryptoKey> {
   const base = await subtle().importKey("raw", shared, "HKDF", false, ["deriveKey"]);
-  return subtle().deriveKey({ name: "HKDF", hash: "SHA-256", salt, info: INFO }, base, { name: "AES-GCM", length: 256 }, false, [
-    usage,
-  ]);
+  return subtle().deriveKey(
+    { name: "HKDF", hash: "SHA-256", salt, info: INFO },
+    base,
+    { name: "AES-GCM", length: 256 },
+    false,
+    [usage],
+  );
 }
 
 /** Device side: lock a note so that only the server can open it. */
 export async function sealNote(note: string, key: NoteKey, context: string): Promise<string> {
   const s = subtle();
-  const serverKey = await s.importKey("raw", fromBase64Url(key.publicKey), { name: "ECDH", namedCurve: "P-256" }, false, []);
+  const serverKey = await s.importKey(
+    "raw",
+    fromBase64Url(key.publicKey),
+    { name: "ECDH", namedCurve: "P-256" },
+    false,
+    [],
+  );
   const once = (await s.generateKey({ name: "ECDH", namedCurve: "P-256" }, false, ["deriveBits"])) as CryptoKeyPair;
   const shared = await s.deriveBits({ name: "ECDH", public: serverKey }, once.privateKey, 256);
   const oncePublic = new Uint8Array(await s.exportKey("raw", once.publicKey));
@@ -98,9 +108,20 @@ export function sealedKeyId(sealed: string): string | null {
  * Throws if it was changed, moved to another person or day, or locked with
  * another key.
  */
-export async function openSealedNote(sealed: string, privateKey: CryptoKey, kid: string, context: string): Promise<string> {
+export async function openSealedNote(
+  sealed: string,
+  privateKey: CryptoKey,
+  kid: string,
+  context: string,
+): Promise<string> {
   if (!isSealedNote(sealed)) throw new Error("Not a sealed note.");
-  const [, noteKid, oncePublicText, ivText, ciphertextText] = sealed.split(".") as [string, string, string, string, string];
+  const [, noteKid, oncePublicText, ivText, ciphertextText] = sealed.split(".") as [
+    string,
+    string,
+    string,
+    string,
+    string,
+  ];
   if (noteKid !== kid) throw new Error("Sealed with another key.");
   const s = subtle();
   const oncePublic = fromBase64Url(oncePublicText);

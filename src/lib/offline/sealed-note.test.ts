@@ -27,7 +27,9 @@ describe("sealed offline notes (D-123)", () => {
     expect(isSealedNote(sealed)).toBe(true);
     expect(sealed).not.toContain("Sam");
     expect(sealedKeyId(sealed)).toBe(server.kid);
-    await expect(openSealedNote(sealed, server.privateKey, server.kid, ctx)).resolves.toBe("Long day. Called Sam instead.");
+    await expect(openSealedNote(sealed, server.privateKey, server.kid, ctx)).resolves.toBe(
+      "Long day. Called Sam instead.",
+    );
   });
 
   it("two seals of the same note differ (fresh one-time key and IV)", async () => {
@@ -44,7 +46,12 @@ describe("sealed offline notes (D-123)", () => {
       openSealedNote(sealed, server.privateKey, server.kid, sealedNoteContext(user, "2026-10-26")),
     ).rejects.toThrow();
     await expect(
-      openSealedNote(sealed, server.privateKey, server.kid, sealedNoteContext("00000000-0000-7000-8000-000000000002", "2026-10-27")),
+      openSealedNote(
+        sealed,
+        server.privateKey,
+        server.kid,
+        sealedNoteContext("00000000-0000-7000-8000-000000000002", "2026-10-27"),
+      ),
     ).rejects.toThrow();
   });
 
@@ -52,8 +59,9 @@ describe("sealed offline notes (D-123)", () => {
     const server = await loadNoteKey(scalar());
     const other = await loadNoteKey(scalar());
     const sealed = await sealNote("note", server, ctx);
-    const last = sealed.at(-1) === "A" ? "B" : "A";
-    const tampered = sealed.slice(0, -1) + last;
+    // A character well inside the ciphertext (the last one may only carry padding bits).
+    const at = sealed.length - 6;
+    const tampered = sealed.slice(0, at) + (sealed[at] === "A" ? "B" : "A") + sealed.slice(at + 1);
     await expect(openSealedNote(tampered, server.privateKey, server.kid, ctx)).rejects.toThrow();
     await expect(openSealedNote(sealed, other.privateKey, other.kid, ctx)).rejects.toThrow();
   });

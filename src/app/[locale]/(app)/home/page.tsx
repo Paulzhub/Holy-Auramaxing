@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/app-shell";
 import { getCheckinOverview, KeptMessage, StreakStats, TodayCard } from "@/features/checkins";
 import { getPushDevices, PushExplainer } from "@/features/notifications";
+import { InstallCard } from "@/features/pwa";
 import { requireAccount } from "@/features/auth";
 import { getMyLevel, getMyXpAndBadges, LevelCard, XpLine } from "@/features/gamification";
 import { getMyNudges, NudgesForYou } from "@/features/social";
@@ -51,6 +52,8 @@ export default async function Page() {
           </Link>
         </p>
         {/* Only after a first check-in, before any browser prompt (§7.8, D-092). */}
+        {/* Install first (push on iPhone needs the installed app), then push (§13, D-127). */}
+        {overview.totalCheckins > 0 ? <InstallCard /> : null}
         {overview.totalCheckins > 0 ? <PushExplainer hasDevice={devices.length > 0} /> : null}
       </div>
     </>

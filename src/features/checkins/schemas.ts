@@ -75,6 +75,8 @@ export function readReflectionForm(formData: FormData) {
  * The database decides whether it still counts.
  */
 export const offlineCheckinSchema = z.object({
+  /** Who made it on the device (D-126): sent only with that person's session, checked again here. */
+  forUser: z.uuid().nullable().default(null),
   date: isoDate,
   recordedAt: z.iso.datetime({ offset: true }),
   outcome: z.enum(OUTCOMES),

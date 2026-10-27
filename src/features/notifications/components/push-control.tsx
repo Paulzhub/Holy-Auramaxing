@@ -4,6 +4,7 @@ import { BellRing } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { serviceWorkerUrl } from "@/lib/pwa/version";
 
 /**
  * This device's Web Push switch (CLAUDE.md §7.8, §13; D-092).
@@ -16,7 +17,9 @@ import { Button } from "@/components/ui/button";
  *    blocked states.
  *
  * On iPhone and iPad, Web Push works only in a web app added to the Home
- * Screen (iOS 16.4+), so Safari shows the three steps instead. The service
+ * Screen (iOS 16.4+): in Safari the settings switch shows the three steps
+ * instead, and the explainer stays away until the install card (D-127) has
+ * done its job. The service
  * worker is registered only when the person turns push on. Labels arrive
  * as props (no message bundle); status changes are announced politely.
  */
@@ -110,7 +113,7 @@ export function PushControl({
     setState("working");
     setMessage(labels.working);
     try {
-      const registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+      const registration = await navigator.serviceWorker.register(serviceWorkerUrl(), { scope: "/" });
       await navigator.serviceWorker.ready;
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
@@ -188,7 +191,9 @@ export function PushControl({
 
   if (mode === "explainer") {
     // Only while this device could still be asked; otherwise nothing at all.
-    const askable = state === "off" || state === "ios" || (state === "working" && !dismissed);
+    // Safari on iPhone outside the Home Screen: the install card comes first
+    // (D-127); once the app is installed, this card can ask.
+    const askable = state === "off" || (state === "working" && !dismissed);
     if (dismissed || !askable) return status;
     return (
       <section className="ui-card push-explainer" aria-labelledby="push-explainer-title" data-testid="push-explainer">
@@ -198,25 +203,14 @@ export function PushControl({
             {labels.explainerTitle}
           </h2>
           <p className="text-muted">{labels.explainerBody}</p>
-          {state === "ios" ? (
-            iosSteps
-          ) : (
-            <div className="alerts-toolbar">
-              <Button onClick={() => void turnOn()} loading={state === "working"} loadingLabel={labels.working}>
-                {labels.turnOn}
-              </Button>
-              <Button variant="ghost" onClick={notNow}>
-                {labels.notNow}
-              </Button>
-            </div>
-          )}
-          {state === "ios" ? (
-            <div>
-              <Button variant="ghost" onClick={notNow}>
-                {labels.notNow}
-              </Button>
-            </div>
-          ) : null}
+          <div className="alerts-toolbar">
+            <Button onClick={() => void turnOn()} loading={state === "working"} loadingLabel={labels.working}>
+              {labels.turnOn}
+            </Button>
+            <Button variant="ghost" onClick={notNow}>
+              {labels.notNow}
+            </Button>
+          </div>
           {status}
         </div>
       </section>

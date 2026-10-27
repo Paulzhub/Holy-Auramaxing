@@ -31,6 +31,12 @@ export async function POST(request: Request) {
   const parsed = offlineCheckinSchema.safeParse(body);
   if (!parsed.success) return json({ error: "invalid", drop: true }, 400);
 
+  // Made by someone else on this device (D-126): never saved to this account.
+  // Not dropped either: it waits on the device for the person who made it.
+  if (parsed.data.forUser && parsed.data.forUser !== account.userId) {
+    return json({ error: "otherAccount", drop: false }, 409);
+  }
+
   const result = await syncOfflineCheckin(account.userId, parsed.data);
   if (result.ok) return json({ status: result.status, noteLost: result.noteLost }, 200);
   const status =

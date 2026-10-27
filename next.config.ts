@@ -14,8 +14,14 @@ const withNextIntl = createNextIntlPlugin({
   },
 });
 
+// This build's version (D-125): the commit on Vercel, otherwise a new value
+// for every build. The service worker is registered as /sw.js?v=<version>, so
+// every deploy installs a new worker and the app can offer "Refresh".
+const appVersion = (process.env.VERCEL_GIT_COMMIT_SHA ?? "").slice(0, 12) || `b${Date.now().toString(36)}`;
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  env: { NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || appVersion },
   reactStrictMode: true,
   // Pin the project root, so a stray package-lock.json in a parent folder
   // (e.g. the user's home directory) is never mistaken for this project's.
@@ -41,10 +47,10 @@ const nextConfig: NextConfig = {
         headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
       {
-        // The service worker (push only for now, D-092; Phase 10 adds caching):
-        // always fetched fresh, so an update reaches every device, and locked
-        // down to its own origin.
-        source: "/sw.js",
+        // The service worker and its queue sender (D-092, D-124): always
+        // fetched fresh, so an update reaches every device, and locked down
+        // to their own origin.
+        source: "/:file(sw\\.js|sw-queue\\.js)",
         headers: [
           { key: "Content-Type", value: "application/javascript; charset=utf-8" },
           { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },

@@ -25,6 +25,7 @@ import {
 } from "@/features/gamification";
 import { getMyGroups } from "@/features/groups";
 import { getPushDevices, PushExplainer } from "@/features/notifications";
+import { InstallCard } from "@/features/pwa";
 import { AskForPrayerCard, getMyActivePartners } from "@/features/social";
 import { Link, redirect } from "@/i18n/navigation";
 import { readFlash } from "@/lib/server/flash";
@@ -129,6 +130,7 @@ async function Done({ overview, date, level }: { overview: Overview; date: strin
         </Link>
       </div>
       {/* After a check-in, the explainer comes before any browser prompt (§7.8, D-092). */}
+      <InstallCard />
       <PushExplainer hasDevice={devices.length > 0} />
     </div>
   );

@@ -39,7 +39,12 @@ const SEEN_EVERY_MS = 15_000;
 const getServerSnapshot = () => false;
 const getServerRecord = () => null;
 
-export function AppLock({ owner, signOut }: { owner: string; signOut: () => Promise<void> }) {
+/**
+ * `owner` and `signOut` are missing only on the offline page (D-124), which
+ * can't know who is signed in from the server and can't sign anyone out:
+ * there the lock still applies, and "Forgot PIN" waits for a connection.
+ */
+export function AppLock({ owner, signOut }: { owner?: string; signOut?: () => Promise<void> }) {
   const t = useTranslations("lock");
   const tApp = useTranslations("app");
   const locked = useSyncExternalStore(subscribeLock, isLocked, getServerSnapshot);
@@ -53,7 +58,7 @@ export function AppLock({ owner, signOut }: { owner: string; signOut: () => Prom
   // A lock set by another account on this device is not this person's: forget it.
   useEffect(() => {
     const r = readRecord();
-    if (r && r.owner !== owner) forgetLock();
+    if (owner !== undefined && r && r.owner !== owner) forgetLock();
     else lockIfDue();
   }, [owner]);
 
@@ -224,11 +229,15 @@ export function AppLock({ owner, signOut }: { owner: string; signOut: () => Prom
         <p id="app-lock-message" className="app-lock__message" aria-live="polite">
           {message}
         </p>
-        <form action={signOut} onSubmit={() => forgetLock({ keepCovered: true })}>
-          <button type="submit" className={buttonVariants({ variant: "ghost" })} disabled={!locked}>
-            {t("forgot")}
-          </button>
-        </form>
+        {signOut ? (
+          <form action={signOut} onSubmit={() => forgetLock({ keepCovered: true })}>
+            <button type="submit" className={buttonVariants({ variant: "ghost" })} disabled={!locked}>
+              {t("forgot")}
+            </button>
+          </form>
+        ) : (
+          <p className="text-muted">{t("forgotOffline")}</p>
+        )}
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import en from "../../messages/en.json";
 import { globalErrorMessages } from "../app/global-error-messages";
+import manifest from "../app/manifest";
 import { exportFileName } from "../lib/data-export";
 import { SENSITIVE_WORDS } from "../lib/discretion";
 import { parseFrom } from "../lib/email/sender";
@@ -237,8 +238,24 @@ describe("discretion: push notifications and notification emails (§7.8, D-092)"
 
   it("the service worker and the install name", () => {
     const sw = read("public/sw.js");
-    expectDiscreet([["sw.js", sw]]);
+    expectDiscreet([
+      ["sw.js", sw],
+      ["sw-queue.js", read("public/sw-queue.js")],
+    ]);
     expect(read("src/app/manifest.ts")).toMatch(/name: en\.app\.tabName/);
+  });
+
+  it("the install sheet: names, shortcuts, screenshot labels and addresses (Phase 10, D-124, D-127)", () => {
+    const m = manifest();
+    expectDiscreet(strings(m, "manifest"));
+    expect(m.name).toBe(en.app.tabName);
+    expect(m.short_name).toBe(en.app.tabName);
+    expect(m.shortcuts?.map((s) => s.url)).toEqual(["/check-in", "/breathe"]);
+    expect(m.screenshots?.length).toBeGreaterThan(0);
+    for (const shot of m.screenshots ?? []) expect(shot.label, shot.src).toBeTruthy();
+    // The offline page, the update banner, the install card and the "saved" line.
+    expectDiscreet(strings(en.pwa, "pwa"));
+    expectDiscreet([["meta.offline", en.meta.offline]]);
   });
 });
 

@@ -1,126 +1,322 @@
 /*
- * Holy Auramaxing service worker (CLAUDE.md §13, D-092). Phase 7 gave it
- * push: show a notification and open the app when one is tapped. Phase 8a
- * (D-106) adds one small, versioned cache: the /breathe page and the files it
- * needs, shown whenever a page can't load because the device is offline.
- * Phase 10 extends this cache into the full app shell and offline queue.
+ * Holy Auramaxing service worker (CLAUDE.md §13; D-092, D-106, D-124 to D-127).
  *
- * A push carries only what's shown (discreet by default) and where to go;
- * it never holds anyone's words. The cache holds only /breathe, a page with
- * nobody's data on it; nothing personal is ever cached.
+ * - Push: show a notification, open the app when one is tapped, set the
+ *   app-icon badge, re-save a replaced subscription (Phase 7, D-092).
+ * - Offline pages: /offline (check in without a connection) and /breathe
+ *   (the SOS tools) are kept for this version and shown whenever a page
+ *   can't load. Both have nobody's data on them, and are fetched without
+ *   cookies.
+ * - Static files: the app's hashed scripts, styles and fonts are kept as
+ *   they're used (their names change with every deploy, so a kept one is
+ *   never stale). The landing page's 3D story is never kept (D-121): it
+ *   loads only when a visitor shows intent, and keeping it would defeat that.
+ * - Never kept: any page's HTML (signed-in pages are personal, and every page
+ *   carries its own CSP nonce), /api/*, server actions, pictures, Supabase.
+ * - The offline check-in queue (sw-queue.js) is sent by Background Sync
+ *   where the browser has it, or when an open page asks.
+ * - Updates: a new deploy is a new worker (registered as /sw.js?v=<version>).
+ *   It waits until the person taps "Refresh" in the app (D-125), so nobody
+ *   is switched to new code in the middle of something.
  */
 "use strict";
 
-// ---------------------------------------------------------------- offline page
+var VERSION = (function () {
+  var v = new URL(self.location.href).searchParams.get("v") || "dev";
+  return /^[A-Za-z0-9_-]{1,40}$/.test(v) ? v : "dev";
+})();
 
-const OFFLINE_CACHE = "ha-offline-v1";
-const OFFLINE_PAGE = "/breathe";
-const REFRESH_AFTER_MS = 24 * 60 * 60 * 1000;
+importScripts("/sw-queue.js?v=" + VERSION);
 
-/** The page, plus the scripts, styles and fonts it names (same origin, under /_next/static/ only). */
-async function cacheOfflinePage() {
-  const cache = await caches.open(OFFLINE_CACHE);
-  const response = await fetch(OFFLINE_PAGE, { credentials: "omit", cache: "no-store" });
-  if (!response.ok) return;
-  const html = await response.clone().text();
-  const assets = new Set();
-  for (const match of html.matchAll(/(?:src|href)="(\/_next\/static\/[^"?#]+)"/gi)) assets.add(match[1]);
-  await Promise.all(
-    [...assets].map((url) =>
-      fetch(url)
-        .then((r) => (r.ok ? cache.put(url, r) : undefined))
-        .catch(() => undefined),
-    ),
-  );
-  const headers = new Headers(response.headers);
-  headers.set("x-cached-at", String(Date.now()));
-  await cache.put(OFFLINE_PAGE, new Response(await response.blob(), { status: 200, headers }));
+var SHELL_CACHE = "ha-shell-" + VERSION;
+var STATIC_CACHE = "ha-static-v1";
+var ICON_CACHE = "ha-icons-v1";
+var OFFLINE_PAGE = "/offline";
+var BREATHE_PAGE = "/breathe";
+var SHELL_PAGES = [OFFLINE_PAGE, BREATHE_PAGE];
+var STATIC_LIMIT = 150;
+var SYNC_TAG = "ha-checkins";
+var MSG = {
+  flush: "ha-flush",
+  skipWaiting: "ha-skip-waiting",
+  forget: "ha-forget",
+  refreshOffline: "refresh-offline",
+  synced: "ha-synced",
+};
+// The landing page's 3D story (D-121): never kept. The same markers story.spec.ts uses.
+var STORY_MARKERS = ["THREE.WebGLRenderer", "ScrollTrigger", "lenis-smooth"];
+
+function isStory(text) {
+  for (var i = 0; i < STORY_MARKERS.length; i++) if (text.indexOf(STORY_MARKERS[i]) !== -1) return true;
+  return false;
 }
 
-/** Refresh the copy now and then (a new deploy has new file names). Never fails the caller. */
-async function refreshOfflinePage(force) {
+// ---------------------------------------------------------------- the offline pages
+
+/** Static files a page or stylesheet names (same origin, under /_next/static/ only). */
+function staticRefs(text) {
+  var found = [];
+  var re = /(?:src|href)="(\/_next\/static\/[^"?#]+)"|url\((?:"|')?(\/_next\/static\/[^)"'?#]+)/gi;
+  var m;
+  while ((m = re.exec(text))) found.push(m[1] || m[2]);
+  return found;
+}
+
+async function cacheShell() {
+  var cache = await caches.open(SHELL_CACHE);
+  var assets = new Set();
+  for (var i = 0; i < SHELL_PAGES.length; i++) {
+    var page = SHELL_PAGES[i];
+    var response = await fetch(page, { credentials: "omit", cache: "no-store" });
+    if (!response.ok) throw new Error("shell " + page + " " + response.status);
+    var html = await response.clone().text();
+    staticRefs(html).forEach(function (u) {
+      assets.add(u);
+    });
+    await cache.put(page, response);
+  }
+  // Stylesheets name their fonts.
+  var list = Array.from(assets);
+  await Promise.all(
+    list.map(async function (url) {
+      var r = await fetch(url);
+      if (!r.ok) return;
+      if (/\.css$/.test(url)) {
+        staticRefs(await r.clone().text()).forEach(function (u) {
+          assets.add(u);
+        });
+      }
+      await cache.put(url, r);
+    }),
+  );
+  await Promise.all(
+    Array.from(assets)
+      .filter(function (u) {
+        return list.indexOf(u) === -1;
+      })
+      .map(function (url) {
+        return fetch(url)
+          .then(function (r) {
+            return r.ok ? cache.put(url, r) : undefined;
+          })
+          .catch(function () {});
+      }),
+  );
+}
+
+async function hasShell() {
+  var cache = await caches.open(SHELL_CACHE);
+  return Boolean(await cache.match(OFFLINE_PAGE));
+}
+
+async function ensureShell() {
   try {
-    const cache = await caches.open(OFFLINE_CACHE);
-    const cached = await cache.match(OFFLINE_PAGE);
-    const at = Number(cached && cached.headers.get("x-cached-at"));
-    if (force || !cached || !at || Date.now() - at > REFRESH_AFTER_MS) await cacheOfflinePage();
+    if (!(await hasShell())) await cacheShell();
   } catch {
-    // Offline or the server is down: keep the old copy.
+    // Offline or the server is down: the last version's pages still answer (see offlineResponse).
   }
 }
 
-self.addEventListener("install", (event) => {
-  // Best effort: push must keep working even if the page can't be fetched now.
-  event.waitUntil(refreshOfflinePage(true).then(() => self.skipWaiting()));
+/** This version's offline page, or any earlier version's while this one has none yet. */
+async function offlineResponse(pathname) {
+  var page = pathname === BREATHE_PAGE ? BREATHE_PAGE : OFFLINE_PAGE;
+  var own = await caches.match(page, { cacheName: SHELL_CACHE });
+  if (own) return own;
+  var any = await caches.match(page);
+  if (any) return any;
+  return (await caches.match(OFFLINE_PAGE)) || (await caches.match(BREATHE_PAGE)) || Response.error();
+}
+
+// ---------------------------------------------------------------- lifecycle
+
+self.addEventListener("install", function (event) {
+  event.waitUntil(
+    ensureShell().then(function () {
+      // The very first worker takes over at once; later ones wait for "Refresh" (D-125).
+      if (!self.registration.active) return self.skipWaiting();
+    }),
+  );
 });
 
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", function (event) {
+  var keep = [SHELL_CACHE, STATIC_CACHE, ICON_CACHE];
   event.waitUntil(
     caches
       .keys()
-      .then((keys) =>
-        Promise.all(
-          keys.filter((k) => k.startsWith("ha-offline-") && k !== OFFLINE_CACHE).map((k) => caches.delete(k)),
-        ),
-      )
-      .then(() => self.clients.claim()),
+      .then(function (keys) {
+        return Promise.all(
+          keys
+            .filter(function (k) {
+              return k.indexOf("ha-") === 0 && keep.indexOf(k) === -1;
+            })
+            .map(function (k) {
+              return caches.delete(k);
+            }),
+        );
+      })
+      .then(function () {
+        return self.clients.claim();
+      }),
   );
 });
 
-// The app asks for a refresh when it opens (at most once a day it actually fetches).
-self.addEventListener("message", (event) => {
+async function forgetEverything() {
+  var keys = await caches.keys();
+  await Promise.all(
+    keys
+      .filter(function (k) {
+        return k.indexOf("ha-") === 0;
+      })
+      .map(function (k) {
+        return caches.delete(k);
+      }),
+  );
+  await new Promise(function (resolve) {
+    var request = indexedDB.deleteDatabase(self.haQueue.DB_NAME);
+    request.onsuccess =
+      request.onerror =
+      request.onblocked =
+        function () {
+          resolve();
+        };
+  });
+  // The offline pages hold nobody's data: keep SOS working offline for whoever comes next.
+  await ensureShell();
+}
+
+async function flushAndTell() {
+  var result = await self.haQueue.flush();
+  if (result.sent.length || result.dropped) {
+    var windows = await self.clients.matchAll({ type: "window" });
+    windows.forEach(function (client) {
+      client.postMessage({ type: MSG.synced, sent: result.sent, dropped: result.dropped, waiting: result.waiting });
+    });
+  }
+  return result;
+}
+
+self.addEventListener("message", function (event) {
   // Only the app's own pages may ask (they're the only clients this worker has).
-  const from = event.source && "url" in event.source ? new URL(event.source.url).origin : event.origin;
+  var from = event.source && "url" in event.source ? new URL(event.source.url).origin : event.origin;
   if (from !== self.location.origin) return;
-  if (event.data === "refresh-offline") event.waitUntil(refreshOfflinePage(false));
+  var data = event.data;
+  if (data === MSG.skipWaiting) self.skipWaiting();
+  else if (data === MSG.flush) event.waitUntil(flushAndTell());
+  else if (data === MSG.forget) event.waitUntil(forgetEverything());
+  else if (data === MSG.refreshOffline) event.waitUntil(ensureShell());
 });
 
-// Page loads go to the network as usual; only when one fails (offline, or
-// the server can't be reached) does the worker answer, with /breathe. The
-// static files /breathe needs come from its own small cache when present
-// (their names change with every deploy, so a cached one is never stale).
-// Everything else isn't touched. (A device's "offline" flag isn't reliable
-// enough to decide this, so it isn't used.) Phase 10 adds caching for the rest.
-self.addEventListener("fetch", (event) => {
-  const request = event.request;
+// Background Sync (Chrome and Android): the browser wakes the worker when the connection is back.
+self.addEventListener("sync", function (event) {
+  if (event.tag !== SYNC_TAG) return;
+  event.waitUntil(
+    flushAndTell().then(function (result) {
+      // Still waiting for the connection: ask the browser to try again later.
+      if (result.waiting && !result.sent.length) throw new Error("retry");
+    }),
+  );
+});
+
+// ---------------------------------------------------------------- fetch
+
+function saveData(request) {
+  return request.headers.get("save-data") === "on";
+}
+
+async function trim(cache) {
+  var keys = await cache.keys();
+  for (var i = 0; i < keys.length - STATIC_LIMIT; i++) await cache.delete(keys[i]);
+}
+
+/** Hashed static files: kept as they're used, except the 3D story. */
+async function staticFile(request, pathname) {
+  var cached =
+    (await caches.match(pathname, { cacheName: SHELL_CACHE })) ||
+    (await caches.match(pathname, { cacheName: STATIC_CACHE }));
+  if (cached) return cached;
+  var response = await fetch(request);
+  if (!response.ok || response.type !== "basic" || saveData(request)) return response;
+  try {
+    if (/\.js$/.test(pathname) && isStory(await response.clone().text())) return response;
+    var cache = await caches.open(STATIC_CACHE);
+    await cache.put(pathname, response.clone());
+    await trim(cache);
+  } catch {
+    // Storage full or refused: the file still reaches the page.
+  }
+  return response;
+}
+
+/** Icons and the manifest: answer from the copy, refresh it behind the scenes. */
+async function iconFile(event, request) {
+  var cache = await caches.open(ICON_CACHE);
+  var cached = await cache.match(request);
+  var refresh = fetch(request)
+    .then(function (r) {
+      if (r.ok)
+        return cache.put(request, r.clone()).then(function () {
+          return r;
+        });
+      return r;
+    })
+    .catch(function () {
+      return undefined;
+    });
+  if (cached) {
+    event.waitUntil(refresh);
+    return cached;
+  }
+  return (await refresh) || Response.error();
+}
+
+self.addEventListener("fetch", function (event) {
+  var request = event.request;
   if (request.method !== "GET") return;
-  const url = new URL(request.url);
+  var url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  // Pages: always from the network; only when that fails, an offline page.
+  // (A device's "offline" flag isn't reliable enough to decide this, so it isn't used.)
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() =>
-        caches.match(OFFLINE_PAGE, { cacheName: OFFLINE_CACHE }).then((r) => r || Response.error()),
-      ),
+      fetch(request).catch(function () {
+        return offlineResponse(url.pathname.replace(/^\/en(?=\/|$)/, "") || "/");
+      }),
     );
     return;
   }
-  if (url.pathname.startsWith("/_next/static/")) {
-    event.respondWith(caches.match(url.pathname, { cacheName: OFFLINE_CACHE }).then((r) => r || fetch(request)));
+  if (url.pathname.indexOf("/_next/static/") === 0) {
+    event.respondWith(staticFile(request, url.pathname));
+    return;
   }
+  if (url.pathname.indexOf("/icons/") === 0 || url.pathname === "/manifest.webmanifest") {
+    event.respondWith(iconFile(event, request));
+  }
+  // Everything else (data, /api/*, pictures) isn't touched.
 });
 
 // ---------------------------------------------------------------- push
 
-const ICON = "/icons/icon-192.png";
-const BADGE = "/icons/badge-96.png";
+var ICON = "/icons/icon-192.png";
+var BADGE = "/icons/badge-96.png";
 
 function safePath(url) {
   // Only paths inside the app, never another site.
-  return typeof url === "string" && /^\/[a-z0-9/_?=&.-]*$/i.test(url) && !url.startsWith("//") ? url : "/alerts";
+  return typeof url === "string" && /^\/[a-z0-9/_?=&.-]*$/i.test(url) && url.indexOf("//") !== 0 ? url : "/alerts";
 }
 
-self.addEventListener("push", (event) => {
-  let data = {};
+self.addEventListener("push", function (event) {
+  var data = {};
   try {
     data = event.data ? event.data.json() : {};
   } catch {
     data = {};
   }
-  const title = typeof data.title === "string" ? data.title.slice(0, 80) : "Holy Auramaxing";
-  const body = typeof data.body === "string" ? data.body.slice(0, 200) : "";
-  const tasks = [
+  var title = typeof data.title === "string" ? data.title.slice(0, 80) : "Holy Auramaxing";
+  var body = typeof data.body === "string" ? data.body.slice(0, 200) : "";
+  var tasks = [
     self.registration.showNotification(title, {
-      body,
+      body: body,
       icon: ICON,
       badge: BADGE,
       tag: typeof data.tag === "string" ? data.tag.slice(0, 64) : undefined,
@@ -132,20 +328,23 @@ self.addEventListener("push", (event) => {
   // The app-icon badge (Badging API), where the system supports it.
   if (typeof data.badge === "number" && "setAppBadge" in self.navigator) {
     tasks.push(
-      (data.badge > 0 ? self.navigator.setAppBadge(data.badge) : self.navigator.clearAppBadge()).catch(() => {}),
+      (data.badge > 0 ? self.navigator.setAppBadge(data.badge) : self.navigator.clearAppBadge()).catch(function () {}),
     );
   }
   event.waitUntil(Promise.all(tasks));
 });
 
-self.addEventListener("notificationclick", (event) => {
+self.addEventListener("notificationclick", function (event) {
   event.notification.close();
-  const path = safePath(event.notification.data && event.notification.data.url);
+  var path = safePath(event.notification.data && event.notification.data.url);
   event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
-      for (const client of windows) {
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (windows) {
+      for (var i = 0; i < windows.length; i++) {
+        var client = windows[i];
         if (new URL(client.url).origin === self.location.origin && "focus" in client) {
-          return client.focus().then((c) => (c && "navigate" in c ? c.navigate(path) : undefined));
+          return client.focus().then(function (c) {
+            return c && "navigate" in c ? c.navigate(path) : undefined;
+          });
         }
       }
       return self.clients.openWindow(path);
@@ -154,17 +353,17 @@ self.addEventListener("notificationclick", (event) => {
 });
 
 // The browser replaced the subscription (keys rotated, or it expired): save the new one.
-self.addEventListener("pushsubscriptionchange", (event) => {
-  const options = event.oldSubscription ? event.oldSubscription.options : null;
+self.addEventListener("pushsubscriptionchange", function (event) {
+  var options = event.oldSubscription ? event.oldSubscription.options : null;
   if (!options) return;
   event.waitUntil(
-    self.registration.pushManager.subscribe(options).then((subscription) =>
-      fetch("/api/push/subscribe", {
+    self.registration.pushManager.subscribe(options).then(function (subscription) {
+      return fetch("/api/push/subscribe", {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(subscription.toJSON()),
-      }),
-    ),
+      });
+    }),
   );
 });

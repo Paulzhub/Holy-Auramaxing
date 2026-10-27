@@ -30,9 +30,13 @@ export async function loadNoteKey(privateScalar: string): Promise<LoadedKey> {
     y: toBase64Url(raw.slice(33, 65)),
     ext: false,
   };
-  const privateKey = await globalThis.crypto.subtle.importKey("jwk", jwk, { name: "ECDH", namedCurve: "P-256" }, false, [
-    "deriveBits",
-  ]);
+  const privateKey = await globalThis.crypto.subtle.importKey(
+    "jwk",
+    jwk,
+    { name: "ECDH", namedCurve: "P-256" },
+    false,
+    ["deriveBits"],
+  );
   return { kid: await keyId(raw), publicKey: toBase64Url(raw), privateKey };
 }
 

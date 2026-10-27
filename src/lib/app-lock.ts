@@ -9,6 +9,8 @@
  * Nothing about it ever leaves the device. See docs/threat-model.md.
  */
 
+import { DB_NAME as PWA_DB_NAME, SW_MESSAGES } from "@/lib/pwa/constants";
+
 /** localStorage: the lock's settings and PIN hash. */
 export const LOCK_KEY = "ha-lock";
 /** localStorage: when the app was last in front of someone (ms since 1970). */
@@ -87,6 +89,7 @@ export const pinPattern = new RegExp(`^\\d{${PIN_LENGTH}}$`);
 /**
  * Runs in <head> before first paint (like the theme's), so the lock is in
  * place before any content shows. After a sign-out it forgets the lock on
- * this device instead.
+ * this device instead, and with it the offline queue, the device's note of
+ * who is signed in, and the service worker's caches (D-126).
  */
-export const appLockBootScript = `(function(){try{var d=document.documentElement,L=localStorage;if(/(?:^|; )${CLEAR_COOKIE}=1(?:;|$)/.test(document.cookie)){L.removeItem("${LOCK_KEY}");L.removeItem("${LOCKED_KEY}");L.removeItem("${FAILS_KEY}");L.removeItem("${SEEN_KEY}");document.cookie="${CLEAR_COOKIE}=; path=/; max-age=0";return}var r=JSON.parse(L.getItem("${LOCK_KEY}")||"null");if(!r||r.v!==1||!r.pin)return;var s=+(L.getItem("${SEEN_KEY}")||0),a=r.after===0?${IMMEDIATE_GRACE_MS}:r.after*60000;if(L.getItem("${LOCKED_KEY}")==="1"||!s||Date.now()-s>=a){L.setItem("${LOCKED_KEY}","1");d.setAttribute("data-locked","")}}catch(e){}})();`;
+export const appLockBootScript = `(function(){try{var d=document.documentElement,L=localStorage;if(/(?:^|; )${CLEAR_COOKIE}=1(?:;|$)/.test(document.cookie)){L.removeItem("${LOCK_KEY}");L.removeItem("${LOCKED_KEY}");L.removeItem("${FAILS_KEY}");L.removeItem("${SEEN_KEY}");document.cookie="${CLEAR_COOKIE}=; path=/; max-age=0";try{indexedDB.deleteDatabase("${PWA_DB_NAME}");var w=navigator.serviceWorker&&navigator.serviceWorker.controller;w&&w.postMessage("${SW_MESSAGES.forget}")}catch(e){}return}var r=JSON.parse(L.getItem("${LOCK_KEY}")||"null");if(!r||r.v!==1||!r.pin)return;var s=+(L.getItem("${SEEN_KEY}")||0),a=r.after===0?${IMMEDIATE_GRACE_MS}:r.after*60000;if(L.getItem("${LOCKED_KEY}")==="1"||!s||Date.now()-s>=a){L.setItem("${LOCKED_KEY}","1");d.setAttribute("data-locked","")}}catch(e){}})();`;
