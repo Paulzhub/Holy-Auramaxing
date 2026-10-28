@@ -87,8 +87,14 @@ select is(pg_temp.lv(:b, '2026-06-01 08:00+00'), '15/0', '... and costs what a s
 -- Still inside the window when it arrives: an ordinary save.
 select is(pg_temp.sync(:b, '2026-06-01', '2026-06-01 02:00+00', 'clean', '2026-06-01 03:00+00'), 'created',
           'Arriving while the day is still open: an ordinary check-in');
-select is(pg_temp.sync(:b, '2026-06-01', '2026-06-01 02:30+00', 'slipped', '2026-06-01 03:30+00'), 'updated',
-          '... and inside the window, a later one is an edit');
+-- (The test runs at the real date, so give the saved row the simulated time
+-- it was saved at; an offline answer is compared with it, D-122.)
+alter table public.checkins disable trigger checkins_touch_updated_at;
+update public.checkins set created_at = '2026-06-01 03:00+00', updated_at = '2026-06-01 03:00+00'
+ where user_id = :b and local_date = '2026-06-01';
+alter table public.checkins enable trigger checkins_touch_updated_at;
+select is(pg_temp.sync(:b, '2026-06-01', '2026-06-01 03:10+00', 'slipped', '2026-06-01 03:30+00'), 'updated',
+          '... and inside the window, one made after it was saved is an edit');
 
 -- Refusals.
 select throws_ok($$ select pg_temp.sync('00000000-0000-7000-8000-000000005101', '2026-06-01', '2026-06-01 15:00+00', 'clean', '2026-06-09 15:01+00') $$,

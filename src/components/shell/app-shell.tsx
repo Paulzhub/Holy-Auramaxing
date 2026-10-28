@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { FocusAfterAction } from "@/components/ui/focus-after-action";
 import { ToastProvider } from "@/components/ui/toast";
-import { OfflineReady, SosButton } from "@/features/recovery";
+import { SosButton } from "@/features/recovery";
 import { Link } from "@/i18n/navigation";
 import type { ThemePreference } from "@/lib/theme/theme";
 
@@ -29,6 +29,7 @@ export function AppShell({
   alertCounts = { total: 0, byGroup: {} },
   live,
   lock,
+  pwa,
 }: {
   children: ReactNode;
   theme: ThemePreference;
@@ -40,6 +41,8 @@ export function AppShell({
   live?: ReactNode;
   /** The app lock's screen (D-113), supplied by the app layout; everything else sits under it. */
   lock?: ReactNode;
+  /** The installable app's helper (D-124 to D-127), supplied by the app layout. */
+  pwa?: ReactNode;
 }) {
   const t = useTranslations();
 
@@ -78,7 +81,7 @@ export function AppShell({
         </div>
         {lock}
         <FocusAfterAction />
-        <OfflineReady />
+        {pwa}
         {live}
       </AlertCountsProvider>
     </ToastProvider>

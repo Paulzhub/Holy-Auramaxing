@@ -6,7 +6,16 @@
  *   "@/features/checkins"     server code and server components (this file)
  *   "@/features/checkins/ui"  the answer buttons (client)
  */
-export { CHART_RANGES, NOTE_MAX, TRIGGERS, type ChartRange, type Outcome, type Trigger } from "./constants";
+export {
+  CHART_RANGES,
+  MOODS,
+  NOTE_MAX,
+  TRIGGERS,
+  URGE_LEVELS,
+  type ChartRange,
+  type Outcome,
+  type Trigger,
+} from "./constants";
 export { isCheckinErrorKey, type CheckinErrorKey } from "./errors";
 export { buildInsights, triggerCounts, type DayRecord, type Insight } from "./insights";
 export {

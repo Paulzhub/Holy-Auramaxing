@@ -10,6 +10,7 @@ import {
   NotificationNotice,
   NotificationSettingsPanel,
 } from "@/features/notifications";
+import { InstallSection } from "@/features/pwa";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
@@ -33,7 +34,13 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
       <NotificationSettingsPanel
         settings={settings}
         timeZone={profile.timezone}
-        devices={<DevicesSection devices={devices} timeZone={profile.timezone} />}
+        devices={
+          <>
+            {/* Installing comes first: on iPhone, notifications need the installed app (D-127). */}
+            <InstallSection />
+            <DevicesSection devices={devices} timeZone={profile.timezone} />
+          </>
+        }
       />
     </>
   );

@@ -22,7 +22,11 @@ export default async function JoinLayout({ children }: { children: ReactNode }) 
   const account = await getAccount();
   const profile = account?.profile;
   if (account && profile && !account.blocked && profile.onboarded_at && !profile.deletion_requested_at) {
-    return <AppFrame userId={account.userId}>{children}</AppFrame>;
+    return (
+      <AppFrame userId={account.userId} timeZone={profile.timezone}>
+        {children}
+      </AppFrame>
+    );
   }
   return <AuthFrame>{children}</AuthFrame>;
 }

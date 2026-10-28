@@ -49,7 +49,8 @@
     "resources": "Resources",
     "breathe": "Take a breath",
     "reading": "Daily reading",
-    "readingPlan": "Reading plan"
+    "readingPlan": "Reading plan",
+    "offline": "Offline"
   },
   "shell": {
     "skipToContent": "Skip to content",
@@ -936,7 +937,7 @@
         },
         "whatWeCollectAndWhy": {
           "heading": "What we collect, and why",
-          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account. If you sign in with Google, we keep only your email address from Google, not your name or photo.\n\nYour profile: the photo, bio, testimony and favourite verse you add, shown only to the people you choose.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nYour progress: your level, XP and badges, worked out from your check-ins. A group sees your level and badges only if you share at least your streak with it, and your check-in details only at the level you choose for that group.\n\nEncouragement: the nudges you send and receive (kept for 90 days), and accountability partners you choose together. A partner sees your full check-ins in that group, and, only if you allow it, is told when you miss two days or ask for prayer.\n\nRecovery tools, only if you use them: your journal, encrypted so only you can read it; how many times you rode out a hard moment with the SOS button (just the number); and a phone number you choose to share with your accountability partners, encrypted and shown only to them. Words you type are checked for signs of crisis on your device only, and never sent anywhere for it.\n\nNotifications: what we have to tell you, kept for 90 days, and your choices about them. If you turn on push, your browser's push service (Google, Mozilla, Apple or Microsoft, depending on your browser) receives an encrypted message it can't read and the address of your device for it.\n\nSecurity records: sign-ins, password changes, exports and deletions, with a rough device name such as “Chrome on Android”, kept for one year to protect your account. We do not keep your IP address: our sign-in provider sees it while you sign in, and we clear it within the hour."
+          "body": "Account details: your email address, the display name and handle you choose, your time zone and your theme. We use these to run your account. If you sign in with Google, we keep only your email address from Google, not your name or photo.\n\nYour profile: the photo, bio, testimony and favourite verse you add, shown only to the people you choose.\n\nYour answers at sign-up: that you confirmed you are 18 or older, which policy version you agreed to, and when.\n\nCheck-ins, mood, urges, triggers and notes, once you start using them. These reveal private parts of your life, so we treat them as sensitive personal data and only process them with your explicit consent.\n\nGroup membership and what you post in a group, shown only to that group's members.\n\nYour progress: your level, XP and badges, worked out from your check-ins. A group sees your level and badges only if you share at least your streak with it, and your check-in details only at the level you choose for that group.\n\nEncouragement: the nudges you send and receive (kept for 90 days), and accountability partners you choose together. A partner sees your full check-ins in that group, and, only if you allow it, is told when you miss two days or ask for prayer.\n\nRecovery tools, only if you use them: your journal, encrypted so only you can read it; how many times you rode out a hard moment with the SOS button (just the number); and a phone number you choose to share with your accountability partners, encrypted and shown only to them. Words you type are checked for signs of crisis on your device only, and never sent anywhere for it.\n\nNotifications: what we have to tell you, kept for 90 days, and your choices about them. If you turn on push, your browser's push service (Google, Mozilla, Apple or Microsoft, depending on your browser) receives an encrypted message it can't read and the address of your device for it.\n\nOn your device: if you check in without a connection, your answer waits on your phone or computer until it can be sent, for at most 7 days. A private note added then is locked on the device so that only our server can open it. The app also remembers on that device who is signed in and your time zone, so the offline page can work. Signing out removes all of it.\n\nSecurity records: sign-ins, password changes, exports and deletions, with a rough device name such as “Chrome on Android”, kept for one year to protect your account. We do not keep your IP address: our sign-in provider sees it while you sign in, and we clear it within the hour."
         },
         "whatWeNeverDo": {
           "heading": "What we never do",
@@ -1646,6 +1647,8 @@
       "share": "Share",
       "shareText": "Join my group on Holy Auramaxing",
       "downloadQr": "Download QR code",
+      "downloadQrPng": "Save QR code as an image",
+      "shareQr": "Share the QR code",
       "listTitle": "Invites",
       "listEmpty": "No invites yet.",
       "created": "Made {date}",
@@ -2910,6 +2913,58 @@
     "wrong": "That PIN didn’t match. Please try again.",
     "wait": "Too many tries for now. You can try again at {time}.",
     "deviceFailed": "That didn’t work. You can use your PIN instead.",
-    "forgot": "Forgot PIN? Sign out"
+    "forgot": "Forgot PIN? Sign out",
+    "forgotOffline": "Forgot your PIN? Once you’re back online, signing out removes it from this device."
+  },
+  "pwa": {
+    "offline": {
+      "title": "You’re offline",
+      "lede": "You can still check in. Your answer is kept on this device and sent as soon as you’re back online.",
+      "noSession": "To check in without a connection, open the app once while you’re online. Until then, everything on Take a breath works offline.",
+      "dayLegend": "Which day is this for?",
+      "savedTitle": "Kept on this device",
+      "savedBody": "It will be sent as soon as you’re back online, and it will count for {day}.",
+      "noteSealed": "Your note is sealed on this device: only the app’s server can open it, when it’s sent. You can’t read it here, and you can change it once it’s saved.",
+      "noteOffline": "You can add a private note once you’re back online.",
+      "change": "Change this answer",
+      "breathe": "Take a breath",
+      "retry": "Try the app again",
+      "saveFailed": "This device couldn’t keep your check-in. Please try again when you’re back online.",
+      "noDay": "There’s no day open to answer right now. Your next check-in opens tomorrow.",
+      "waitingOne": "1 check-in is waiting to be sent.",
+      "waitingMany": "{count} check-ins are waiting to be sent."
+    },
+    "synced": {
+      "one": "Your check-in for {day} was saved.",
+      "noteLost": "Your private note couldn’t be opened, so only your answer was saved."
+    },
+    "update": {
+      "title": "A new version is ready",
+      "body": "Refresh to get the latest. Anything you’ve typed on this page stays until you choose.",
+      "refresh": "Refresh",
+      "later": "Later"
+    },
+    "install": {
+      "title": "Add the app to this device",
+      "body": "It opens full-screen from your Home Screen, keeps working offline, and shows the same neutral name everywhere.",
+      "install": "Install",
+      "notNow": "Not now",
+      "iosTitle": "Add the app to your Home Screen",
+      "iosBody": "On iPhone and iPad this takes three taps, and it’s needed before notifications can reach you.",
+      "iosShow": "Show me how",
+      "iosStep1": "In Safari, tap the Share button (a square with an arrow pointing up).",
+      "iosStep2": "Scroll down and choose “Add to Home Screen”.",
+      "iosStep3": "Tap Add, then open the app from your Home Screen.",
+      "close": "Close",
+      "settingsTitle": "This device",
+      "installed": "The app is installed on this device.",
+      "unavailable": "This browser can’t install apps. You can keep using it here, or open the app in Chrome, Edge or Safari.",
+      "installedNow": "Installed. You’ll find it on your Home Screen."
+    },
+    "screenshots": {
+      "breathe": "Take a breath, one minute at a time",
+      "reading": "Today’s verse and reading plan",
+      "together": "Walking together with your group"
+    }
   }
 }

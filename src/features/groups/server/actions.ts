@@ -27,6 +27,7 @@ import {
   normaliseInviteCode,
 } from "../invite-secrets";
 import { renderInviteQr } from "../qr";
+import { inviteQrPng } from "./qr-png";
 import {
   challengeFieldNames,
   covenantSchema,
@@ -268,13 +269,15 @@ async function makeInvite(groupId: string, expiresInDays: number, maxUses: numbe
   const t = await getTranslations("groups.invites");
   const link = inviteLink(siteOrigin(), token);
   refresh();
+  const qrSvg = renderInviteQr(link, t("qrLabel")).svg;
   // The only time the link and code exist outside the person's own screen.
   return {
     status: "saved",
     invite: {
       link,
       code: formatInviteCode(code),
-      qrSvg: renderInviteQr(link, t("qrLabel")).svg,
+      qrSvg,
+      qrPng: await inviteQrPng(qrSvg),
       expiresAt: new Date(Date.now() + expiresInDays * 86_400_000).toISOString(),
       maxUses,
     },

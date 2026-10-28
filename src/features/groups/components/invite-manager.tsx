@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, Download, Share2 } from "lucide-react";
+import { Check, Copy, Download, ImageDown, Share2 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
@@ -49,6 +49,31 @@ function CopyButton({ text, label }: { text: string; label: string }) {
   );
 }
 
+/** Whether this browser can share a picture (Web Share with files, mostly phones). */
+function canShareImages(): boolean {
+  try {
+    const probe = new File([new Uint8Array(1)], "invite-qr.png", { type: "image/png" });
+    return typeof navigator.canShare === "function" && navigator.canShare({ files: [probe] });
+  } catch {
+    return false;
+  }
+}
+
+/** Shares the QR code as a picture, with the link, through the phone's own share sheet (D-127). */
+async function shareQr(invite: CreatedInvite, text: string): Promise<void> {
+  if (!invite.qrPng) return;
+  try {
+    // Decoded here: fetch() can't read a data: URL under our CSP (connect-src 'self').
+    const binary = atob(invite.qrPng.slice(invite.qrPng.indexOf(",") + 1));
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const file = new File([bytes], "invite-qr.png", { type: "image/png" });
+    await navigator.share({ title: text, text, url: invite.link, files: [file] });
+  } catch {
+    // Cancelled, or the share sheet refused: the buttons beside it still work.
+  }
+}
+
 /** The link, code and QR code, shown once after an invite is made. */
 function CreatedPanel({ invite }: { invite: CreatedInvite }) {
   const t = useTranslations("groups.invites");
@@ -59,6 +84,7 @@ function CreatedPanel({ invite }: { invite: CreatedInvite }) {
     () => typeof navigator.share === "function",
     () => false,
   );
+  const canShareFiles = useSyncExternalStore(noopSubscribe, canShareImages, () => false);
   const qrUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(invite.qrSvg)}`;
 
   // Move focus to the new invite, so it's announced and easy to reach.
@@ -128,7 +154,23 @@ function CreatedPanel({ invite }: { invite: CreatedInvite }) {
               <CopyButton text={invite.code} label={t("copyCode")} />
             </div>
           </div>
-          <div>
+          <div className="profile-actions">
+            {invite.qrPng ? (
+              <a
+                className={buttonVariants({ variant: "secondary", size: "sm" })}
+                href={invite.qrPng}
+                download="invite-qr.png"
+              >
+                <ImageDown aria-hidden="true" />
+                {t("downloadQrPng")}
+              </a>
+            ) : null}
+            {invite.qrPng && canShareFiles ? (
+              <Button type="button" variant="secondary" size="sm" onClick={() => void shareQr(invite, t("shareText"))}>
+                <Share2 aria-hidden="true" />
+                {t("shareQr")}
+              </Button>
+            ) : null}
             <a className={buttonVariants({ variant: "secondary", size: "sm" })} href={qrUrl} download="invite-qr.svg">
               <Download aria-hidden="true" />
               {t("downloadQr")}

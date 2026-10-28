@@ -78,6 +78,8 @@ jobs:
             # Phase 7c: a throwaway VAPID key pair for this run (Web Push).
             node -e 'const k=require("web-push").generateVAPIDKeys();console.log("NEXT_PUBLIC_VAPID_PUBLIC_KEY="+k.publicKey);console.log("VAPID_PRIVATE_KEY="+k.privateKey)'
             echo "VAPID_SUBJECT=mailto:ci@example.test"
+            # Phase 10: a throwaway key for sealed offline notes (D-123).
+            echo "OFFLINE_NOTE_PRIVATE_KEY=$(node scripts/offline-note-key.mjs)"
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Playwright
@@ -125,6 +127,8 @@ jobs:
             # Phase 7c: a throwaway VAPID key pair for this run (Web Push).
             node -e 'const k=require("web-push").generateVAPIDKeys();console.log("NEXT_PUBLIC_VAPID_PUBLIC_KEY="+k.publicKey);console.log("VAPID_PRIVATE_KEY="+k.privateKey)'
             echo "VAPID_SUBJECT=mailto:ci@example.test"
+            # Phase 10: a throwaway key for sealed offline notes (D-123).
+            echo "OFFLINE_NOTE_PRIVATE_KEY=$(node scripts/offline-note-key.mjs)"
           } >> "$GITHUB_ENV"
       - run: npm run build
       - name: Lighthouse CI

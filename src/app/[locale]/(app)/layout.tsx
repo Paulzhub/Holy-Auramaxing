@@ -17,5 +17,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const { profile, userId } = await requireAccount();
   // New accounts go through onboarding first (CLAUDE.md §7.2); it can be skipped.
   if (!profile.onboarded_at) redirect({ href: "/welcome", locale: await getLocale() });
-  return <AppFrame userId={userId}>{children}</AppFrame>;
+  return (
+    <AppFrame userId={userId} timeZone={profile.timezone}>
+      {children}
+    </AppFrame>
+  );
 }

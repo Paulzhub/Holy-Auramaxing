@@ -1,0 +1,78 @@
+/* ---------- the installable app (§13, D-124 to D-127) ----------
+   The "new version" banner, the install card and the iPhone steps, and the
+   offline page. Colours are the existing contrast-checked pairs; in forced
+   colours the banner keeps a system border so it never relies on a shadow. */
+@layer components {
+  .update-banner {
+    position: fixed;
+    z-index: 70;
+    inset-block-start: calc(var(--space-3) + env(safe-area-inset-top));
+    inset-inline: var(--space-3);
+    margin-inline: auto;
+    max-inline-size: 32rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-3);
+    align-items: start;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-2);
+  }
+
+  .update-banner__icon {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin-block-start: 0.15rem;
+    color: var(--color-accent-ink);
+  }
+
+  .update-banner__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .update-banner__text p {
+    margin: 0;
+    color: var(--color-ink-muted);
+    overflow-wrap: anywhere;
+  }
+
+  .update-banner__actions {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  @media (forced-colors: active) {
+    .update-banner {
+      border: 2px solid CanvasText;
+    }
+  }
+
+  .install-steps {
+    margin-block: var(--space-3);
+  }
+
+  .install-steps li {
+    overflow-wrap: anywhere;
+  }
+
+  .install-steps__icon {
+    display: inline-block;
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+    margin-inline-end: var(--space-1);
+    vertical-align: -0.15em;
+  }
+
+  .offline-page {
+    display: grid;
+    gap: var(--space-4);
+  }
+}

@@ -1,7 +1,10 @@
+import { sealedNoteContext } from "@/lib/offline/sealed-note";
 import { encryptText } from "@/lib/security/encryption";
+import { openOfflineNote } from "@/lib/security/offline-note-keys";
 import { devLog } from "@/lib/server/dev-log";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+import { NOTE_MAX } from "../constants";
 import { checkinErrorKey, type CheckinErrorKey } from "../errors";
 import type { OfflineCheckinInput } from "../schemas";
 import { noteContext } from "./queries";
@@ -17,7 +20,8 @@ import { noteContext } from "./queries";
  * error) is worth trying again later.
  */
 export type OfflineSyncResult =
-  { ok: true; status: "created" | "updated" | "synced_late" } | { ok: false; error: CheckinErrorKey; drop: boolean };
+  | { ok: true; status: "created" | "updated" | "synced_late"; noteLost: boolean }
+  | { ok: false; error: CheckinErrorKey; drop: boolean };
 
 const permanent: readonly CheckinErrorKey[] = ["syncTooOld", "alreadyAnswered", "windowClosed", "invalid"];
 
@@ -26,6 +30,16 @@ function sqlNull<T>(value: T | null): T {
 }
 
 export async function syncOfflineCheckin(userId: string, input: OfflineCheckinInput): Promise<OfflineSyncResult> {
+  // A sealed note is opened here (D-123) and then stored like any note. If it
+  // can't be opened (a retired key, or it was changed), the check-in is still
+  // saved without it: the check-in matters more than the note.
+  let note = input.note;
+  let noteLost = false;
+  if (!note && input.sealedNote) {
+    const opened = await openOfflineNote(input.sealedNote, sealedNoteContext(userId, input.date));
+    if (opened === null) noteLost = true;
+    else note = opened.replace(/\r\n/g, "\n").trim().slice(0, NOTE_MAX);
+  }
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.rpc("submit_offline_checkin", {
     p_local_date: input.date,
@@ -34,12 +48,12 @@ export async function syncOfflineCheckin(userId: string, input: OfflineCheckinIn
     p_mood: sqlNull(input.mood),
     p_urge_level: sqlNull(input.urge),
     p_triggers: input.triggers,
-    p_note_encrypted: sqlNull(input.note ? encryptText(input.note, noteContext(userId, input.date)) : null),
+    p_note_encrypted: sqlNull(note ? encryptText(note, noteContext(userId, input.date)) : null),
   });
   if (error) {
     devLog("checkin-offline", error);
     const key = checkinErrorKey(error);
     return { ok: false, error: key, drop: permanent.includes(key) };
   }
-  return { ok: true, status: data as "created" | "updated" | "synced_late" };
+  return { ok: true, status: data as "created" | "updated" | "synced_late", noteLost };
 }
